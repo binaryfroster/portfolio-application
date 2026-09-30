@@ -39,8 +39,8 @@
   let agvVehicles = [];
   let isDragging = false;
   let prevMousePos = { x: 0, y: 0 };
-  let plantRotation = { x: 0.5, y: -0.75 };
-  let targetRotation = { x: 0.5, y: -0.75 };
+  let plantRotation = { x: 0.0, y: -0.78 };
+  let targetRotation = { x: 0.0, y: -0.78 };
 
   function initThreeJSFactory() {
     if (!factoryContainer || typeof THREE === 'undefined') return;
@@ -50,8 +50,8 @@
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(7.5, 8.5, 7.5);
+    camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
+    camera.position.set(9.0, 9.5, 9.0);
     camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -172,7 +172,7 @@
       const deltaX = e.clientX - prevMousePos.x;
       const deltaY = e.clientY - prevMousePos.y;
       targetRotation.y += deltaX * 0.006;
-      targetRotation.x = Math.max(0.2, Math.min(1.2, targetRotation.x + deltaY * 0.006));
+      targetRotation.x = Math.max(-0.15, Math.min(0.2, targetRotation.x + deltaY * 0.004));
       prevMousePos = { x: e.clientX, y: e.clientY };
     });
 
@@ -191,14 +191,18 @@
       const deltaX = e.touches[0].clientX - prevMousePos.x;
       const deltaY = e.touches[0].clientY - prevMousePos.y;
       targetRotation.y += deltaX * 0.006;
-      targetRotation.x = Math.max(0.2, Math.min(1.2, targetRotation.x + deltaY * 0.006));
+      targetRotation.x = Math.max(-0.15, Math.min(0.2, targetRotation.x + deltaY * 0.004));
       prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     });
 
     factoryContainer.addEventListener('wheel', (e) => {
       e.preventDefault();
-      camera.position.z = Math.max(5.5, Math.min(15.0, camera.position.z + e.deltaY * 0.006));
-      camera.position.x = camera.position.z;
+      const zoomFactor = 1 + e.deltaY * 0.001;
+      const newDist = camera.position.length() * zoomFactor;
+      if (newDist >= 8 && newDist <= 22) {
+        camera.position.multiplyScalar(zoomFactor);
+        camera.lookAt(0, 0, 0);
+      }
     }, { passive: false });
 
     window.addEventListener('resize', onWindowResize);
@@ -249,9 +253,9 @@
   }
 
   resetFactoryCameraBtn?.addEventListener('click', () => {
-    targetRotation = { x: 0.5, y: -0.75 };
+    targetRotation = { x: 0.0, y: -0.78 };
     if (camera) {
-      camera.position.set(7.5, 8.5, 7.5);
+      camera.position.set(9.0, 9.5, 9.0);
       camera.lookAt(0, 0, 0);
     }
     if (window.showToast) window.showToast('3D plant digital twin camera reset.', 'info');
