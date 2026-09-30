@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnBridge LMS | Next-Gen Engineering Learning Management System</title>
+  <meta name="description" content="Binary Froster enterprise EdTech learning management system with AWS S3 adaptive streaming, interactive quizzes, progress tracking, and certificates.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            lms: {
+              base: '#080914',
+              card: '#0E1122',
+              border: '#1A1E38',
+              violet: '#818CF8',
+              indigo: '#6366F1',
+              cyan: '#00F2FE',
+              emerald: '#10B981',
+              amber: '#F59E0B',
+              rose: '#F43F5E'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #080914;
+      color: #E2E8F0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #090B18;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1C2242;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #2C3566;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-[#080914] text-slate-200">
+
+  <!-- TOP APP BAR -->
+  <header class="h-14 border-b border-lms-border bg-[#0B0D1C]/90 backdrop-blur px-4 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500/20 via-violet-500/30 to-purple-600/30 border border-violet-500/40 flex items-center justify-center text-violet-400 font-mono font-bold text-sm">
+          LB
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm tracking-tight text-white">LearnBridge LMS</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/30">ACADEMY OS</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">ADVANCED ENGINEERING EDUCATION</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Telemetry & Action -->
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-lms-border pr-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">MRR:</span>
+          <span class="text-emerald-400 font-bold">$35,400/mo</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">COURSES:</span>
+          <span class="text-violet-400 font-bold">200+ Live</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">RATING:</span>
+          <span class="text-amber-400 font-bold">4.8 / 5.0</span>
+        </div>
+      </div>
+
+      <button id="viewCertBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs transition-colors shadow">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+        <span>My Certificate</span>
+      </button>
+
+      <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg border border-lms-border hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors">
+        <span>Portfolio</span>
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="bg-[#090B18] border-b border-lms-border px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
+    <button data-tab="learning" class="lms-tab active-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-violet-400 text-violet-400 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span>Video Classroom & Notes</span>
+    </button>
+    <button data-tab="syllabus" class="lms-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      <span>Course Syllabus (16 Lessons)</span>
+    </button>
+    <button data-tab="quiz" class="lms-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+      <span>Interactive Knowledge Quiz</span>
+    </button>
+    <button data-tab="pricing" class="lms-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+      <span>Stripe Course Sales Engine</span>
+    </button>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- 1. VIDEO CLASSROOM -->
+    <div id="tab-learning" class="lms-tab-content space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Video Player Frame -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="rounded-2xl border border-lms-border bg-lms-card overflow-hidden shadow-2xl">
+            <!-- Simulated Video Player Canvas / Frame -->
+            <div class="relative aspect-video bg-[#05060C] flex flex-col items-center justify-center p-6 border-b border-lms-border">
+              <div class="w-16 h-16 rounded-full bg-violet-600/30 border border-violet-500/50 flex items-center justify-center text-violet-300 cursor-pointer hover:scale-110 transition-transform shadow-lg" id="playBtn">
+                <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono text-slate-300 bg-[#080914]/80 backdrop-blur px-3 py-2 rounded-xl border border-lms-border">
+                <span id="videoTimecode">04:18 / 18:42</span>
+                <span class="text-violet-400 font-semibold truncate max-w-xs">Lesson 2.3: Zero-Copy Sockets via io_uring</span>
+                <div class="flex items-center gap-2">
+                  <span class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px]">1080p 60fps</span>
+                  <select class="bg-transparent text-[11px] text-slate-300 focus:outline-none cursor-pointer">
+                    <option value="1">1.0x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2.0x</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lesson Info & Controls -->
+            <div class="p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-violet-400 font-bold uppercase">MODULE 2 • LESSON 3 OF 16</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">AWS S3 STREAMING ACTIVE</span>
+              </div>
+              <h2 class="text-lg font-bold text-white">Kernel Bypass, Ring Buffers, and Async Network I/O</h2>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                In this deep-dive lesson, we explore how modern Linux kernels leverage <code>io_uring</code> to eliminate context-switching overhead in microservices processing 1M+ requests per second.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Synchronized Notes Notebook -->
+        <div class="lg:col-span-1 p-5 rounded-2xl bg-lms-card border border-lms-border flex flex-col space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-lms-border">
+            <h3 class="text-sm font-bold text-white font-mono uppercase">Student Notebook</h3>
+            <span class="text-[10px] font-mono text-slate-400">Timestamped</span>
+          </div>
+
+          <div class="flex-1 space-y-3 overflow-y-auto max-h-80 custom-scrollbar pr-1" id="notesList">
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-lms-border text-xs space-y-1">
+              <div class="flex justify-between font-mono text-[10px]">
+                <span class="text-violet-400 font-bold">[01:45]</span>
+                <span class="text-slate-500">Saved</span>
+              </div>
+              <p class="text-slate-300">Context switching cost: ~1.2 microseconds per syscall when handling 50k sockets.</p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-lms-border text-xs space-y-1">
+              <div class="flex justify-between font-mono text-[10px]">
+                <span class="text-violet-400 font-bold">[03:20]</span>
+                <span class="text-slate-500">Saved</span>
+              </div>
+              <p class="text-slate-300">Shared memory submission queues (SQ) and completion queues (CQ) avoid kernel traps.</p>
+            </div>
+          </div>
+
+          <!-- Add Note Form -->
+          <div class="pt-2 border-t border-lms-border">
+            <div class="flex gap-2">
+              <input type="text" id="newNoteInput" placeholder="Add timestamped note..." class="flex-1 bg-slate-900 border border-lms-border rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-violet-400">
+              <button id="addNoteBtn" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs rounded-lg transition-colors">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. COURSE SYLLABUS -->
+    <div id="tab-syllabus" class="lms-tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white font-mono uppercase">Full Course Curriculum & Syllabus</h2>
+        <p class="text-xs text-slate-400">Complete 16-lesson roadmap with hands-on labs and architecture blueprints.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Module 1 -->
+        <div class="rounded-2xl border border-lms-border bg-lms-card p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white">Module 1: High-Performance Networking Foundations</h3>
+            <span class="text-xs font-mono text-emerald-400 font-bold">4 / 4 Completed</span>
+          </div>
+          <div class="divide-y divide-lms-border text-xs font-mono">
+            <div class="py-2.5 flex justify-between items-center text-slate-300">
+              <span>1.1 Anatomy of a High-Frequency TCP Packet</span>
+              <span class="text-emerald-400">Watched (14m)</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center text-slate-300">
+              <span>1.2 epoll vs kqueue: Operating System Event Loops</span>
+              <span class="text-emerald-400">Watched (19m)</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center text-slate-300">
+              <span>1.3 Buffer Pooling and Zero-Copy Serialization</span>
+              <span class="text-emerald-400">Watched (22m)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="rounded-2xl border border-violet-500/40 bg-lms-card p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-violet-300">Module 2: Kernel Bypass & io_uring Systems</h3>
+            <span class="text-xs font-mono text-violet-400 font-bold">In Progress (Lesson 2.3)</span>
+          </div>
+          <div class="divide-y divide-lms-border text-xs font-mono">
+            <div class="py-2.5 flex justify-between items-center text-slate-300">
+              <span>2.1 Architecture of io_uring Submission & Completion Queues</span>
+              <span class="text-emerald-400">Watched (25m)</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center text-slate-300">
+              <span>2.2 Registering Fixed Files and Buffers</span>
+              <span class="text-emerald-400">Watched (18m)</span>
+            </div>
+            <div class="py-2.5 flex justify-between items-center text-white font-bold bg-violet-950/20 px-2 rounded">
+              <span>2.3 Zero-Copy Sockets via io_uring (Active)</span>
+              <span class="text-violet-400">Resume Playing →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. INTERACTIVE QUIZ -->
+    <div id="tab-quiz" class="lms-tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white font-mono uppercase">Interactive Module Assessment</h2>
+        <p class="text-xs text-slate-400">Verify your comprehension to unlock your professional certification badge.</p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-lms-card border border-lms-border max-w-2xl mx-auto space-y-6" id="quizContainer">
+        <div>
+          <span class="text-[10px] font-mono text-violet-400 font-bold uppercase">QUESTION 1 OF 3</span>
+          <h3 class="text-base font-bold text-white mt-1">What primary advantage does io_uring provide over traditional epoll?</h3>
+        </div>
+
+        <div class="space-y-3 text-xs" id="quizOptions">
+          <button class="quiz-option w-full p-3.5 rounded-xl border border-lms-border bg-slate-900/60 hover:border-violet-400 text-left text-slate-200 transition-colors" data-correct="false">
+            A) It enforces HTTP/3 QUIC encryption at the hardware level.
+          </button>
+          <button class="quiz-option w-full p-3.5 rounded-xl border border-lms-border bg-slate-900/60 hover:border-violet-400 text-left text-slate-200 transition-colors" data-correct="true">
+            B) It allows asynchronous submission and completion of I/O operations via shared memory ring buffers without repeated system call transitions.
+          </button>
+          <button class="quiz-option w-full p-3.5 rounded-xl border border-lms-border bg-slate-900/60 hover:border-violet-400 text-left text-slate-200 transition-colors" data-correct="false">
+            C) It completely replaces the TCP/IP stack with UDP tunnels.
+          </button>
+        </div>
+
+        <div id="quizFeedback" class="p-3.5 rounded-xl hidden text-xs font-mono"></div>
+      </div>
+    </div>
+
+    <!-- 4. STRIPE COURSE SALES ENGINE -->
+    <div id="tab-pricing" class="lms-tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white font-mono uppercase">Stripe-Powered Course Monetization</h2>
+        <p class="text-xs text-slate-400">Built-in checkout workflows delivering $35K monthly recurring revenue.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div class="p-6 rounded-2xl bg-lms-card border border-lms-border space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-base font-bold text-white">Professional Engineer License</h3>
+              <p class="text-xs text-slate-400">Individual access with all source repos and labs.</p>
+            </div>
+            <div class="text-2xl font-bold text-white font-mono">$299</div>
+          </div>
+          <ul class="text-xs space-y-2 text-slate-300 font-mono">
+            <li>✓ Full 16-lesson video curriculum</li>
+            <li>✓ AWS S3 code repo sandbox access</li>
+            <li>✓ Verifiable certificate of completion</li>
+            <li>✓ Lifetime syllabus updates</li>
+          </ul>
+          <button onclick="alert('Launching Stripe Embedded Checkout for $299...');" class="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs transition-colors">
+            Enroll via Stripe
+          </button>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-lms-card border border-violet-500/40 space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-base font-bold text-white">Enterprise Team Seat</h3>
+              <p class="text-xs text-slate-400">For engineering teams of up to 10 architects.</p>
+            </div>
+            <div class="text-2xl font-bold text-violet-400 font-mono">$799</div>
+          </div>
+          <ul class="text-xs space-y-2 text-slate-300 font-mono">
+            <li>✓ Everything in Professional tier</li>
+            <li>✓ Team progress manager dashboard</li>
+            <li>✓ Direct 1-on-1 architecture review</li>
+            <li>✓ Priority technical support SLA</li>
+          </ul>
+          <button onclick="alert('Launching Stripe Enterprise Team Checkout for $799...');" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs transition-colors">
+            Enroll Team via Stripe
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CERTIFICATE MODAL -->
+  <div id="certModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-[#0C0F1F] border border-violet-500/40 rounded-3xl max-w-2xl w-full p-8 shadow-2xl relative text-center space-y-4">
+      <button id="closeCertBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <div class="w-12 h-12 rounded-full bg-violet-500/20 border border-violet-500/40 mx-auto flex items-center justify-center text-violet-300">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <h3 class="text-lg font-bold text-white font-mono uppercase tracking-widest">Certificate of Mastery</h3>
+      <p class="text-xs text-slate-400">This certifies that</p>
+      <h2 class="text-2xl font-bold text-violet-300 font-sans">Enterprise Software Engineer</h2>
+      <p class="text-xs text-slate-300 max-w-md mx-auto">
+        Has successfully demonstrated rigorous mastery in <strong>Advanced Distributed Systems & High-Frequency Microservices Architecture</strong>.
+      </p>
+      <div class="pt-4 border-t border-lms-border flex items-center justify-between text-[10px] font-mono text-slate-500">
+        <span>Verification Hash: 8f92a1...bc78</span>
+        <span>Issued by Binary Froster Academy</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

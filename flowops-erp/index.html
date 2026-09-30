@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowOps ERP | Unified Manufacturing & Supply Chain OS</title>
+  <meta name="description" content="Binary Froster enterprise manufacturing ERP system delivering 40% faster order processing, real-time inventory management, and automated work orders.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              base: '#080A0F',
+              card: '#0E131E',
+              cardHover: '#131A2B',
+              border: '#1C2438',
+              cyan: '#00F2FE',
+              sky: '#38BDF8',
+              emerald: '#10B981',
+              amber: '#F59E0B',
+              rose: '#F43F5E'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #080A0F;
+      color: #E2E8F0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #090C14;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1C2438;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #2D3A56;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-[#080A0F] text-slate-200">
+
+  <!-- TOP APP BAR -->
+  <header class="h-14 border-b border-brand-border bg-[#0B0F19]/90 backdrop-blur px-4 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <button id="mobileNavToggle" class="md:hidden p-1.5 rounded-lg border border-brand-border text-slate-400 hover:text-white" aria-label="Toggle Navigation">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+
+      <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500/20 via-cyan-500/20 to-blue-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-mono font-bold text-sm">
+          FO
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm tracking-tight text-white">FlowOps ERP</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">PLANT #04 ACTIVE</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">MANUFACTURING EXECUTION SYSTEM</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Live Telemetry Badges -->
+    <div class="flex items-center gap-4">
+      <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-brand-border pr-4">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-500">CAPACITY:</span>
+          <span class="text-emerald-400 font-bold">94.2%</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">CYCLE TIME:</span>
+          <span class="text-cyan-400 font-bold">-40% Faster</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">BURN RATE:</span>
+          <span class="text-slate-200 font-bold">$500/day</span>
+        </div>
+      </div>
+
+      <button id="quickOrderBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span>New Work Order</span>
+      </button>
+
+      <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg border border-brand-border hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors">
+        <span>Portfolio</span>
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="bg-[#0B0E17] border-b border-brand-border px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
+    <button data-tab="dashboard" class="nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-emerald-400 text-emerald-400 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      <span>Control Room</span>
+    </button>
+    <button data-tab="workorders" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+      <span>Manufacturing Kanban (42)</span>
+    </button>
+    <button data-tab="inventory" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+      <span>Inventory & Warehousing</span>
+    </button>
+    <button data-tab="procurement" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+      <span>Purchase Orders & Suppliers</span>
+    </button>
+    <button data-tab="finance" class="nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+      <span>COGS & Settlements</span>
+    </button>
+  </nav>
+
+  <!-- CONTENT PANELS -->
+  <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- 1. DASHBOARD CONTROL ROOM -->
+    <div id="tab-dashboard" class="tab-content space-y-6">
+      <!-- 4 Top KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl bg-brand-card border border-brand-border shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+            <span>TOTAL MONTHLY ORDERS</span>
+            <span class="text-emerald-400 font-bold">+18.4%</span>
+          </div>
+          <div class="text-2xl font-bold text-white font-mono">$1,842,500</div>
+          <div class="text-xs text-slate-500 mt-1">200 active manufacturing clients</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-brand-card border border-brand-border shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+            <span>SPRINT COMPLETION</span>
+            <span class="text-cyan-400 font-bold">38 / 42 Sprints</span>
+          </div>
+          <div class="text-2xl font-bold text-white font-mono">90.4%</div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5 mt-2">
+            <div class="bg-cyan-400 h-full w-[90%] rounded-full"></div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-brand-card border border-brand-border shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+            <span>OPERATING MARGIN</span>
+            <span class="text-emerald-400 font-bold">Target 28%</span>
+          </div>
+          <div class="text-2xl font-bold text-white font-mono">31.6%</div>
+          <div class="text-xs text-emerald-400 mt-1">+$42,100 above baseline</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-brand-card border border-brand-border shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+            <span>DEFECT ESCAPE RATE</span>
+            <span class="text-emerald-400 font-bold">6-Sigma Grade</span>
+          </div>
+          <div class="text-2xl font-bold text-white font-mono">0.18%</div>
+          <div class="text-xs text-slate-500 mt-1">Industry tolerance: 1.50%</div>
+        </div>
+      </div>
+
+      <!-- Critical Assembly Progress & Stock Alerts -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Live Production Floor Monitor -->
+        <div class="lg:col-span-2 p-5 rounded-2xl bg-brand-card border border-brand-border space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+              <h3 class="text-sm font-bold text-white tracking-wide uppercase font-mono">Active Assembly Lines Status</h3>
+            </div>
+            <span class="text-xs font-mono text-slate-400">Station A through D</span>
+          </div>
+
+          <div class="space-y-3" id="assemblyLinesList">
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-brand-border flex items-center justify-between">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-slate-200">Line A1: High-Precision Titanium Milling</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Operational</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-0.5">Order #WO-9021 • 450 / 500 units completed</div>
+              </div>
+              <div class="text-right">
+                <span class="text-sm font-bold text-white font-mono">90%</span>
+                <div class="text-[10px] text-slate-500 font-mono">ETA 2h 15m</div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-brand-border flex items-center justify-between">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-slate-200">Line B3: Surface Mount Electronics (SMT)</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Operational</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-0.5">Order #WO-8944 • 1,200 / 1,500 PCBs populated</div>
+              </div>
+              <div class="text-right">
+                <span class="text-sm font-bold text-white font-mono">80%</span>
+                <div class="text-[10px] text-slate-500 font-mono">ETA 4h 30m</div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-brand-border flex items-center justify-between">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-slate-200">Line C2: Automated Laser Calibration & QA</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Calibration Phase</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-0.5">Order #WO-9104 • 80 / 100 Optic Arrays tested</div>
+              </div>
+              <div class="text-right">
+                <span class="text-sm font-bold text-white font-mono">80%</span>
+                <div class="text-[10px] text-slate-500 font-mono">ETA 1h 10m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Reorder Threshold Alerts -->
+        <div class="p-5 rounded-2xl bg-brand-card border border-brand-border space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white tracking-wide uppercase font-mono">Stock Safety Alerts</h3>
+            <span class="text-xs font-mono text-amber-400 bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded">2 SKUs Low</span>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-amber-500/30">
+              <div class="flex justify-between items-start">
+                <span class="font-semibold text-xs text-slate-200">Silicon Heat Sinks (Alu-22)</span>
+                <span class="text-[10px] font-mono text-amber-400 font-bold">14 left (Min 50)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Warehouse Bay B-08 • Supplier: Apex Thermal</p>
+              <button onclick="alert('Auto-generating Purchase Order to Apex Thermal for 200 units.');" class="mt-2 text-xs font-semibold text-amber-400 hover:text-amber-300 underline font-mono">Trigger Auto-Reorder →</button>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-brand-border">
+              <div class="flex justify-between items-start">
+                <span class="font-semibold text-xs text-slate-200">Titanium Hex Screws M4</span>
+                <span class="text-[10px] font-mono text-slate-400">820 left (Min 500)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Warehouse Bay A-02 • Normal Safety Threshold</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. KANBAN WORK ORDERS -->
+    <div id="tab-workorders" class="tab-content hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono uppercase">Manufacturing Pipeline (Kanban)</h2>
+          <p class="text-xs text-slate-400">Drag or click arrows to advance work order stages across the production facility.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" id="kanbanSearch" placeholder="Filter orders by SKU, client, ID..." class="bg-[#0E131E] border border-brand-border rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
+        </div>
+      </div>
+
+      <!-- 4 Kanban Columns -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Col 1: Staged & Queued -->
+        <div class="p-3 rounded-2xl bg-[#0B0E17] border border-brand-border flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-brand-border">
+            <span class="text-xs font-bold text-slate-300 font-mono">1. STAGED / QUEUED</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300" id="count-queued">2</span>
+          </div>
+          <div class="space-y-3 flex-1 kanban-lane" id="lane-queued">
+            <div class="kanban-card p-3 rounded-xl bg-brand-card border border-brand-border hover:border-slate-600 transition-all space-y-2 cursor-pointer" data-id="WO-9201">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-mono text-cyan-400 font-bold">#WO-9201</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">HIGH PRIORITY</span>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Aerospace Turbine Blades (x50)</h4>
+              <p class="text-[11px] text-slate-400">Client: SkyDrive Dynamics • Material: Inconel 718</p>
+              <div class="flex justify-between items-center pt-2 border-t border-brand-border text-[10px] text-slate-500 font-mono">
+                <span>Staged 2h ago</span>
+                <button class="advance-btn text-emerald-400 hover:text-emerald-300 font-bold">Start Machining →</button>
+              </div>
+            </div>
+
+            <div class="kanban-card p-3 rounded-xl bg-brand-card border border-brand-border hover:border-slate-600 transition-all space-y-2 cursor-pointer" data-id="WO-9204">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-mono text-cyan-400 font-bold">#WO-9204</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">STANDARD</span>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Hydraulic Pump Housings (x120)</h4>
+              <p class="text-[11px] text-slate-400">Client: HeavyMach Industries • Cast Aluminum</p>
+              <div class="flex justify-between items-center pt-2 border-t border-brand-border text-[10px] text-slate-500 font-mono">
+                <span>Staged 5h ago</span>
+                <button class="advance-btn text-emerald-400 hover:text-emerald-300 font-bold">Start Machining →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 2: In Machining & Assembly -->
+        <div class="p-3 rounded-2xl bg-[#0B0E17] border border-brand-border flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-brand-border">
+            <span class="text-xs font-bold text-cyan-400 font-mono">2. ACTIVE ASSEMBLY</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-400" id="count-assembly">2</span>
+          </div>
+          <div class="space-y-3 flex-1 kanban-lane" id="lane-assembly">
+            <div class="kanban-card p-3 rounded-xl bg-brand-card border border-cyan-500/30 space-y-2 cursor-pointer" data-id="WO-9021">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-mono text-cyan-400 font-bold">#WO-9021</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">LINE A1</span>
+              </div>
+              <h4 class="text-xs font-semibold text-white">CNC Precision Titanium Rods (x500)</h4>
+              <p class="text-[11px] text-slate-400">Batch Lot: TL-882 • Lead: M. Vance</p>
+              <div class="flex justify-between items-center pt-2 border-t border-brand-border text-[10px] text-slate-500 font-mono">
+                <span class="text-cyan-400">90% Done</span>
+                <button class="advance-btn text-emerald-400 hover:text-emerald-300 font-bold">Send to QA →</button>
+              </div>
+            </div>
+
+            <div class="kanban-card p-3 rounded-xl bg-brand-card border border-brand-border space-y-2 cursor-pointer" data-id="WO-8944">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-mono text-cyan-400 font-bold">#WO-8944</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">LINE B3</span>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Industrial Controller Motherboards (x1500)</h4>
+              <p class="text-[11px] text-slate-400">Batch Lot: SMT-402 • Lead: S. Gupta</p>
+              <div class="flex justify-between items-center pt-2 border-t border-brand-border text-[10px] text-slate-500 font-mono">
+                <span class="text-cyan-400">80% Done</span>
+                <button class="advance-btn text-emerald-400 hover:text-emerald-300 font-bold">Send to QA →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 3: Quality Control Gate -->
+        <div class="p-3 rounded-2xl bg-[#0B0E17] border border-brand-border flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-brand-border">
+            <span class="text-xs font-bold text-amber-400 font-mono">3. QA INSPECTION</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-400" id="count-qa">1</span>
+          </div>
+          <div class="space-y-3 flex-1 kanban-lane" id="lane-qa">
+            <div class="kanban-card p-3 rounded-xl bg-brand-card border border-amber-500/30 space-y-2 cursor-pointer" data-id="WO-9104">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-mono text-amber-400 font-bold">#WO-9104</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400">OPTICAL QA</span>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Fiber Optic Transceiver Arrays (x100)</h4>
+              <p class="text-[11px] text-slate-400">Defect check: 0 faults recorded</p>
+              <div class="flex justify-between items-center pt-2 border-t border-brand-border text-[10px] text-slate-500 font-mono">
+                <span>Inspector: K. Lewis</span>
+                <button class="advance-btn text-emerald-400 hover:text-emerald-300 font-bold">Approve & Ship →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 4: Staged for Dispatch -->
+        <div class="p-3 rounded-2xl bg-[#0B0E17] border border-brand-border flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-brand-border">
+            <span class="text-xs font-bold text-emerald-400 font-mono">4. DISPATCHED / READY</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-400" id="count-dispatched">2</span>
+          </div>
+          <div class="space-y-3 flex-1 kanban-lane" id="lane-dispatched">
+            <div class="kanban-card p-3 rounded-xl bg-brand-card border border-emerald-500/30 space-y-2" data-id="WO-8800">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-mono text-emerald-400 font-bold">#WO-8800</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400">DISPATCHED</span>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Precision Ball Bearings (x2500)</h4>
+              <p class="text-[11px] text-slate-400">Freight Courier: DHL Global • Tracking #DHL-9921</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. INVENTORY & WAREHOUSE -->
+    <div id="tab-inventory" class="tab-content hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono uppercase">Warehouse & Raw Materials Inventory</h2>
+          <p class="text-xs text-slate-400">Live stock ledger with barcode scanning and auto-reorder triggers.</p>
+        </div>
+        <button onclick="alert('Physical Barcode Scanner hardware interface initialized via WebHID/Serial.');" class="px-3 py-1.5 rounded-lg border border-brand-border bg-slate-900 text-xs font-semibold text-slate-300 hover:text-white">
+          Scan Barcode (WebHID)
+        </button>
+      </div>
+
+      <div class="rounded-2xl border border-brand-border bg-brand-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-[#0A0D15] text-[10px] font-mono uppercase text-slate-400 border-b border-brand-border">
+              <tr>
+                <th class="p-3">SKU Code</th>
+                <th class="p-3">Description</th>
+                <th class="p-3">Category</th>
+                <th class="p-3">Current Stock</th>
+                <th class="p-3">Safety Min</th>
+                <th class="p-3">Storage Location</th>
+                <th class="p-3">Unit Cost</th>
+                <th class="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-brand-border font-mono" id="inventoryTableBody">
+              <tr class="hover:bg-slate-900/40">
+                <td class="p-3 text-cyan-400 font-bold">SKU-TI-6AL4V</td>
+                <td class="p-3 font-sans font-medium text-white">Titanium Alloy Rods (Grade 5)</td>
+                <td class="p-3 text-slate-400">Raw Metals</td>
+                <td class="p-3 text-emerald-400 font-bold">340 kg</td>
+                <td class="p-3 text-slate-400">100 kg</td>
+                <td class="p-3 text-slate-300">Bay A-12</td>
+                <td class="p-3 text-slate-200">$48.50 / kg</td>
+                <td class="p-3 text-right">
+                  <button class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Adjust</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="p-3 text-cyan-400 font-bold">SKU-STM32-H7</td>
+                <td class="p-3 font-sans font-medium text-white">ARM Cortex-M7 Microcontroller</td>
+                <td class="p-3 text-slate-400">Semiconductors</td>
+                <td class="p-3 text-emerald-400 font-bold">2,450 pcs</td>
+                <td class="p-3 text-slate-400">500 pcs</td>
+                <td class="p-3 text-slate-300">Vault C-04</td>
+                <td class="p-3 text-slate-200">$14.20 / pc</td>
+                <td class="p-3 text-right">
+                  <button class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Adjust</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-900/40 bg-amber-950/10">
+                <td class="p-3 text-amber-400 font-bold">SKU-ALU-HS22</td>
+                <td class="p-3 font-sans font-medium text-white">Extruded Aluminum Heat Sinks</td>
+                <td class="p-3 text-slate-400">Thermal Parts</td>
+                <td class="p-3 text-amber-400 font-bold">14 pcs</td>
+                <td class="p-3 text-slate-400">50 pcs</td>
+                <td class="p-3 text-slate-300">Bay B-08</td>
+                <td class="p-3 text-slate-200">$6.80 / pc</td>
+                <td class="p-3 text-right">
+                  <button class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Order Stock</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="p-3 text-cyan-400 font-bold">SKU-BRG-608Z</td>
+                <td class="p-3 font-sans font-medium text-white">Chrome Steel Miniature Bearings</td>
+                <td class="p-3 text-slate-400">Hardware</td>
+                <td class="p-3 text-emerald-400 font-bold">8,900 pcs</td>
+                <td class="p-3 text-slate-400">2,000 pcs</td>
+                <td class="p-3 text-slate-300">Bin D-19</td>
+                <td class="p-3 text-slate-200">$0.45 / pc</td>
+                <td class="p-3 text-right">
+                  <button class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Adjust</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PROCUREMENT & PURCHASE ORDERS -->
+    <div id="tab-procurement" class="tab-content hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono uppercase">Supplier Purchase Orders (PO)</h2>
+          <p class="text-xs text-slate-400">Multi-stage approval workflow and automated vendor EDI dispatches.</p>
+        </div>
+        <button id="openNewPOModalBtn" class="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow">
+          Create Purchase Order
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="poCardGrid">
+        <div class="p-4 rounded-2xl bg-brand-card border border-brand-border space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono text-cyan-400 font-bold">PO-2026-118</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">CONFIRMED</span>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Apex Precision Metals Ltd</h4>
+            <p class="text-xs text-slate-400 font-mono mt-0.5">500kg Titanium Ti-6Al-4V • $24,250.00</p>
+          </div>
+          <div class="pt-2 border-t border-brand-border flex justify-between items-center text-xs font-mono text-slate-400">
+            <span>Delivery: Oct 4, 2026</span>
+            <span class="text-emerald-400 font-semibold">In Transit</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-brand-card border border-brand-border space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono text-cyan-400 font-bold">PO-2026-119</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">PENDING SIGN-OFF</span>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Silicon Flow Labs UK</h4>
+            <p class="text-xs text-slate-400 font-mono mt-0.5">10,000 Microcontrollers • $142,000.00</p>
+          </div>
+          <div class="pt-2 border-t border-brand-border flex justify-between items-center text-xs font-mono text-slate-400">
+            <span>Awaiting VP Approval</span>
+            <button onclick="this.textContent='Approved'; this.className='text-emerald-400 font-bold';" class="text-cyan-400 hover:underline">Sign & Release</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. FINANCIAL COGS & SETTLEMENTS -->
+    <div id="tab-finance" class="tab-content hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white font-mono uppercase">Cost of Goods Sold (COGS) & Margins</h2>
+        <p class="text-xs text-slate-400">Direct unit economics per manufactured assembly lot.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="p-5 rounded-2xl bg-brand-card border border-brand-border space-y-4">
+          <h3 class="text-sm font-bold text-white font-mono uppercase">Manufacturing Margin Breakdown</h3>
+          <div class="space-y-3 text-xs font-mono">
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Raw Material Costs (Ti, Alu, Silicon)</span>
+                <span>$420,000 (45%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2">
+                <div class="bg-cyan-400 h-full w-[45%] rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Direct Machining & Operator Labor</span>
+                <span>$210,000 (22%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2">
+                <div class="bg-blue-500 h-full w-[22%] rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Cleanroom Overheads & QA Verification</span>
+                <span>$85,000 (9%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2">
+                <div class="bg-indigo-500 h-full w-[9%] rounded-full"></div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-brand-border flex justify-between text-emerald-400 font-bold text-sm">
+              <span>Gross Realized Margin</span>
+              <span>+$318,400 (31.6%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-brand-card border border-brand-border space-y-4">
+          <h3 class="text-sm font-bold text-white font-mono uppercase">Recent Settlement Invoices</h3>
+          <div class="space-y-2 text-xs font-mono">
+            <div class="p-2.5 rounded-lg bg-slate-900 border border-brand-border flex justify-between items-center">
+              <div>
+                <span class="text-white font-bold">INV-9842 • SkyDrive Dynamics</span>
+                <div class="text-[10px] text-slate-500">Milestone 2 Delivery • Dispatched</div>
+              </div>
+              <span class="text-emerald-400 font-bold">$125,000.00 PAID</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-900 border border-brand-border flex justify-between items-center">
+              <div>
+                <span class="text-white font-bold">INV-9843 • HeavyMach Industries</span>
+                <div class="text-[10px] text-slate-500">Q3 Fabrication Batch • 30-Day Net</div>
+              </div>
+              <span class="text-cyan-400 font-bold">$78,400.00 DUE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- NEW WORK ORDER MODAL -->
+  <div id="newOrderModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-brand-card border border-emerald-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 border-b border-brand-border mb-4">
+        <h3 class="text-sm font-bold text-white uppercase font-mono">Create Manufacturing Work Order</h3>
+        <button id="closeOrderModalBtn" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form id="newOrderForm" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Work Order Title</label>
+          <input type="text" id="orderTitle" required placeholder="e.g. Precision Gyroscope Assemblies (x200)" class="w-full bg-slate-900 border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-emerald-400">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Client Organization</label>
+            <input type="text" id="orderClient" required placeholder="e.g. Orbital Robotics" class="w-full bg-slate-900 border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-emerald-400">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Priority</label>
+            <select id="orderPriority" class="w-full bg-slate-900 border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-emerald-400">
+              <option value="NORMAL">Standard</option>
+              <option value="HIGH">High Priority</option>
+              <option value="URGENT">Urgent / Rush</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="cancelOrderBtn" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold">Dispatch to Plant Floor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropValuate | Real Estate Machine Learning Price Predictor</title>
+  <meta name="description" content="Binary Froster machine learning property valuation model trained on 500K+ UK transactions delivering 92% prediction accuracy.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            prop: {
+              base: '#06120E',
+              card: '#0B1E17',
+              border: '#15382B',
+              emerald: '#10B981',
+              mint: '#34D399',
+              cyan: '#00F2FE',
+              amber: '#F59E0B',
+              rose: '#F43F5E'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #06120E;
+      color: #E2E8F0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #081712;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #194334;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #27664F;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-[#06120E] text-slate-200">
+
+  <!-- TOP HEADER -->
+  <header class="h-14 border-b border-prop-border bg-[#091A14]/90 backdrop-blur px-4 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500/20 via-teal-500/20 to-cyan-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-mono font-bold text-sm">
+          PV
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm tracking-tight text-white">PropValuate ML</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">92% ACCURACY</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">REAL ESTATE VALUATION ENGINE</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Telemetry Badges -->
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-prop-border pr-4">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-500">TRAINED ON:</span>
+          <span class="text-emerald-400 font-bold">500,000+ Comps</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">ESTATE AGENTS:</span>
+          <span class="text-slate-200 font-bold">15+ Active</span>
+        </div>
+      </div>
+
+      <button onclick="window.print();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-prop-border hover:bg-slate-800 text-slate-200 text-xs font-semibold transition-colors">
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        <span>Print Dossier</span>
+      </button>
+
+      <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-colors">
+        <span>Portfolio</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN: PROPERTY SPECIFICATION INPUTS (5 COLS) -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="p-5 rounded-2xl bg-prop-card border border-prop-border space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-prop-border">
+            <h2 class="text-sm font-bold text-white uppercase font-mono tracking-wide">Property Parameters</h2>
+            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded">FastAPI Model Active</span>
+          </div>
+
+          <form id="valuationForm" class="space-y-4 text-xs">
+            <!-- Borough -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">London Borough / Region</label>
+              <select id="boroughSelect" class="w-full bg-[#071712] border border-prop-border rounded-lg p-2.5 text-white font-medium focus:border-emerald-400 focus:outline-none">
+                <option value="kensington">Royal Borough of Kensington & Chelsea (Prime)</option>
+                <option value="westminster" selected>City of Westminster (Mayfair & Soho)</option>
+                <option value="camden">Camden & Primrose Hill</option>
+                <option value="islington">Islington & Highbury</option>
+                <option value="hackney">Hackney & Shoreditch</option>
+                <option value="greenwich">Royal Borough of Greenwich</option>
+                <option value="richmond">Richmond upon Thames</option>
+              </select>
+            </div>
+
+            <!-- Property Class -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Property Type</label>
+                <select id="typeSelect" class="w-full bg-[#071712] border border-prop-border rounded-lg p-2.5 text-white focus:border-emerald-400 focus:outline-none">
+                  <option value="flat">Luxury Flat / Apartment</option>
+                  <option value="terraced" selected>Terraced Townhouse</option>
+                  <option value="semi">Semi-Detached House</option>
+                  <option value="detached">Detached Residence</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Build Era</label>
+                <select id="eraSelect" class="w-full bg-[#071712] border border-prop-border rounded-lg p-2.5 text-white focus:border-emerald-400 focus:outline-none">
+                  <option value="victorian" selected>Victorian / Georgian (Period)</option>
+                  <option value="edwardian">Edwardian (1900-1920)</option>
+                  <option value="postwar">Mid-Century (1950-1980)</option>
+                  <option value="contemporary">Contemporary (2020+)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Square Footage Slider -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-slate-300 font-semibold">Internal Usable Floor Area</label>
+                <span id="sqftLabel" class="font-mono text-emerald-400 font-bold text-sm">1,450 sq ft (134.7 m²)</span>
+              </div>
+              <input type="range" id="sqftSlider" min="400" max="4500" step="50" value="1450" class="w-full accent-emerald-400 bg-slate-800 rounded h-2 cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                <span>400 sq ft</span>
+                <span>2,450 sq ft</span>
+                <span>4,500 sq ft</span>
+              </div>
+            </div>
+
+            <!-- Bedrooms & Bathrooms -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Bedrooms</label>
+                <div class="flex items-center border border-prop-border rounded-lg bg-[#071712] overflow-hidden">
+                  <button type="button" id="bedMinus" class="px-3 py-2 text-slate-400 hover:text-white">-</button>
+                  <span id="bedCount" class="flex-1 text-center font-mono font-bold text-white">3</span>
+                  <button type="button" id="bedPlus" class="px-3 py-2 text-slate-400 hover:text-white">+</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Bathrooms</label>
+                <div class="flex items-center border border-prop-border rounded-lg bg-[#071712] overflow-hidden">
+                  <button type="button" id="bathMinus" class="px-3 py-2 text-slate-400 hover:text-white">-</button>
+                  <span id="bathCount" class="flex-1 text-center font-mono font-bold text-white">2</span>
+                  <button type="button" id="bathPlus" class="px-3 py-2 text-slate-400 hover:text-white">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feature Checkboxes -->
+            <div class="pt-2 border-t border-prop-border space-y-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="gardenCheck" checked class="accent-emerald-400 rounded">
+                <span class="text-slate-300">Private Outdoor Garden / Terrace</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="parkingCheck" checked class="accent-emerald-400 rounded">
+                <span class="text-slate-300">Allocated Off-Street Parking / Garage</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="stationCheck" checked class="accent-emerald-400 rounded">
+                <span class="text-slate-300">&lt; 300m to Underground / Train Station</span>
+              </label>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: ML PREDICTION & FINANCIAL ANALYTICS (7 COLS) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Valuation Estimate Hero Banner -->
+        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#0B2119] to-[#0E2C22] border border-emerald-500/40 shadow-2xl relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs font-mono text-emerald-400 mb-2">
+            <span>PREDICTED FAIR MARKET VALUE</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">92% CONFIDENCE</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2">
+            <span class="text-4xl md:text-5xl font-black text-white font-mono tracking-tight" id="estimatedPrice">£1,425,000</span>
+            <span class="text-xs font-mono text-slate-400">£982 / sq ft</span>
+          </div>
+
+          <!-- Confidence Spread -->
+          <div class="mt-4 pt-4 border-t border-emerald-500/20 grid grid-cols-2 gap-4 text-xs font-mono">
+            <div>
+              <span class="text-slate-400 text-[10px] block">CONSERVATIVE VALUATION (95% CI)</span>
+              <span class="text-slate-200 font-bold text-sm" id="lowerBound">£1,360,000</span>
+            </div>
+            <div>
+              <span class="text-slate-400 text-[10px] block">OPTIMISTIC SPREAD (95% CI)</span>
+              <span class="text-emerald-400 font-bold text-sm" id="upperBound">£1,490,000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Drivers & Feature Attribution -->
+        <div class="p-5 rounded-2xl bg-prop-card border border-prop-border space-y-4">
+          <h3 class="text-sm font-bold text-white uppercase font-mono">Feature Importance & Attribution (SHAP)</h3>
+          <div class="space-y-3 text-xs font-mono">
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Borough Geographic Index (Westminster)</span>
+                <span class="text-emerald-400">+£540,000 (38%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5">
+                <div class="bg-emerald-400 h-full w-[38%] rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Usable Floor Space (1,450 sq ft)</span>
+                <span class="text-emerald-400">+£420,000 (29%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5">
+                <div class="bg-teal-400 h-full w-[29%] rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Underground Transit Proximity (&lt;300m)</span>
+                <span class="text-cyan-400">+£125,000 (9%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5">
+                <div class="bg-cyan-400 h-full w-[9%] rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Private Garden & Allocated Parking</span>
+                <span class="text-mint">+£95,000 (7%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5">
+                <div class="bg-mint h-full w-[7%] rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investment Yields & Rental Projections -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-2xl bg-prop-card border border-prop-border text-center">
+            <span class="text-[10px] font-mono text-slate-400 uppercase">Est. Monthly Rent</span>
+            <div class="text-lg font-bold text-white font-mono mt-1" id="monthlyRent">£5,200 / mo</div>
+            <span class="text-[10px] text-emerald-400 font-mono">Gross Yield: 4.4%</span>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-prop-card border border-prop-border text-center">
+            <span class="text-[10px] font-mono text-slate-400 uppercase">5-Yr Appreciation</span>
+            <div class="text-lg font-bold text-emerald-400 font-mono mt-1">+24.8%</div>
+            <span class="text-[10px] text-slate-400 font-mono">Borough Trajectory</span>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-prop-card border border-prop-border text-center">
+            <span class="text-[10px] font-mono text-slate-400 uppercase">Demand Liquidity</span>
+            <div class="text-lg font-bold text-white font-mono mt-1">High (18 Days)</div>
+            <span class="text-[10px] text-slate-400 font-mono">Avg Time on Market</span>
+          </div>
+        </div>
+
+        <!-- Recent Verified Comparable Transactions -->
+        <div class="p-5 rounded-2xl bg-prop-card border border-prop-border space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white uppercase font-mono">Recent HM Land Registry Comps</h3>
+            <span class="text-xs font-mono text-slate-400">Within 0.5 miles</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left font-mono">
+              <thead class="text-[10px] uppercase text-slate-400 border-b border-prop-border">
+                <tr>
+                  <th class="pb-2">Address</th>
+                  <th class="pb-2">Type</th>
+                  <th class="pb-2">Sq Ft</th>
+                  <th class="pb-2">Sale Price</th>
+                  <th class="pb-2 text-right">Sold Date</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-prop-border" id="compsTableBody">
+                <tr class="hover:bg-slate-900/40">
+                  <td class="py-2.5 text-white">42 Bedford Square</td>
+                  <td class="py-2.5 text-slate-400">Townhouse</td>
+                  <td class="py-2.5 text-slate-300">1,510</td>
+                  <td class="py-2.5 text-emerald-400 font-bold">£1,480,000</td>
+                  <td class="py-2.5 text-right text-slate-400">Aug 2026</td>
+                </tr>
+                <tr class="hover:bg-slate-900/40">
+                  <td class="py-2.5 text-white">18 Percy Street</td>
+                  <td class="py-2.5 text-slate-400">Flat</td>
+                  <td class="py-2.5 text-slate-300">1,380</td>
+                  <td class="py-2.5 text-emerald-400 font-bold">£1,390,000</td>
+                  <td class="py-2.5 text-right text-slate-400">Jul 2026</td>
+                </tr>
+                <tr class="hover:bg-slate-900/40">
+                  <td class="py-2.5 text-white">9 Charlotte Street</td>
+                  <td class="py-2.5 text-slate-400">Townhouse</td>
+                  <td class="py-2.5 text-slate-300">1,620</td>
+                  <td class="py-2.5 text-emerald-400 font-bold">£1,550,000</td>
+                  <td class="py-2.5 text-right text-slate-400">Jun 2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
