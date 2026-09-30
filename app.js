@@ -43,7 +43,7 @@
   // 1. THREE.JS 3D PARAMETRIC ARCHITECTURAL MASSING MODEL
   // =========================================================================
   const container = document.getElementById('threejs-arch-container');
-  let scene, camera, renderer, buildingGroup, groundGrid;
+  let scene, camera, renderer, buildingGroup, groundGrid, worldGroup;
   let isDragging = false;
   let prevMousePos = { x: 0, y: 0 };
   let archRotation = { x: 0.35, y: -0.6 };
@@ -78,13 +78,16 @@
     dirLight2.position.set(-6, 5, -4);
     scene.add(dirLight2);
 
-    // Ground Grid & Base Slab
+    worldGroup = new THREE.Group();
+    scene.add(worldGroup);
+
+    // Ground Grid & Base Slab (Locked to Architectural World)
     groundGrid = new THREE.GridHelper(10, 20, 0x164e3b, 0x09261c);
-    groundGrid.position.y = -1.5;
-    scene.add(groundGrid);
+    groundGrid.position.y = -1.45;
+    worldGroup.add(groundGrid);
 
     buildingGroup = new THREE.Group();
-    scene.add(buildingGroup);
+    worldGroup.add(buildingGroup);
 
     // Initial building generation
     reconstruct3DBuilding();
@@ -102,7 +105,7 @@
       const deltaX = e.clientX - prevMousePos.x;
       const deltaY = e.clientY - prevMousePos.y;
       targetRotation.y += deltaX * 0.006;
-      targetRotation.x = Math.max(0.1, Math.min(1.2, targetRotation.x + deltaY * 0.006));
+      targetRotation.x = Math.max(0.12, Math.min(0.55, targetRotation.x + deltaY * 0.005));
       prevMousePos = { x: e.clientX, y: e.clientY };
     });
 
@@ -121,7 +124,7 @@
       const deltaX = e.touches[0].clientX - prevMousePos.x;
       const deltaY = e.touches[0].clientY - prevMousePos.y;
       targetRotation.y += deltaX * 0.006;
-      targetRotation.x = Math.max(0.1, Math.min(1.2, targetRotation.x + deltaY * 0.006));
+      targetRotation.x = Math.max(0.12, Math.min(0.55, targetRotation.x + deltaY * 0.005));
       prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     });
 
@@ -149,13 +152,9 @@
     archRotation.x += (targetRotation.x - archRotation.x) * 0.08;
     archRotation.y += (targetRotation.y - archRotation.y) * 0.08;
 
-    if (buildingGroup) {
-      buildingGroup.rotation.x = archRotation.x;
-      buildingGroup.rotation.y = archRotation.y;
-    }
-
-    if (groundGrid) {
-      groundGrid.rotation.y = archRotation.y;
+    if (worldGroup) {
+      worldGroup.rotation.x = archRotation.x;
+      worldGroup.rotation.y = archRotation.y;
     }
 
     if (renderer && scene && camera) {
