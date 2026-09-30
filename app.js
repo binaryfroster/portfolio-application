@@ -72,6 +72,7 @@
 
     camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.set(0, 0, 6.2);
+    camera.lookAt(0, -0.35, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
@@ -192,6 +193,7 @@
     heartContainer.addEventListener('wheel', (e) => {
       e.preventDefault();
       camera.position.z = Math.max(3.8, Math.min(10.0, camera.position.z + e.deltaY * 0.005));
+      camera.lookAt(0, -0.35, 0);
     }, { passive: false });
 
     window.addEventListener('resize', onWindowResize);
@@ -247,7 +249,10 @@
 
   resetHeartCameraBtn?.addEventListener('click', () => {
     targetRotation = { x: 0.2, y: 0.4 };
-    if (camera) camera.position.set(0, 0, 6.2);
+    if (camera) {
+      camera.position.set(0, 0, 6.2);
+      camera.lookAt(0, -0.35, 0);
+    }
     if (window.showToast) window.showToast('3D cardiac viewport camera reset.', 'info');
   });
 
