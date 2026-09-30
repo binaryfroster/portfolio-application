@@ -60,11 +60,11 @@
   let currentRotation = { x: 0.15, y: -0.2 };
 
   const SUBJECTS = [
-    { name: 'Distributed Systems', score: '98%', color: 0x38BDF8, pos: [-4.2, 2.0, 1.5] },
-    { name: 'Machine Learning', score: '95%', color: 0x00F2FE, pos: [3.8, 2.5, -1.2] },
-    { name: 'Discrete Math', score: '99%', color: 0x10B981, pos: [-3.0, -2.4, 2.0] },
-    { name: 'Microarchitecture', score: '92%', color: 0x818CF8, pos: [4.0, -1.8, 1.8] },
-    { name: 'Cryptographic Protocols', score: '97%', color: 0xF59E0B, pos: [0.2, 3.8, -2.2] }
+    { name: 'Distributed Systems', score: '98%', color: 0x38BDF8, pos: [-3.2, 1.2, 1.2] },
+    { name: 'Machine Learning', score: '95%', color: 0x00F2FE, pos: [3.0, 1.5, -1.0] },
+    { name: 'Discrete Math', score: '99%', color: 0x10B981, pos: [-2.4, -1.5, 1.5] },
+    { name: 'Microarchitecture', score: '92%', color: 0x818CF8, pos: [2.8, -1.4, 1.2] },
+    { name: 'Cryptographic Protocols', score: '97%', color: 0xF59E0B, pos: [0.2, 2.3, -1.8] }
   ];
 
   function initThreeConstellation() {
@@ -77,8 +77,8 @@
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x040814, 0.035);
 
-    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0, 12);
+    camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 0, 13.5);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -221,7 +221,7 @@
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         targetRotation = { x: 0.15, y: -0.2 };
-        camera.position.set(0, 0, 12);
+        camera.position.set(0, 0, 13.5);
         if (window.BFAuth) {
           window.BFAuth.showToast('Constellation camera orientation reset to baseline polar angle.', 'info');
         }
