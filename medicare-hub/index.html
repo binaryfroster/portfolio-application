@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js 3D WebGL Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -16,9 +18,10 @@
         extend: {
           colors: {
             med: {
-              base: '#060B14',
-              card: '#0B1324',
-              border: '#152442',
+              base: '#050A14',
+              shell: '#0A1224',
+              core: '#0D172E',
+              border: '#152445',
               teal: '#00D2D3',
               cyan: '#00F2FE',
               blue: '#38BDF8',
@@ -37,96 +40,104 @@
   </script>
   <style>
     body {
-      background-color: #060B14;
+      background-color: #050A14;
       color: #E2E8F0;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #080E1C;
+      background: #070D1B;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #182747;
+      background: #172648;
       border-radius: 3px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #253A68;
+      background: #253C72;
+    }
+    .double-bezel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1.25rem;
+      padding: 0.375rem;
+    }
+    .double-bezel-inner {
+      background: #091122;
+      border-radius: calc(1.25rem - 0.375rem);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased bg-[#060B14] text-slate-200">
+<body class="min-h-screen flex flex-col antialiased bg-[#050A14] text-slate-200">
 
   <!-- TOP HEADER -->
-  <header class="h-14 border-b border-med-border bg-[#091020]/90 backdrop-blur px-4 flex items-center justify-between sticky top-0 z-30">
-    <div class="flex items-center gap-3">
-      <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-teal-500/20 via-cyan-500/20 to-blue-600/30 border border-teal-500/40 flex items-center justify-center text-teal-400 font-mono font-bold text-sm">
-          MC
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-sm tracking-tight text-white">MediCare Hub</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/30">HIPAA LEVEL 3</span>
+  <header class="sticky top-0 z-40 px-4 py-2 bg-[#050A14]/90 backdrop-blur-xl border-b border-white/[0.08]">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-600/30 via-cyan-600/20 to-blue-600/30 border border-teal-500/40 flex items-center justify-center text-teal-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(0,210,211,0.2)]">
+            MC
           </div>
-          <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">CLINICAL EHR & TELEHEALTH CORE</p>
-        </div>
-      </a>
-    </div>
-
-    <!-- Telemetry & Action -->
-    <div class="flex items-center gap-4">
-      <div class="hidden md:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-med-border pr-4">
-        <div class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-          <span class="text-slate-500">TRIAGE QUEUE:</span>
-          <span class="text-teal-400 font-bold" id="queueStat">6 Waiting</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span class="text-slate-500">PAPERLESS:</span>
-          <span class="text-emerald-400 font-bold">100% Active</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span class="text-slate-500">ENCRYPTION:</span>
-          <span class="text-slate-300 font-bold">AES-256 Validated</span>
-        </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-sm tracking-tight text-white group-hover:text-teal-300 transition-colors">MediCare Hub</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 font-semibold tracking-wider">HIPAA LEVEL 3</span>
+            </div>
+            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">CLINICAL EHR & BIOTELEMETRY CORE</p>
+          </div>
+        </a>
       </div>
 
-      <button id="newPatientBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-colors shadow">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        <span>Intake Patient</span>
-      </button>
+      <!-- Telemetry & Actions -->
+      <div class="flex items-center gap-3">
+        <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            <span class="text-slate-500">TRIAGE QUEUE:</span>
+            <span class="text-teal-300 font-bold" id="queueStat">6 Inpatient Bed</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-500">EHR VAULT:</span>
+            <span class="text-emerald-400 font-bold">AES-256 Validated</span>
+          </div>
+        </div>
 
-      <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg border border-med-border hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors">
-        <span>Portfolio</span>
-        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-      </a>
+        <button id="newPatientBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,210,211,0.25)] active:scale-[0.98]">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          <span>Intake Patient</span>
+        </button>
+
+        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
+          <span>Portfolio</span>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+
+        <!-- Enterprise Auth Mount -->
+        <div id="bf-auth-mount"></div>
+      </div>
     </div>
   </header>
 
   <!-- NAVIGATION TABS -->
-  <nav class="bg-[#080E1C] border-b border-med-border px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
-    <button data-tab="emr" class="med-nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-teal-400 text-teal-400 transition-colors whitespace-nowrap">
+  <nav class="bg-[#070D1B]/80 backdrop-blur border-b border-white/[0.08] px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
+    <button data-tab="emr" class="med-nav-tab active-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-teal-400 text-teal-300 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
       <span>Patient EHR Directory</span>
     </button>
-    <button data-tab="appointments" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+    <button data-tab="appointments" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
       <span>Clinical Queue & Consultations</span>
     </button>
-    <button data-tab="prescriptions" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+    <button data-tab="prescriptions" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
       <span>e-Prescriptions & Pharmacy</span>
     </button>
-    <button data-tab="billing" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"></path></svg>
-      <span>ICD-10 Billing & Claims</span>
-    </button>
-    <button data-tab="audit" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap">
+    <button data-tab="audit" class="med-nav-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-      <span>HIPAA Security Ledger</span>
+      <span>HIPAA Audit Trail</span>
     </button>
   </nav>
 
@@ -137,280 +148,289 @@
     <div id="tab-emr" class="med-tab-content space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-base font-bold text-white font-mono uppercase">Electronic Health Records (EHR)</h2>
-          <p class="text-xs text-slate-400">Cryptographically isolated patient records with real-time biometric telemetry.</p>
+          <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Electronic Health Records (EHR)</h2>
+          <p class="text-xs text-slate-400 font-sans">Cryptographically isolated patient records with real-time biometric telemetry.</p>
         </div>
-        <input type="text" id="patientSearchInput" placeholder="Search by name, MRN, phone..." class="bg-med-card border border-med-border rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-400">
+        <div class="relative w-full sm:w-72">
+          <input type="text" id="patientSearchInput" placeholder="Filter patient by name, MRN, condition..." class="w-full bg-[#08101E] border border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-teal-400">
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Patient Roster List -->
-        <div class="lg:col-span-1 space-y-2" id="patientRoster">
-          <div class="patient-card p-3 rounded-xl bg-med-card border border-teal-500/40 cursor-pointer transition-all" data-mrn="MRN-78421">
-            <div class="flex justify-between items-start">
-              <div>
-                <h4 class="text-sm font-bold text-white">Sarah Jenkins</h4>
-                <div class="text-[11px] font-mono text-teal-400">MRN-78421 • Female, 42y</div>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">STABLE</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-2">Condition: Essential Hypertension • Last Visit: Sep 24, 2026</p>
-          </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          <div class="patient-card p-3 rounded-xl bg-med-card border border-med-border hover:border-slate-600 cursor-pointer transition-all" data-mrn="MRN-78422">
-            <div class="flex justify-between items-start">
-              <div>
-                <h4 class="text-sm font-bold text-white">Marcus Brody</h4>
-                <div class="text-[11px] font-mono text-slate-400">MRN-78422 • Male, 58y</div>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">MONITOR</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-2">Condition: Type 2 Diabetes Mellitus • HbA1c: 7.4%</p>
-          </div>
-
-          <div class="patient-card p-3 rounded-xl bg-med-card border border-med-border hover:border-slate-600 cursor-pointer transition-all" data-mrn="MRN-78423">
-            <div class="flex justify-between items-start">
-              <div>
-                <h4 class="text-sm font-bold text-white">Elena Rostova</h4>
-                <div class="text-[11px] font-mono text-slate-400">MRN-78423 • Female, 29y</div>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">ALLERGY ALERT</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-2">Severe Penicillin Allergy • Post-op Knee Recovery</p>
-          </div>
+        <!-- Patient Roster List (4 COLS) -->
+        <div class="lg:col-span-4 space-y-3" id="patientRoster">
+          <!-- Dynamically populated from /api/patients -->
         </div>
 
-        <!-- Selected Patient Detail View -->
-        <div class="lg:col-span-2 p-5 rounded-2xl bg-med-card border border-med-border space-y-5" id="patientDetailView">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-med-border gap-2">
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="text-lg font-bold text-white" id="detailPatientName">Sarah Jenkins</h3>
-                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-teal-500/10 text-teal-400 border border-teal-500/30">DOB: 14-MAY-1984</span>
-              </div>
-              <p class="text-xs font-mono text-slate-400">Attending Physician: Dr. Aris Thorne (Cardiology) • Insurance: BlueCross PPO</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="alert('Exporting encrypted HIPAA Continuity of Care Document (CCD XML/PDF)...');" class="px-3 py-1.5 rounded-lg border border-med-border bg-slate-900 text-xs font-semibold text-slate-200 hover:text-white">
-                Export CCD / PDF
-              </button>
-            </div>
-          </div>
+        <!-- Selected Patient Detail View (8 COLS) -->
+        <div class="lg:col-span-8 space-y-6" id="patientDetailView">
 
-          <!-- Vitals Matrix -->
-          <div>
-            <span class="text-[10px] font-mono uppercase text-slate-400 tracking-wider block mb-2">Real-Time Vitals Stream</span>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div class="p-3 rounded-xl bg-[#080E1C] border border-med-border">
-                <span class="text-[10px] font-mono text-slate-500">BLOOD PRESSURE</span>
-                <div class="text-base font-bold text-white font-mono mt-1">122 / 78 <span class="text-[10px] text-slate-400 font-normal">mmHg</span></div>
-                <span class="text-[10px] text-emerald-400 font-mono">Normal range</span>
+          <!-- 3D ANATOMICAL HEART & BIO-TELEMETRY CARD -->
+          <div class="double-bezel">
+            <div class="double-bezel-inner p-5 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">3D Anatomical Heart & Cardiac Rhythm Matrix</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="cardiacSyncLabel" class="text-[10px] font-mono text-teal-400 px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20">72 BPM Sync</span>
+                  <button id="resetHeartCameraBtn" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10">
+                    Reset View
+                  </button>
+                </div>
               </div>
 
-              <div class="p-3 rounded-xl bg-[#080E1C] border border-med-border">
-                <span class="text-[10px] font-mono text-slate-500">HEART RATE</span>
-                <div class="text-base font-bold text-white font-mono mt-1">72 <span class="text-[10px] text-slate-400 font-normal">BPM</span></div>
-                <span class="text-[10px] text-emerald-400 font-mono">Resting Sinus</span>
+              <!-- Three.js Canvas Container -->
+              <div class="rounded-xl bg-[#040812] border border-white/[0.08] relative overflow-hidden h-64 group cursor-grab active:cursor-grabbing">
+                <div id="threejs-heart-container" class="w-full h-full"></div>
+
+                <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1">
+                  <span class="bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/5">ORBIT: DRAG TO ROTATE &middot; SCROLL TO ZOOM</span>
+                  <span id="ecgWaveLabel" class="text-teal-400 font-bold bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/5">ECG: NORMAL SINUS RHYTHM</span>
+                </div>
               </div>
 
-              <div class="p-3 rounded-xl bg-[#080E1C] border border-med-border">
-                <span class="text-[10px] font-mono text-slate-500">OXYGEN SAT (SpO2)</span>
-                <div class="text-base font-bold text-teal-400 font-mono mt-1">99%</div>
-                <span class="text-[10px] text-emerald-400 font-mono">Optimal</span>
-              </div>
+              <!-- Vitals Telemetry Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div class="p-3 rounded-xl bg-[#070D1B] border border-white/[0.06]">
+                  <span class="text-[10px] text-slate-500 block">BLOOD PRESSURE</span>
+                  <div class="text-base font-bold text-white mt-0.5" id="valBP">122 / 78 <span class="text-[10px] text-slate-400 font-normal">mmHg</span></div>
+                  <span class="text-[10px] text-emerald-400">Normotensive</span>
+                </div>
 
-              <div class="p-3 rounded-xl bg-[#080E1C] border border-med-border">
-                <span class="text-[10px] font-mono text-slate-500">TEMPERATURE</span>
-                <div class="text-base font-bold text-white font-mono mt-1">98.6°F</div>
-                <span class="text-[10px] text-emerald-400 font-mono">Afebrile</span>
+                <div class="p-3 rounded-xl bg-[#070D1B] border border-white/[0.06]">
+                  <span class="text-[10px] text-slate-500 block">HEART RATE</span>
+                  <div class="text-base font-bold text-white mt-0.5" id="valHR">72 <span class="text-[10px] text-slate-400 font-normal">BPM</span></div>
+                  <span class="text-[10px] text-emerald-400">Resting Sinus</span>
+                </div>
+
+                <div class="p-3 rounded-xl bg-[#070D1B] border border-white/[0.06]">
+                  <span class="text-[10px] text-slate-500 block">OXYGEN SAT (SpO2)</span>
+                  <div class="text-base font-bold text-teal-400 mt-0.5" id="valSpO2">99%</div>
+                  <span class="text-[10px] text-emerald-400">Optimal</span>
+                </div>
+
+                <div class="p-3 rounded-xl bg-[#070D1B] border border-white/[0.06]">
+                  <span class="text-[10px] text-slate-500 block">TEMPERATURE</span>
+                  <div class="text-base font-bold text-white mt-0.5" id="valTemp">98.6°F</div>
+                  <span class="text-[10px] text-emerald-400">Afebrile</span>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Clinical History & Encounter Notes -->
-          <div class="space-y-3">
-            <span class="text-[10px] font-mono uppercase text-slate-400 tracking-wider block">Recent Encounter Note (Sep 24, 2026)</span>
-            <div class="p-4 rounded-xl bg-[#080E1C] border border-med-border text-xs leading-relaxed text-slate-300">
-              <p class="font-semibold text-white mb-1">Subjective / Objective Assessment:</p>
-              <p class="mb-2">Patient presents for 6-month hypertensive follow-up. Tolerating Lisinopril 10mg PO QD with good adherence. No dizziness, orthostasis, or peripheral edema noted. Home blood pressure logs average 124/80.</p>
-              <p class="font-semibold text-white mb-1">Clinical Plan:</p>
-              <p>Continue current dose. Repeat comprehensive metabolic panel in 6 months. Maintain low-sodium DASH diet.</p>
+          <div class="double-bezel">
+            <div class="double-bezel-inner p-5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xs font-bold text-white font-mono uppercase tracking-wider">Clinical Encounter & Treatment Protocol</h3>
+                  <span id="detailPatientMRNBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20">MRN-78421</span>
+                </div>
+                <button id="exportCCDButton" class="px-3 py-1.5 rounded-xl border border-white/[0.1] hover:bg-white/[0.05] text-xs font-semibold text-slate-200 transition-all">
+                  Export HIPAA CCD / PDF
+                </button>
+              </div>
+
+              <div class="p-4 rounded-xl bg-[#070D1B] border border-white/[0.06] text-xs leading-relaxed text-slate-300 space-y-2">
+                <div>
+                  <span class="font-bold text-white font-sans">Attending Physician:</span>
+                  <span id="detailPhysician" class="text-teal-400 font-mono">Dr. Evelyn Vance (Chief Medical Officer)</span>
+                </div>
+                <div>
+                  <span class="font-bold text-white font-sans">Primary Assessment:</span>
+                  <p id="detailNotes" class="mt-0.5 text-slate-300 font-sans">Patient presents for 6-month hypertensive follow-up. Tolerating Lisinopril 10mg PO QD with good adherence. Home blood pressure logs average 124/80.</p>
+                </div>
+                <div>
+                  <span class="font-bold text-white font-sans">Clinical Orders:</span>
+                  <p class="mt-0.5 text-slate-400 font-sans">Repeat comprehensive metabolic panel in 6 months. Maintain low-sodium DASH diet. Telemetry monitoring authorized.</p>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
+
       </div>
     </div>
 
     <!-- 2. CLINICAL QUEUE & APPOINTMENTS -->
     <div id="tab-appointments" class="med-tab-content hidden space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base font-bold text-white font-mono uppercase">Today's Consultation Schedule</h2>
-          <p class="text-xs text-slate-400">Multi-physician calendar with automated check-in and waiting room telemetry.</p>
-        </div>
-        <button onclick="alert('Appointment scheduler modal loaded.');" class="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs">
-          Book Appointment
-        </button>
-      </div>
+      <div class="double-bezel">
+        <div class="double-bezel-inner p-5 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+            <div>
+              <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Inpatient & Triage Consultation Queue</h2>
+              <p class="text-xs text-slate-400 font-sans">Automated bed management with real-time biometric status indicators.</p>
+            </div>
+            <button id="bookAppointmentBtn" class="px-3.5 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-mono text-xs font-bold transition-all">
+              Schedule Consultation
+            </button>
+          </div>
 
-      <div class="rounded-2xl border border-med-border bg-med-card overflow-hidden">
-        <table class="w-full text-xs text-left">
-          <thead class="bg-[#080E1C] text-[10px] font-mono uppercase text-slate-400 border-b border-med-border">
-            <tr>
-              <th class="p-3">Time</th>
-              <th class="p-3">Patient</th>
-              <th class="p-3">Physician</th>
-              <th class="p-3">Type</th>
-              <th class="p-3">Room</th>
-              <th class="p-3">Status</th>
-              <th class="p-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-med-border font-mono">
-            <tr class="hover:bg-slate-900/40">
-              <td class="p-3 text-teal-400 font-bold">09:30 AM</td>
-              <td class="p-3 font-sans font-medium text-white">Sarah Jenkins</td>
-              <td class="p-3 text-slate-300">Dr. Aris Thorne</td>
-              <td class="p-3 text-slate-400">Cardio Checkup</td>
-              <td class="p-3 text-slate-300">Exam Room 3</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400">COMPLETED</span></td>
-              <td class="p-3 text-right"><button class="text-slate-400 hover:text-white">View Note</button></td>
-            </tr>
-            <tr class="hover:bg-slate-900/40 bg-teal-950/10">
-              <td class="p-3 text-teal-400 font-bold">10:15 AM</td>
-              <td class="p-3 font-sans font-medium text-white">Marcus Brody</td>
-              <td class="p-3 text-slate-300">Dr. Maya Patel</td>
-              <td class="p-3 text-slate-400">Diabetes Review</td>
-              <td class="p-3 text-slate-300">Exam Room 1</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-teal-500/10 text-teal-400 animate-pulse">IN CONSULT</span></td>
-              <td class="p-3 text-right"><button class="text-teal-400 font-bold hover:underline">Open Chart</button></td>
-            </tr>
-            <tr class="hover:bg-slate-900/40">
-              <td class="p-3 text-teal-400 font-bold">11:00 AM</td>
-              <td class="p-3 font-sans font-medium text-white">Elena Rostova</td>
-              <td class="p-3 text-slate-300">Dr. Lucas Gray</td>
-              <td class="p-3 text-slate-400">Post-Op Ortho</td>
-              <td class="p-3 text-slate-300">Waiting Room</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400">CHECKED IN</span></td>
-              <td class="p-3 text-right"><button class="text-cyan-400 hover:underline">Call Patient</button></td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="rounded-xl border border-white/[0.08] overflow-hidden">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-[#070D1B] text-[10px] font-mono uppercase text-slate-400 border-b border-white/[0.08]">
+                <tr>
+                  <th class="p-3">Time</th>
+                  <th class="p-3">Patient</th>
+                  <th class="p-3">Provider</th>
+                  <th class="p-3">Service</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.06] font-mono">
+                <tr class="hover:bg-white/[0.02]">
+                  <td class="p-3 text-teal-400 font-bold">09:00 AM</td>
+                  <td class="p-3 text-white font-sans font-semibold">Sarah Jenkins</td>
+                  <td class="p-3 text-slate-400 font-sans">Dr. Evelyn Vance</td>
+                  <td class="p-3 text-slate-300">Hypertension Follow-up</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px]">IN PROGRESS</span></td>
+                  <td class="p-3 text-right"><button class="text-teal-400 hover:underline">View Chart</button></td>
+                </tr>
+                <tr class="hover:bg-white/[0.02]">
+                  <td class="p-3 text-teal-400 font-bold">10:30 AM</td>
+                  <td class="p-3 text-white font-sans font-semibold">Marcus Brody</td>
+                  <td class="p-3 text-slate-400 font-sans">Dr. Julian Hayes</td>
+                  <td class="p-3 text-slate-300">HbA1c Diabetic Review</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px]">WAITING</span></td>
+                  <td class="p-3 text-right"><button class="text-teal-400 hover:underline">Admit Patient</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 3. E-PRESCRIPTIONS & PHARMACY -->
+    <!-- 3. e-PRESCRIPTIONS & PHARMACY -->
     <div id="tab-prescriptions" class="med-tab-content hidden space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base font-bold text-white font-mono uppercase">e-Prescriptions & Pharmacy Integration</h2>
-          <p class="text-xs text-slate-400">Direct Surescripts-compliant pharmacy routing with contraindication checking.</p>
-        </div>
-        <button onclick="alert('Opening DEA Schedule e-Rx Pad with two-factor cryptographic signature prompt...');" class="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs">
-          Draft New Prescription
-        </button>
-      </div>
+      <div class="double-bezel">
+        <div class="double-bezel-inner p-6 space-y-5">
+          <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider">ELECTRONIC PHARMACY DISPATCH (NCPDP SCRIPT)</span>
+              </div>
+              <h2 class="text-base font-bold text-white mt-1">Dispense & Validate e-Prescription</h2>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20">Drug-Drug Interaction Checker: ACTIVE</span>
+          </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 rounded-2xl bg-med-card border border-med-border space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-mono text-teal-400 font-bold">RX-994021 • CVS Pharmacy #482</span>
-            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">DISPENSED</span>
-          </div>
-          <h4 class="text-sm font-semibold text-white">Lisinopril 10mg Oral Tablets</h4>
-          <p class="text-xs text-slate-400 font-mono">Patient: Sarah Jenkins • Quantity: 90 Tablets (3 Months)</p>
-          <div class="pt-2 border-t border-med-border flex justify-between items-center text-xs font-mono text-slate-400">
-            <span>Refills Remaining: 3</span>
-            <span>Digitally Signed by Dr. Thorne</span>
-          </div>
-        </div>
+          <form id="rxOrderForm" class="space-y-4 text-xs font-sans">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Target Patient</label>
+                <select id="rxPatientSelect" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono focus:border-teal-400 outline-none">
+                  <!-- Populated from patient roster -->
+                </select>
+              </div>
 
-        <div class="p-4 rounded-2xl bg-med-card border border-med-border space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-mono text-teal-400 font-bold">RX-994022 • Walgreens #104</span>
-            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">READY FOR PICKUP</span>
-          </div>
-          <h4 class="text-sm font-semibold text-white">Metformin HCl 500mg Extended Release</h4>
-          <p class="text-xs text-slate-400 font-mono">Patient: Marcus Brody • Quantity: 60 Tablets</p>
-          <div class="pt-2 border-t border-med-border flex justify-between items-center text-xs font-mono text-slate-400">
-            <span>Refills Remaining: 5</span>
-            <span>Digitally Signed by Dr. Patel</span>
-          </div>
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Pharmaceutical Formulation</label>
+                <select id="rxDrugSelect" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono focus:border-teal-400 outline-none">
+                  <option value="Lisinopril 10mg">Lisinopril 10mg Oral Tablet (ACE Inhibitor)</option>
+                  <option value="Metformin 500mg">Metformin 500mg ER Tablet (Antidiabetic)</option>
+                  <option value="Amoxicillin 500mg">Amoxicillin 500mg Capsule (Beta-lactam Antibiotic - HIGH ALLERGY RISK)</option>
+                  <option value="Atorvastatin 20mg">Atorvastatin 20mg Tablet (Lipid Reducer)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Dosage Schedule</label>
+                <input id="rxDosage" type="text" value="Take 1 tablet daily with morning meal" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-teal-400">
+              </div>
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">Refills Authorized</label>
+                <input id="rxRefills" type="number" min="0" max="11" value="3" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-teal-400">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(0,210,211,0.25)] active:scale-[0.98]">
+              Verify Interactions & Dispatch e-Prescription
+            </button>
+          </form>
         </div>
       </div>
     </div>
 
-    <!-- 4. ICD-10 BILLING & CLAIMS -->
-    <div id="tab-billing" class="med-tab-content hidden space-y-4">
-      <div>
-        <h2 class="text-base font-bold text-white font-mono uppercase">ICD-10 Diagnostic Billing & Claims</h2>
-        <p class="text-xs text-slate-400">Automated pre-authorization verification and clearinghouse claims engine.</p>
-      </div>
-
-      <div class="rounded-2xl border border-med-border bg-med-card overflow-hidden">
-        <table class="w-full text-xs text-left">
-          <thead class="bg-[#080E1C] text-[10px] font-mono uppercase text-slate-400 border-b border-med-border">
-            <tr>
-              <th class="p-3">Claim ID</th>
-              <th class="p-3">Patient</th>
-              <th class="p-3">ICD-10 Diagnosis</th>
-              <th class="p-3">CPT Code</th>
-              <th class="p-3">Insurance Payer</th>
-              <th class="p-3">Claim Amount</th>
-              <th class="p-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-med-border font-mono">
-            <tr class="hover:bg-slate-900/40">
-              <td class="p-3 text-teal-400 font-bold">CLM-88021</td>
-              <td class="p-3 font-sans text-white">Sarah Jenkins</td>
-              <td class="p-3 text-slate-300">I10 (Essential Hypertension)</td>
-              <td class="p-3 text-slate-400">99214 (Level 4 Office Visit)</td>
-              <td class="p-3 text-slate-300">BlueCross BlueShield</td>
-              <td class="p-3 text-emerald-400 font-bold">$240.00</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400">PAID</span></td>
-            </tr>
-            <tr class="hover:bg-slate-900/40">
-              <td class="p-3 text-teal-400 font-bold">CLM-88022</td>
-              <td class="p-3 font-sans text-white">Marcus Brody</td>
-              <td class="p-3 text-slate-300">E11.9 (Type 2 Diabetes)</td>
-              <td class="p-3 text-slate-400">99213 (Level 3 Office Visit)</td>
-              <td class="p-3 text-slate-300">Medicare Part B</td>
-              <td class="p-3 text-cyan-400 font-bold">$185.00</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-400">IN REVIEW</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 5. HIPAA AUDIT TRAIL -->
+    <!-- 4. HIPAA AUDIT TRAIL -->
     <div id="tab-audit" class="med-tab-content hidden space-y-4">
-      <div>
-        <h2 class="text-base font-bold text-white font-mono uppercase">Cryptographic HIPAA Access Ledger</h2>
-        <p class="text-xs text-slate-400">Every EHR view, update, and export is permanently recorded with SHA-256 integrity hashing.</p>
-      </div>
+      <div class="double-bezel">
+        <div class="double-bezel-inner p-5 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+            <h3 class="text-xs font-bold text-white font-mono uppercase tracking-wider">Immutable HIPAA Access Ledger</h3>
+            <span class="text-[10px] font-mono text-emerald-400">SHA-256 Hash Chaining Live</span>
+          </div>
 
-      <div class="rounded-2xl border border-med-border bg-med-card p-4 space-y-2 font-mono text-xs" id="auditTrailContainer">
-        <div class="p-2.5 rounded-lg bg-[#080E1C] border border-med-border flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="text-teal-400 font-bold">RECORD_VIEW</span>
-            <span class="text-slate-300">Dr. Aris Thorne accessed Patient Sarah Jenkins (MRN-78421)</span>
+          <div id="auditLogFeed" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1 font-mono text-xs">
+            <!-- Populated from /api/audit -->
           </div>
-          <div class="text-[10px] text-slate-500">Sep 30, 2026 14:15:02 UTC • Hash: 7b8f...a12c</div>
-        </div>
-        <div class="p-2.5 rounded-lg bg-[#080E1C] border border-med-border flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="text-cyan-400 font-bold">RX_SIGN</span>
-            <span class="text-slate-300">Dr. Maya Patel digitally signed Rx Metformin (MRN-78422)</span>
-          </div>
-          <div class="text-[10px] text-slate-500">Sep 30, 2026 13:42:19 UTC • Hash: c49e...881f</div>
         </div>
       </div>
     </div>
 
   </main>
 
+  <!-- PATIENT INTAKE MODAL -->
+  <div id="newPatientModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl">
+    <div class="relative w-full max-w-lg double-bezel shadow-2xl">
+      <div class="double-bezel-inner p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            <h3 class="text-sm font-bold text-white uppercase font-mono tracking-wider">Clinical Patient Intake</h3>
+          </div>
+          <button id="closePatientModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+        </div>
+
+        <form id="patientIntakeForm" class="space-y-3.5 text-xs font-sans">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Full Legal Name</label>
+              <input id="intakeName" type="text" placeholder="e.g. Liam Sterling" required class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-teal-400">
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Age & Gender</label>
+              <input id="intakeDemographics" type="text" placeholder="e.g. Male, 34y" required class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-teal-400">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Primary Clinical Diagnosis / Chief Complaint</label>
+            <input id="intakeCondition" type="text" placeholder="e.g. Acute Cardiac Arrhythmia" required class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-teal-400">
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Heart Rate (BPM)</label>
+              <input id="intakeHR" type="number" value="78" min="40" max="180" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-teal-400">
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Blood Pressure</label>
+              <input id="intakeBP" type="text" value="120/80" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-teal-400">
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">SpO2 (%)</label>
+              <input id="intakeSpO2" type="text" value="98%" class="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-teal-400">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(0,210,211,0.3)]">
+            Admit Patient & Synchronize Biometrics
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
