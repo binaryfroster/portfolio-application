@@ -54,6 +54,7 @@
 
     camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.set(0, 0, 7.5);
+    camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
@@ -150,6 +151,7 @@
     certContainer.addEventListener('wheel', (e) => {
       e.preventDefault();
       camera.position.z = Math.max(4.5, Math.min(11.0, camera.position.z + e.deltaY * 0.006));
+      camera.lookAt(0, 0, 0);
     }, { passive: false });
 
     window.addEventListener('resize', onCertWindowResize);
