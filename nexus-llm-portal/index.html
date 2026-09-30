@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus LLM Portal | Enterprise Knowledge & RAG Intelligence</title>
-  <meta name="description" content="Binary Froster's enterprise multi-model LLM portal and RAG knowledge assistant with real-time vector search and document intelligence.">
+  <meta name="description" content="Binary Froster enterprise multi-model LLM portal and 3D RAG vector knowledge graph assistant.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js 3D WebGL Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -41,8 +43,8 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #0B0E14;
@@ -54,8 +56,16 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #334155;
     }
-    .glow-cyan {
-      box-shadow: 0 0 25px -5px rgba(0, 242, 254, 0.25);
+    .double-bezel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1.25rem;
+      padding: 0.375rem;
+    }
+    .double-bezel-inner {
+      background: #0B0F17;
+      border-radius: calc(1.25rem - 0.375rem);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07);
     }
     .cursor-blink::after {
       content: '▋';
@@ -88,7 +98,7 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="font-bold text-sm tracking-tight text-white">NEXUS LLM</span>
-            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">v2.4 Core</span>
+            <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold tracking-wider">v2.4 Core</span>
           </div>
           <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">ENTERPRISE COGNITIVE FABRIC</p>
         </div>
@@ -100,32 +110,32 @@
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
       <span class="text-xs text-slate-400 font-medium">Model:</span>
       <select id="modelSelector" class="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer">
+        <option value="claude-3-5-sonnet" selected class="bg-slate-900 text-white">Anthropic Claude 3.5 Sonnet</option>
         <option value="gpt-4o" class="bg-slate-900 text-white">OpenAI GPT-4o (Omni 128k)</option>
-        <option value="claude-3-5" selected class="bg-slate-900 text-white">Anthropic Claude 3.5 Sonnet</option>
         <option value="gemini-1-5-pro" class="bg-slate-900 text-white">Google Gemini 1.5 Pro (2M)</option>
         <option value="llama-3-1" class="bg-slate-900 text-white">Meta Llama 3.1 70B Instruct</option>
       </select>
     </div>
 
-    <!-- System Telemetry Stats -->
+    <!-- System Telemetry Stats & Actions -->
     <div class="flex items-center gap-3">
       <div class="hidden sm:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-brand-border pr-3">
         <div class="flex items-center gap-1.5">
-          <span class="text-slate-500">LATENCY</span>
+          <span class="text-slate-500">LATENCY:</span>
           <span id="latencyStat" class="text-cyan-400 font-semibold">28ms</span>
         </div>
         <div class="flex items-center gap-1.5">
-          <span class="text-slate-500">TOKENS</span>
+          <span class="text-slate-500">TOKENS:</span>
           <span id="tokenCounterHeader" class="text-slate-200 font-semibold">14,280</span>
         </div>
       </div>
 
-      <button id="tuneSettingsBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand-border bg-slate-900/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+      <button id="tuneSettingsBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-border bg-slate-900/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
         <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
         <span>Parameters</span>
       </button>
 
-      <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition-colors">
+      <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition-colors">
         <span>Portfolio</span>
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
       </a>
@@ -147,10 +157,10 @@
 
       <!-- Navigation Tabs: Sessions vs RAG Knowledge Base -->
       <div class="flex border-b border-brand-border text-xs font-semibold">
-        <button id="tabSessionsBtn" class="flex-1 py-2.5 text-center text-cyan-400 border-b-2 border-cyan-400 bg-slate-900/40 transition-colors">
+        <button id="tabSessionsBtn" class="flex-1 py-2.5 text-center text-cyan-400 border-b-2 border-cyan-400 bg-slate-900/40 transition-colors font-mono">
           Sessions
         </button>
-        <button id="tabKnowledgeBtn" class="flex-1 py-2.5 text-center text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-colors">
+        <button id="tabKnowledgeBtn" class="flex-1 py-2.5 text-center text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-colors font-mono">
           RAG Knowledge Base
         </button>
       </div>
@@ -167,33 +177,11 @@
       <div id="knowledgePanel" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3 hidden">
         <div class="flex items-center justify-between">
           <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Indexed Documents</span>
-          <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-1.5 py-0.5 rounded">4 Files (580 Chunks)</span>
+          <span id="docCountBadge" class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-1.5 py-0.5 rounded">4 Files (580 Chunks)</span>
         </div>
 
         <div class="space-y-2 text-xs" id="docList">
-          <div class="p-2.5 rounded-lg border border-brand-border bg-slate-900/60 hover:border-slate-700 transition-colors">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-medium text-slate-200 truncate">SOC2_Audit_Report_2026.pdf</span>
-              <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Vectorized</span>
-            </div>
-            <p class="text-[11px] text-slate-400 line-clamp-1">Type II compliance specifications, physical safeguards, IAM encryption.</p>
-          </div>
-
-          <div class="p-2.5 rounded-lg border border-brand-border bg-slate-900/60 hover:border-slate-700 transition-colors">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-medium text-slate-200 truncate">BF_API_Architecture_v3.md</span>
-              <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Vectorized</span>
-            </div>
-            <p class="text-[11px] text-slate-400 line-clamp-1">Next.js edge routing, cryptographic session cookies, webhook endpoints.</p>
-          </div>
-
-          <div class="p-2.5 rounded-lg border border-brand-border bg-slate-900/60 hover:border-slate-700 transition-colors">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-medium text-slate-200 truncate">Enterprise_SLA_Master.docx</span>
-              <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Vectorized</span>
-            </div>
-            <p class="text-[11px] text-slate-400 line-clamp-1">99.8% production uptime, tier-1 response (<15m), credit schedules.</p>
-          </div>
+          <!-- Populated by JS / API -->
         </div>
 
         <!-- Document Uploader Simulator -->
@@ -220,26 +208,59 @@
       </div>
     </aside>
 
-    <!-- CENTER CONVERSATION CORE -->
-    <main class="flex-1 flex flex-col bg-[#08090C] relative">
+    <!-- CENTER CONVERSATION & 3D RAG CORE -->
+    <main class="flex-1 flex flex-col bg-[#08090C] relative overflow-hidden">
+
+      <!-- 3D NEURAL VECTOR RAG KNOWLEDGE GRAPH STAGE -->
+      <div class="px-4 md:px-6 pt-3 shrink-0">
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-3.5 space-y-2">
+            <div class="flex items-center justify-between pb-1.5 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span class="text-[11px] font-bold text-white font-mono uppercase tracking-wider">3D Neural Vector RAG Knowledge Graph</span>
+                <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hidden sm:inline">1536 DIMENSIONALITY &middot; COSINE HNSW</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="resetGraphBtn" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10 transition-colors">
+                  Reset Angle
+                </button>
+                <button id="toggleGraphBtn" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10 transition-colors">
+                  Collapse View
+                </button>
+              </div>
+            </div>
+
+            <!-- Three.js Canvas Container -->
+            <div id="graphContainer" class="rounded-xl bg-[#04060C] border border-white/[0.08] relative overflow-hidden h-44 group cursor-grab active:cursor-grabbing transition-all duration-300">
+              <div id="threejs-vector-container" class="w-full h-full"></div>
+
+              <div class="absolute bottom-2 left-3 right-3 flex justify-between items-center text-[9px] font-mono text-slate-400 pointer-events-none">
+                <span class="bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/5">ORBIT: DRAG TO ROTATE &middot; SCROLL TO ZOOM</span>
+                <span id="activeQueryRayIndicator" class="text-cyan-300 font-bold bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/5">VECTOR CLUSTERS READY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Conversation Messages Scroll Area -->
-      <div id="messagesContainer" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full">
+      <div id="messagesContainer" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-4 max-w-4xl mx-auto w-full">
         <!-- Messages rendered by JS -->
       </div>
 
       <!-- Quick Starter Prompts -->
-      <div id="quickPrompts" class="px-4 md:px-6 py-2 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none flex gap-2 shrink-0">
-        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-lg border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap">
+      <div id="quickPrompts" class="px-4 md:px-6 py-1.5 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none flex gap-2 shrink-0">
+        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-xl border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap font-mono text-[11px]">
           Audit our SLA response tiers and credits
         </button>
-        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-lg border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap">
+        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-xl border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap font-mono text-[11px]">
           How does the encrypted session cookie work?
         </button>
-        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-lg border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap">
+        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-xl border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap font-mono text-[11px]">
           Generate TypeScript interface for EMR prescriptions
         </button>
-        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-lg border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap">
+        <button class="quick-prompt-btn text-xs font-medium px-3 py-1.5 rounded-xl border border-brand-border bg-[#0E121B] hover:border-cyan-500/50 hover:text-cyan-300 text-slate-400 transition-colors whitespace-nowrap font-mono text-[11px]">
           Summarize SOC2 compliance controls
         </button>
       </div>
@@ -261,9 +282,9 @@
           <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 px-2">
             <span class="flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-              RAG Mode: <span class="text-cyan-300">Semantic Cosine Search Active</span>
+              RAG Mode: <span id="ragStatusLabel" class="text-cyan-300">Semantic Cosine Search Active</span>
             </span>
-            <span class="hidden sm:inline">Shift + Enter for new line • Enter to execute</span>
+            <span class="hidden sm:inline text-slate-500">Shift + Enter for new line &middot; Enter to execute</span>
           </div>
         </form>
       </div>
@@ -281,7 +302,7 @@
       <div class="space-y-6 pt-6 text-xs">
         <div>
           <label class="block text-slate-300 font-semibold mb-2">System Persona</label>
-          <select id="personaSelector" class="w-full bg-[#121824] border border-brand-border rounded-lg p-2.5 text-slate-200 font-medium focus:border-cyan-400 focus:outline-none">
+          <select id="personaSelector" class="w-full bg-[#121824] border border-brand-border rounded-xl p-2.5 text-slate-200 font-medium focus:border-cyan-400 focus:outline-none font-mono">
             <option value="rag-strict">Strict Enterprise RAG Grounding</option>
             <option value="code-architect">Senior Full-Stack Code Architect</option>
             <option value="legal-audit">SOC2 & Compliance Auditor</option>
@@ -306,7 +327,7 @@
           <input type="range" id="topPSlider" min="0.1" max="1" step="0.05" value="0.9" class="w-full accent-cyan-400 bg-slate-800 rounded h-1.5 cursor-pointer">
         </div>
 
-        <div class="p-3 rounded-xl bg-slate-900/60 border border-brand-border space-y-2">
+        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-brand-border space-y-2">
           <div class="text-[11px] font-mono text-slate-400 uppercase">Context Memory Limit</div>
           <div class="text-sm font-bold text-white font-mono">128,000 Tokens</div>
           <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
@@ -315,34 +336,37 @@
           <div class="text-[10px] text-slate-500 font-mono">15,360 tokens cached (12%)</div>
         </div>
 
-        <button id="resetDefaultsBtn" class="w-full py-2 rounded-lg border border-brand-border hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors">
+        <button id="resetDefaultsBtn" class="w-full py-2.5 rounded-xl border border-brand-border hover:bg-slate-800 text-slate-300 text-xs font-semibold font-mono transition-colors">
           Reset to Factory Defaults
         </button>
       </div>
     </div>
 
     <!-- CITATION MODAL INSPECTOR -->
-    <div id="citationModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-      <div class="bg-[#0C1019] border border-cyan-500/40 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative">
-        <button id="closeCitationBtn" class="absolute top-4 right-4 p-1 text-slate-400 hover:text-white">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">GROUNDED CITATION</span>
-          <span id="citationDocName" class="text-xs font-mono text-slate-300 font-bold truncate">Document.pdf</span>
-        </div>
-        <h4 id="citationTitle" class="text-sm font-bold text-white mb-2">Chunk #24 • Cosine Similarity: 0.942</h4>
-        <div id="citationContent" class="p-3.5 rounded-xl bg-slate-900 border border-brand-border text-xs text-slate-300 leading-relaxed font-mono max-h-60 overflow-y-auto custom-scrollbar">
-          Content preview will appear here.
-        </div>
-        <div class="mt-4 flex justify-end">
-          <button id="dismissCitationBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-white">Close Inspector</button>
+    <div id="citationModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+      <div class="relative w-full max-w-xl double-bezel shadow-2xl">
+        <div class="double-bezel-inner p-6 space-y-3">
+          <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">GROUNDED CITATION</span>
+              <span id="citationDocName" class="text-xs font-mono text-slate-300 font-bold truncate">Document.pdf</span>
+            </div>
+            <button id="closeCitationBtn" class="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+          </div>
+          <h4 id="citationTitle" class="text-sm font-bold text-white font-mono">Chunk #24 &middot; Cosine Similarity: 0.942</h4>
+          <div id="citationContent" class="p-3.5 rounded-xl bg-slate-900/90 border border-brand-border text-xs text-slate-300 leading-relaxed font-mono max-h-60 overflow-y-auto custom-scrollbar">
+            Content preview will appear here.
+          </div>
+          <div class="pt-2 flex justify-end">
+            <button id="dismissCitationBtn" class="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold font-mono rounded-xl text-white transition-colors">Close Inspector</button>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
 
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
