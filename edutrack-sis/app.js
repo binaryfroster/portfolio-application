@@ -79,6 +79,7 @@
 
     camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
     camera.position.set(0, 0, 13.5);
+    camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -191,7 +192,7 @@
       isDragging = false;
     });
 
-    container.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
       const deltaX = e.clientX - previousMousePosition.x;
       const deltaY = e.clientY - previousMousePosition.y;
@@ -200,9 +201,29 @@
       previousMousePosition = { x: e.clientX, y: e.clientY };
     });
 
+    // Touch Support for mobile & tablet
+    container.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    });
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const deltaX = e.touches[0].clientX - previousMousePosition.x;
+      const deltaY = e.touches[0].clientY - previousMousePosition.y;
+      targetRotation.y += deltaX * 0.006;
+      targetRotation.x += deltaY * 0.006;
+      previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    });
+
     container.addEventListener('wheel', (e) => {
       e.preventDefault();
       camera.position.z = Math.max(7, Math.min(18, camera.position.z + e.deltaY * 0.01));
+      camera.lookAt(0, 0, 0);
     }, { passive: false });
 
     // Window Resize Handler
@@ -222,6 +243,7 @@
       resetBtn.addEventListener('click', () => {
         targetRotation = { x: 0.15, y: -0.2 };
         camera.position.set(0, 0, 13.5);
+        camera.lookAt(0, 0, 0);
         if (window.BFAuth) {
           window.BFAuth.showToast('Constellation camera orientation reset to baseline polar angle.', 'info');
         }

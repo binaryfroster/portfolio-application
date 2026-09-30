@@ -132,6 +132,7 @@
     container.addEventListener('wheel', (e) => {
       e.preventDefault();
       camera.position.z = Math.max(5.5, Math.min(14.0, camera.position.z + e.deltaY * 0.006));
+      camera.lookAt(0, -0.2, 0);
     }, { passive: false });
 
     window.addEventListener('resize', onWindowResize);
@@ -294,7 +295,10 @@
 
   resetArchCameraBtn?.addEventListener('click', () => {
     targetRotation = { x: 0.35, y: -0.6 };
-    if (camera) camera.position.set(0, 4.5, 9.5);
+    if (camera) {
+      camera.position.set(0, 4.5, 9.5);
+      camera.lookAt(0, -0.2, 0);
+    }
     if (window.showToast) window.showToast('3D architectural camera reset to primary axonometric angle.', 'info');
   });
 
