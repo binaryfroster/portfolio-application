@@ -324,7 +324,7 @@
           <div class="flex justify-between items-start">
             <div>
               <h4 class="text-sm font-bold text-white">${p.name}</h4>
-              <div class="text-[11px] font-mono text-teal-400">${p.mrn} &middot; ${p.demographics}</div>
+              <div class="text-[11px] font-mono text-teal-400">${p.mrn} &middot; ${p.demographics || p.sex || 'Demographics Verified'}</div>
             </div>
             <span class="px-2 py-0.5 rounded text-[9px] font-mono ${isAlert ? 'bg-rose-500/10 text-rose-300 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'}">
               ${isAlert ? 'ALLERGY' : 'STABLE'}

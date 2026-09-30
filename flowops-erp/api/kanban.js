@@ -46,6 +46,12 @@ module.exports = async (req, res) => {
   return res.status(200).json({
     success: true,
     columns: columns,
+    orders: [
+      { id: 'WO-9021', title: '500x Titanium Milling Housings', client: 'SpaceX Propulsion', stage: 'backlog', priority: 'HIGH' },
+      { id: 'WO-8944', title: '1,500x SMT Microcontroller PCBs', client: 'Tesla Energy', stage: 'assembly', priority: 'NORMAL' },
+      { id: 'WO-9104', title: '100x Laser Calibration Arrays', client: 'Lockheed Optical', stage: 'qa', priority: 'HIGH' },
+      { id: 'WO-8802', title: '250x Brushless Actuators', client: 'Boston Dynamics', stage: 'dispatched', priority: 'NORMAL' }
+    ],
     activeWorkOrders: 6,
     cogsEfficiency: '+41.2% reduction in cycle waste',
     lastSync: new Date().toISOString()

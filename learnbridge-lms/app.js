@@ -293,13 +293,17 @@
   function openCertificateModal() {
     if (certModal) {
       certModal.classList.remove('hidden');
+      const user = window.BFAuth ? window.BFAuth.getUser() : { name: 'Dr. Aris Thorne' };
+      if (modalScholarName) modalScholarName.textContent = user.name;
+      if (modalGradeLabel) modalGradeLabel.textContent = certScore;
+      if (certHashLabel) certHashLabel.textContent = `ED25519: ${certHash}`;
       setTimeout(() => {
         if (!renderer) {
           initThreeJSCertificate();
         } else {
           onCertWindowResize();
-          updateCertificateVisuals();
         }
+        updateCertificateVisuals();
       }, 50);
     }
   }
