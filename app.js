@@ -152,7 +152,17 @@
       camera.position.z = Math.max(4.5, Math.min(11.0, camera.position.z + e.deltaY * 0.006));
     }, { passive: false });
 
+    window.addEventListener('resize', onCertWindowResize);
     animateCertThreeJS();
+  }
+
+  function onCertWindowResize() {
+    if (!certContainer || !renderer || !camera) return;
+    const width = certContainer.clientWidth || 580;
+    const height = certContainer.clientHeight || 320;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
   }
 
   function createDiplomaTexture() {
@@ -283,11 +293,14 @@
   function openCertificateModal() {
     if (certModal) {
       certModal.classList.remove('hidden');
-      if (!renderer) {
-        setTimeout(initThreeJSCertificate, 100);
-      } else {
-        updateCertificateVisuals();
-      }
+      setTimeout(() => {
+        if (!renderer) {
+          initThreeJSCertificate();
+        } else {
+          onCertWindowResize();
+          updateCertificateVisuals();
+        }
+      }, 50);
     }
   }
 
