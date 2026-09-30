@@ -269,9 +269,19 @@
       const res = await fetch('/api/inventory');
       if (res.ok) {
         const data = await res.json();
-        inventoryData = data.items || data;
-        renderInventoryTable();
-        return;
+        const incoming = Array.isArray(data) ? data : (data.items || data.topInventoryItems);
+        if (Array.isArray(incoming) && incoming.length > 0) {
+          inventoryData = incoming.map(it => ({
+            sku: it.sku || 'SKU-0000',
+            name: it.name || 'Component',
+            bay: it.bay || 'Bay A-01',
+            stock: it.stock !== undefined ? it.stock : (it.inStock !== undefined ? it.inStock : 50),
+            min: it.min !== undefined ? it.min : (it.reorderPoint !== undefined ? it.reorderPoint : 20),
+            cost: it.cost !== undefined ? it.cost : 10.00
+          }));
+          renderInventoryTable();
+          return;
+        }
       }
     } catch (e) {
       console.warn('Inventory fetch fallback:', e);
@@ -345,9 +355,18 @@
       const res = await fetch('/api/kanban');
       if (res.ok) {
         const data = await res.json();
-        kanbanOrders = data.orders || data;
-        renderKanban();
-        return;
+        const incoming = Array.isArray(data) ? data : (data.orders || (data.columns ? data.columns.flatMap(c => c.cards || []) : null));
+        if (Array.isArray(incoming) && incoming.length > 0) {
+          kanbanOrders = incoming.map(o => ({
+            id: o.id || 'WO-0000',
+            title: o.title || o.part || 'Batch Order',
+            client: o.client || 'Enterprise Client',
+            stage: (o.stage === 'staged' ? 'backlog' : (o.stage === 'active' ? 'assembly' : o.stage)) || 'backlog',
+            priority: o.priority || 'NORMAL'
+          }));
+          renderKanban();
+          return;
+        }
       }
     } catch (e) {
       console.warn('Kanban fetch fallback:', e);
