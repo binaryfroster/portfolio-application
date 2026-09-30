@@ -155,7 +155,7 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
     if (!container || typeof THREE === 'undefined') return;
 
     const width = container.clientWidth || 600;
-    const height = container.clientHeight || 176;
+    const height = container.clientHeight || 230;
 
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x04060C, 0.04);

@@ -61,8 +61,8 @@
     scene = new THREE.Scene();
 
     // Camera
-    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 6.2);
+    camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 6.8);
 
     // Renderer
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -112,7 +112,7 @@
     scene.add(innerCore);
 
     // Orbital Telemetry Ring
-    const ringGeo = new THREE.TorusGeometry(2.5, 0.02, 16, 100);
+    const ringGeo = new THREE.TorusGeometry(2.2, 0.02, 16, 100);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0xa855f7,
       transparent: true,
