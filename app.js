@@ -92,6 +92,7 @@
     scene.add(tealLight);
 
     heartGroup = new THREE.Group();
+    heartGroup.position.set(0, -0.35, 0);
     scene.add(heartGroup);
 
     // Anatomical Ventricular Body
@@ -229,6 +230,9 @@
 
       if (ventricularMesh) {
         ventricularMesh.scale.set(cardiacScale, cardiacScale, cardiacScale);
+      }
+      if (aortaMesh) {
+        aortaMesh.scale.set(1.0 + systole * 0.4, 1.0 + systole * 0.7, 1.0 + systole * 0.4);
       }
     }
 
