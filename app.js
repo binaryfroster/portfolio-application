@@ -162,6 +162,7 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
 
     camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
     camera.position.set(0, 0, 11);
+    camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -278,7 +279,7 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
       isDragging = false;
     });
 
-    container.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
       const deltaX = e.clientX - previousMousePos.x;
       const deltaY = e.clientY - previousMousePos.y;
@@ -287,9 +288,29 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
       previousMousePos = { x: e.clientX, y: e.clientY };
     });
 
+    // Touch Support for mobile & tablet
+    container.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        previousMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    });
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const deltaX = e.touches[0].clientX - previousMousePos.x;
+      const deltaY = e.touches[0].clientY - previousMousePos.y;
+      targetRotation.y += deltaX * 0.007;
+      targetRotation.x += deltaY * 0.007;
+      previousMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    });
+
     container.addEventListener('wheel', (e) => {
       e.preventDefault();
       camera.position.z = Math.max(7, Math.min(16, camera.position.z + e.deltaY * 0.01));
+      camera.lookAt(0, 0, 0);
     }, { passive: false });
 
     // Resize Handler
