@@ -148,7 +148,7 @@
     const user = getActiveUser();
     let mount = document.getElementById('bf-auth-mount');
     if (!mount) {
-      const headerRight = document.querySelector('header .flex.items-center.gap-3');
+      const headerRight = document.getElementById('headerRightActions') || document.querySelector('header .flex.items-center.gap-3');
       if (!headerRight) return;
       mount = document.createElement('div');
       mount.id = 'bf-auth-mount';
