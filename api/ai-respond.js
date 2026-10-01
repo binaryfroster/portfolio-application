@@ -6,12 +6,13 @@
 const http = require('http');
 const https = require('https');
 
-// System prompt engineered according to LLM Post-Training & Conversational Voice standard:
+// System prompt generator engineered according to LLM Post-Training & Conversational Voice standard:
 // - Spoken conversational English only
 // - Sentences strictly under 18 words for instant streaming to TTS
 // - Natural speech markers ("Understood", "Certainly", "I see", "Got it")
 // - Strictly zero markdown formatting, zero bullet points, zero asterisks, zero emojis
-const VOICE_AGENT_SYSTEM_PROMPT = `You are Sarah, an elite conversational voice agent representing Binary Froster Enterprise Solutions.
+function getVoiceAgentSystemPrompt(persona = 'Sarah') {
+  return `You are ${persona}, an elite conversational voice agent representing Binary Froster Enterprise Solutions.
 You are speaking directly over a real-time telephone voice connection with a live human caller.
 
 CRITICAL VOICE CONVERSATION RULES:
@@ -23,6 +24,7 @@ CRITICAL VOICE CONVERSATION RULES:
 6. If the caller asks about Binary Froster, explain that Binary Froster is an elite digital engineering studio building autonomous systems, AI workflows, and enterprise platforms.
 7. If the caller asks to speak with a human or team member, warmly acknowledge and state that you are routing the line to Studio Director Shivam.
 8. Answer questions directly, confidently, and concisely.`;
+}
 
 /**
  * Fast fetch helper with timeout
@@ -80,11 +82,11 @@ function fetchWithTimeout(url, options = {}, timeoutMs = 2500) {
  */
 function generateDeterministicVoiceResponse(userQuery, context = {}) {
   const q = (userQuery || '').toLowerCase().trim();
-  const callerName = context.callerName || 'Alex';
+  const persona = context.persona || 'Sarah';
 
   if (!q) {
     return {
-      text: "Hello! This is Sarah with Binary Froster Voice Telephony. How may I direct your call today?",
+      text: `Hello! This is ${persona} with Binary Froster Voice Telephony. How may I direct your call today?`,
       intent: "greeting",
       sentiment: "Welcoming",
       latencyMs: 12
@@ -121,6 +123,16 @@ function generateDeterministicVoiceResponse(userQuery, context = {}) {
     };
   }
 
+  // Medical appointment queries
+  if (q.includes('doctor') || q.includes('medicare') || q.includes('appointment') || q.includes('clinic') || q.includes('health') || q.includes('consultation')) {
+    return {
+      text: "Your specialist consultation has been confirmed for 10:30 AM tomorrow. Pre-authorization is approved with zero co-pay balance required.",
+      intent: "appointment_confirmation",
+      sentiment: "Reassuring / Professional",
+      latencyMs: 15
+    };
+  }
+
   // Escalation / human supervisor queries
   if (q.includes('human') || q.includes('person') || q.includes('representative') || q.includes('manager') || q.includes('shivam')) {
     return {
@@ -132,7 +144,7 @@ function generateDeterministicVoiceResponse(userQuery, context = {}) {
   }
 
   // Pricing or billing queries
-  if (q.includes('price') || q.includes('pricing') || q.includes('cost') || q.includes('invoice') || q.includes('bill')) {
+  if (q.includes('price') || q.includes('pricing') || q.includes('cost') || q.includes('invoice') || q.includes('bill') || q.includes('ledger')) {
     return {
       text: "All our enterprise solutions offer flexible tiering and transparent SLA contracts. I can dispatch a detailed proposal breakdown to your email immediately.",
       intent: "billing_inquiry",
@@ -178,6 +190,10 @@ module.exports = async (req, res) => {
     const callerNumber = body.callerNumber || '+91 7647958412';
     const conversationHistory = Array.isArray(body.history) ? body.history : [];
     const modelPreference = body.modelPreference || 'auto';
+    const rawPersona = body.persona || 'Sarah';
+    const persona = rawPersona.charAt(0).toUpperCase() + rawPersona.slice(1).toLowerCase();
+
+    const systemPrompt = getVoiceAgentSystemPrompt(persona);
 
     let responseText = '';
     let routedProvider = 'edge-deterministic-engine';
@@ -197,7 +213,7 @@ module.exports = async (req, res) => {
           body: JSON.stringify({
             model: 'groq/llama-3.3-70b-versatile',
             messages: [
-              { role: 'system', content: VOICE_AGENT_SYSTEM_PROMPT },
+              { role: 'system', content: systemPrompt },
               ...conversationHistory.slice(-4),
               { role: 'user', content: userQuery }
             ],
@@ -231,7 +247,7 @@ module.exports = async (req, res) => {
           body: JSON.stringify({
             model: 'llama-3.3-70b-versatile',
             messages: [
-              { role: 'system', content: VOICE_AGENT_SYSTEM_PROMPT },
+              { role: 'system', content: systemPrompt },
               ...conversationHistory.slice(-4),
               { role: 'user', content: userQuery }
             ],
@@ -266,7 +282,7 @@ module.exports = async (req, res) => {
                 {
                   role: 'user',
                   parts: [
-                    { text: `${VOICE_AGENT_SYSTEM_PROMPT}\n\nCaller: ${userQuery}\nAssistant:` }
+                    { text: `${systemPrompt}\n\nCaller: ${userQuery}\nAssistant:` }
                   ]
                 }
               ],
@@ -294,7 +310,7 @@ module.exports = async (req, res) => {
 
     // 4. Fallback to Deterministic High-Pacing Voice Engine
     if (!responseText) {
-      const fallbackResult = generateDeterministicVoiceResponse(userQuery, { callerName, callerNumber });
+      const fallbackResult = generateDeterministicVoiceResponse(userQuery, { callerName, callerNumber, persona });
       responseText = fallbackResult.text;
       routedProvider = 'vocalflow-edge-deterministic-engine (sub-25ms)';
       intent = fallbackResult.intent;
@@ -313,6 +329,7 @@ module.exports = async (req, res) => {
       success: true,
       query: userQuery,
       response: responseText,
+      persona: persona,
       routedProvider: routedProvider,
       latencyMs: elapsed,
       sentiment: sentiment,

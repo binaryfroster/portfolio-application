@@ -25,6 +25,8 @@ module.exports = async (req, res) => {
     const scenario = body.scenario || query.scenario || 'enterprise_priority';
     const turnIndex = parseInt(body.turnIndex || query.turnIndex || '1', 10);
     const to = body.to || query.to || '+91 7647958412';
+    const rawPersona = body.persona || query.persona || 'Sarah';
+    const persona = rawPersona.charAt(0).toUpperCase() + rawPersona.slice(1).toLowerCase();
 
     // Conversational intent reasoning
     let aiResponse = '';
@@ -37,13 +39,25 @@ module.exports = async (req, res) => {
     const lower = customerSpeech.toLowerCase();
 
     if (!customerSpeech) {
-      aiResponse = "I am listening. Please let me know how I can assist your flight or operations today.";
+      aiResponse = `I am listening. Please let me know how I can assist your operations today.`;
       intent = "silence_fallback";
     } else if (lower.includes('binary froster') || lower.includes('company') || lower.includes('who are you') || lower.includes('what do you do')) {
       intent = 'company_inquiry';
       aiResponse = 'Binary Froster is a premium software engineering studio building autonomous AI platforms, web systems, and high-performance digital products.';
       sentimentScore = 0.95;
       sentimentLabel = 'Interested / Engaged';
+    } else if (lower.includes('doctor') || lower.includes('medicare') || lower.includes('appointment') || lower.includes('health') || lower.includes('consultation')) {
+      intent = 'medical_confirmation';
+      aiResponse = 'Your medical consultation with Dr. Aris Thorne is confirmed for 10:30 AM tomorrow. Pre-authorization is approved with zero copay.';
+      sentimentScore = 0.97;
+      sentimentLabel = 'Reassured / Relieved';
+      automatedResolution = true;
+    } else if (lower.includes('bill') || lower.includes('invoice') || lower.includes('payment') || lower.includes('ledger') || lower.includes('cost')) {
+      intent = 'billing_inquiry';
+      aiResponse = 'Your active retainer balance of 12,500 credits has reconciled cleanly. A certified tax invoice was dispatched to your corporate email.';
+      sentimentScore = 0.92;
+      sentimentLabel = 'Business / Satisfied';
+      automatedResolution = true;
     } else if (lower.includes('flight') || lower.includes('ticket') || lower.includes('switch') || lower.includes('change') || lower.includes('reschedule')) {
       intent = 'flight_rescheduling';
       aiResponse = 'Checking real-time seat availability for flight BA-2494 departing at 3:45 PM. Seat 4A in Club World is currently open with zero modification penalties. Would you like me to lock this in?';
@@ -75,9 +89,9 @@ module.exports = async (req, res) => {
       nextAction = 'terminate_call';
     } else {
       const responses = [
-        'Certainly. I have pulled up your verified reservation record. What specific change would you like to make?',
-        'I have applied that update to your profile and synchronized it with our central reservations system.',
-        'Everything is confirmed and your verification token has been issued. Is there anything else you require?'
+        `Certainly. I have pulled up your verified record. What specific update would you like me to make?`,
+        `I have applied that update to your profile and synchronized it with our central systems.`,
+        `Everything is confirmed and your verification token has been issued. Is there anything else you require?`
       ];
       aiResponse = responses[turnIndex % responses.length];
       sentimentScore = 0.85;
@@ -86,11 +100,11 @@ module.exports = async (req, res) => {
 
     const elapsed = Date.now() - startTime;
 
-    // Check if request is expecting TwiML XML (Twilio webhook) or JSON (browser API)
-    const acceptsXml = req.headers.accept && req.headers.accept.includes('xml');
+    const headers = req.headers || {};
+    const acceptsXml = Boolean(headers.accept && headers.accept.includes('xml'));
     const isTwilioWebhook = Boolean(body.CallSid || query.CallSid);
 
-    if (acceptsXml || (isTwilioWebhook && !req.headers.accept?.includes('json'))) {
+    if (acceptsXml || (isTwilioWebhook && !headers.accept?.includes('json'))) {
       res.setHeader('Content-Type', 'text/xml');
       let voice = 'Polly.Aditi';
       let language = 'en-IN';
@@ -100,7 +114,7 @@ module.exports = async (req, res) => {
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="${voice}" language="${language}">${aiResponse}</Say>
-  ${nextAction === 'terminate_call' ? '<Hangup/>' : nextAction === 'warm_transfer_agent' ? '<Dial>+917647958412</Dial>' : `<Gather input="speech" action="/api/transcribe?to=${encodeURIComponent(to)}&amp;turnIndex=${turnIndex + 1}" method="POST" timeout="4"><Say voice="${voice}" language="${language}">Is there anything else I can assist you with?</Say></Gather>`}
+  ${nextAction === 'terminate_call' ? '<Hangup/>' : nextAction === 'warm_transfer_agent' ? '<Dial>+917647958412</Dial>' : `<Gather input="speech" action="/api/transcribe?to=${encodeURIComponent(to)}&amp;turnIndex=${turnIndex + 1}&amp;persona=${encodeURIComponent(persona)}" method="POST" timeout="4"><Say voice="${voice}" language="${language}">Is there anything else I can assist you with?</Say></Gather>`}
 </Response>`;
       return res.status(200).send(twiml);
     }
@@ -110,6 +124,7 @@ module.exports = async (req, res) => {
       success: true,
       callSid: callSid,
       turnIndex: turnIndex,
+      persona: persona,
       speech: customerSpeech,
       aiResponse: aiResponse,
       reply: aiResponse,
@@ -130,7 +145,7 @@ module.exports = async (req, res) => {
         }
       },
       agentTurn: {
-        speaker: 'AI VOICE AGENT (SARAH)',
+        speaker: `AI VOICE AGENT (${persona.toUpperCase()})`,
         text: aiResponse,
         latencyMs: Math.max(elapsed, 92),
         ttsEngine: 'ElevenLabs / Edge Neural / Deepgram Aura',

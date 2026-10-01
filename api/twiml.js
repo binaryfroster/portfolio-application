@@ -12,25 +12,27 @@ module.exports = async (req, res) => {
   const to = query.to || '+91 7647958412';
   const customerName = query.name || (to.includes('7647958412') ? 'Binary Froster HQ' : 'Valued Client');
   const scenario = query.scenario || 'enterprise_priority';
+  const personaRaw = query.persona || 'Sarah';
+  const persona = personaRaw.charAt(0).toUpperCase() + personaRaw.slice(1).toLowerCase();
 
-  // Select optimal neural voice based on target destination
+  // Select optimal neural voice based on target destination and persona
   let voice = 'Polly.Aditi';
   let language = 'en-IN';
 
   if (to.startsWith('+44')) {
-    voice = 'Polly.Danielle';
+    voice = persona === 'Marcus' || persona === 'Alex' ? 'Polly.Brian' : 'Polly.Danielle';
     language = 'en-GB';
   } else if (to.startsWith('+1')) {
-    voice = 'Polly.Joanna';
+    voice = persona === 'Marcus' || persona === 'Alex' ? 'Polly.Matthew' : 'Polly.Joanna';
     language = 'en-US';
   } else if (to.startsWith('+91')) {
     voice = 'Polly.Aditi';
     language = 'en-IN';
   }
 
-  const host = req.headers.host || 'voice-call-automation-delta.vercel.app';
-  const transcribeActionUrl = `https://${host}/api/transcribe?scenario=${encodeURIComponent(scenario)}&to=${encodeURIComponent(to)}`;
-  const mediaStreamUrl = `wss://${host}/api/media-stream`;
+  const headers = req.headers || {};
+  const host = headers.host || 'voice-call-automation-delta.vercel.app';
+  const transcribeActionUrl = `https://${host}/api/transcribe?scenario=${encodeURIComponent(scenario)}&to=${encodeURIComponent(to)}&persona=${encodeURIComponent(persona)}`;
 
   const xmlResponse = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -39,7 +41,7 @@ module.exports = async (req, res) => {
   </Say>
   <Gather input="speech" action="${transcribeActionUrl}" method="POST" timeout="5" speechTimeout="auto">
     <Say voice="${voice}" language="${language}">
-      I am Sarah, your AI systems concierge. Please tell me in plain English how I can assist your operations today.
+      I am ${persona}, your AI systems concierge. Please tell me in plain English how I can assist your operations today.
     </Say>
   </Gather>
   <Say voice="${voice}" language="${language}">

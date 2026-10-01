@@ -64,6 +64,85 @@ function twilioCallRequest(accountSid, authToken, fromNumber, toNumber, twimlUrl
   });
 }
 
+/**
+ * Test and verify Twilio Account credentials
+ */
+function verifyTwilioCredentials(accountSid, authToken) {
+  return new Promise((resolve) => {
+    if (!accountSid || !authToken) {
+      return resolve({
+        valid: false,
+        statusCode: 400,
+        message: 'Missing Account SID or Auth Token.'
+      });
+    }
+
+    const authHeader = 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+    const options = {
+      hostname: 'api.twilio.com',
+      port: 443,
+      path: `/2010-04-01/Accounts/${accountSid}.json`,
+      method: 'GET',
+      headers: {
+        'Authorization': authHeader
+      },
+      timeout: 6000
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve({
+              valid: true,
+              statusCode: res.statusCode,
+              accountName: parsed.friendly_name || 'Twilio Production Account',
+              status: parsed.status,
+              type: parsed.type,
+              message: `Twilio Account Authenticated: ${parsed.friendly_name || accountSid} (${parsed.status})`
+            });
+          } else {
+            resolve({
+              valid: false,
+              statusCode: res.statusCode,
+              errorCode: parsed.code,
+              message: parsed.message || 'Twilio authentication failed.'
+            });
+          }
+        } catch (e) {
+          resolve({
+            valid: false,
+            statusCode: res.statusCode,
+            message: 'Unable to parse Twilio response.'
+          });
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      resolve({
+        valid: false,
+        statusCode: 500,
+        message: `Network error connecting to Twilio: ${err.message}`
+      });
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      resolve({
+        valid: false,
+        statusCode: 504,
+        message: 'Twilio connection test timed out.'
+      });
+    });
+
+    req.end();
+  });
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -77,12 +156,48 @@ module.exports = async (req, res) => {
 
   try {
     const body = req.body || {};
+
+    // 1. Check for credential test trigger action
+    if (body.action === 'test_credentials') {
+      const sid = (body.twilioAccountSid || process.env.TWILIO_ACCOUNT_SID || '').trim();
+      const token = (body.twilioAuthToken || process.env.TWILIO_AUTH_TOKEN || '').trim();
+
+      if (!sid || !token) {
+        return res.status(200).json({
+          success: true,
+          sandbox: true,
+          status: 'SANDBOX_ACTIVE',
+          message: 'Client sandbox mode active. All WebRTC speech turns and SIP flows are operational without live Twilio billing.'
+        });
+      }
+
+      const testResult = await verifyTwilioCredentials(sid, token);
+      const elapsed = Date.now() - startTime;
+      return res.status(200).json({
+        success: testResult.valid,
+        sandbox: false,
+        status: testResult.valid ? 'LIVE_VERIFIED' : 'AUTHENTICATION_FAILED',
+        details: testResult,
+        latencyMs: elapsed
+      });
+    }
+
+    // 2. Normal Call Initiation Flow
     // Target phone number (Default: Binary Froster phone number +91 7647958412)
     const rawTo = (body.to || '+91 7647958412').trim();
     const to = rawTo.replace(/\s+/g, '');
     const customerName = body.customerName || (to.includes('7647958412') ? 'Binary Froster HQ' : 'Alex Rivera');
-    const scenario = body.scenario || 'enterprise_priority';
-    const agentVoice = body.agentVoice || 'Sarah (Neural Voice Agent)';
+
+    // Scenario normalization
+    let rawScenario = body.scenario || 'enterprise_priority';
+    if (rawScenario === 'british_airways') rawScenario = 'flight_change';
+    if (rawScenario === 'medicare') rawScenario = 'medical_appointment';
+    const scenario = rawScenario;
+
+    // Agent Persona Voice
+    const rawPersona = body.persona || 'sarah';
+    const personaName = rawPersona.charAt(0).toUpperCase() + rawPersona.slice(1).toLowerCase();
+    const agentVoice = body.agentVoice || `${personaName} (Neural Voice Agent)`;
     const callMode = body.mode || 'auto'; // 'pstn', 'webrtc', or 'auto'
 
     // Twilio credentials from Environment or Request Body
@@ -95,12 +210,12 @@ module.exports = async (req, res) => {
     const randomHex = Math.random().toString(36).substring(2, 9).toUpperCase();
     const generatedCallSid = `CA${timestamp}${randomHex}`;
 
-    // Contextual greetings
+    // Contextual greetings with dynamic persona
     const greetings = {
-      enterprise_priority: `Hello ${customerName}, this is Sarah calling from Binary Froster priority automation. How may I assist your engineering operations today?`,
-      flight_change: `Hello ${customerName}, Sarah calling from British Airways Executive Club regarding your upcoming reservation. How may I assist you today?`,
-      medical_appointment: `Good morning ${customerName}, Sarah calling from MediCare Care Hub to confirm your medical consultation schedule. Do you require any updates?`,
-      billing_support: `Hello ${customerName}, this is Sarah from Binary Froster Accounts Support regarding your invoice ledger. How can I help?`
+      enterprise_priority: `Hello ${customerName}, this is ${personaName} calling from Binary Froster priority automation. How may I assist your engineering operations today?`,
+      flight_change: `Hello ${customerName}, ${personaName} calling from British Airways Executive Club regarding your upcoming reservation. How may I assist you today?`,
+      medical_appointment: `Good morning ${customerName}, ${personaName} calling from MediCare Care Hub to confirm your medical consultation schedule. Do you require any updates?`,
+      billing_support: `Hello ${customerName}, this is ${personaName} from Binary Froster Accounts Support regarding your invoice ledger. How can I help?`
     };
     const initialGreeting = greetings[scenario] || greetings.enterprise_priority;
 
@@ -114,8 +229,9 @@ module.exports = async (req, res) => {
     const hasTwilioCreds = Boolean(twilioAccountSid && twilioAuthToken && twilioPhoneNumber);
 
     if (hasTwilioCreds && callMode !== 'webrtc') {
-      const host = req.headers.host || 'voice-call-automation-delta.vercel.app';
-      const twimlUrl = `https://${host}/api/twiml?to=${encodeURIComponent(to)}&name=${encodeURIComponent(customerName)}&scenario=${scenario}`;
+      const headers = req.headers || {};
+      const host = headers.host || 'voice-call-automation-delta.vercel.app';
+      const twimlUrl = `https://${host}/api/twiml?to=${encodeURIComponent(to)}&name=${encodeURIComponent(customerName)}&scenario=${encodeURIComponent(scenario)}&persona=${encodeURIComponent(personaName)}`;
 
       try {
         const result = await twilioCallRequest(
@@ -169,6 +285,7 @@ module.exports = async (req, res) => {
       from: twilioPhoneNumber,
       customerName: customerName,
       agentVoice: agentVoice,
+      persona: personaName,
       scenario: scenario,
       startedAt: new Date().toISOString(),
       codec: 'opus/48000',
@@ -179,7 +296,7 @@ module.exports = async (req, res) => {
       failureGuidance: failureGuidance,
       twilioResponse: twilioResponseData,
       initialTurn: {
-        speaker: 'AI VOICE AGENT (SARAH)',
+        speaker: `AI VOICE AGENT (${personaName.toUpperCase()})`,
         timestamp: '00:01',
         text: initialGreeting,
         latencyMs: 142,
