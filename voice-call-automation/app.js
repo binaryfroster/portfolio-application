@@ -622,9 +622,9 @@
     }, 1000);
 
     // Call backend API to initiate call
-    const savedSid = localStorage.getItem('bf_twilio_sid') || '';
-    const savedToken = localStorage.getItem('bf_twilio_token') || '';
-    const savedPhone = localStorage.getItem('bf_twilio_phone') || '';
+    const savedSid = (document.getElementById('cfgTwilioSid')?.value?.trim()) || localStorage.getItem('bf_twilio_sid') || '';
+    const savedToken = (document.getElementById('cfgTwilioToken')?.value?.trim()) || localStorage.getItem('bf_twilio_token') || '';
+    const savedPhone = (document.getElementById('cfgTwilioPhone')?.value?.trim()) || localStorage.getItem('bf_twilio_phone') || '';
     const telephonyMode = telephonyModeSelect ? telephonyModeSelect.value : 'twilio_carrier';
 
     let initialGreeting = number.includes('7647958412')
