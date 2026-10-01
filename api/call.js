@@ -8,15 +8,15 @@ const https = require('https');
 
 /**
  * Make an HTTP request to Twilio REST API
+ * Uses clean parameters strictly compliant with both standard and trial accounts
  */
 function twilioCallRequest(accountSid, authToken, fromNumber, toNumber, twimlUrl) {
   return new Promise((resolve, reject) => {
+    // Only pass trial-compliant parameters: To, From, Url
     const postData = new URLSearchParams({
       To: toNumber,
       From: fromNumber,
-      Url: twimlUrl,
-      StatusCallbackMethod: 'POST',
-      Record: 'false'
+      Url: twimlUrl
     }).toString();
 
     const authHeader = 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64');
@@ -31,7 +31,7 @@ function twilioCallRequest(accountSid, authToken, fromNumber, toNumber, twimlUrl
         'Content-Type': 'application/x-www-form-urlencoded',
         'Content-Length': Buffer.byteLength(postData)
       },
-      timeout: 5000
+      timeout: 8000
     };
 
     const req = https.request(options, (res) => {
@@ -56,7 +56,7 @@ function twilioCallRequest(accountSid, authToken, fromNumber, toNumber, twimlUrl
     req.on('error', reject);
     req.on('timeout', () => {
       req.destroy();
-      reject(new Error('Twilio REST API request timed out after 5000ms'));
+      reject(new Error('Twilio REST API request timed out after 8000ms'));
     });
 
     req.write(postData);
@@ -85,12 +85,12 @@ module.exports = async (req, res) => {
     const agentVoice = body.agentVoice || 'Sarah (Neural Voice Agent)';
     const callMode = body.mode || 'auto'; // 'pstn', 'webrtc', or 'auto'
 
-    // Twilio credentials from Environment or Request
+    // Twilio credentials from Environment or Request Body
     const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID || body.twilioAccountSid;
     const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN || body.twilioAuthToken;
     const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER || body.twilioPhoneNumber;
 
-    // Generate unique Call SID
+    // Generate unique Call SID fallback
     const timestamp = Date.now();
     const randomHex = Math.random().toString(36).substring(2, 9).toUpperCase();
     const generatedCallSid = `CA${timestamp}${randomHex}`;
@@ -129,9 +129,9 @@ module.exports = async (req, res) => {
         twilioResponseData = result.data;
 
         if (result.statusCode >= 200 && result.statusCode < 300) {
-          callStatus = result.data.status || 'in-progress';
+          callStatus = result.data.status || 'queued';
           twilioCallSid = result.data.sid;
-          provider = 'twilio-voice-gateway (PSTN Outbound Live)';
+          provider = 'twilio-voice-gateway (PSTN Outbound Live Carrier)';
         } else {
           // Handle trial restrictions or invalid caller ID
           callStatus = 'sandbox-fallback';
@@ -140,7 +140,7 @@ module.exports = async (req, res) => {
           if (result.data && result.data.code === 21608) {
             failureGuidance = `Twilio Trial Notice: The destination number ${to} is unverified. Under Twilio Free Trial regulations, please verify this number via SMS OTP in the Twilio Console (Phone Numbers > Manage > Verified Caller IDs), or enable India under Voice > Geo-Permissions.`;
           } else {
-            failureGuidance = `Twilio Gateway Notice: ${result.data ? result.data.message : 'Authentication check returned non-200'}`;
+            failureGuidance = `Twilio Gateway Notice: ${result.data ? (result.data.message || JSON.stringify(result.data)) : 'Authentication check returned non-200'}`;
           }
         }
       } catch (err) {
@@ -166,6 +166,7 @@ module.exports = async (req, res) => {
       status: callStatus,
       direction: 'outbound-api',
       to: to,
+      from: twilioPhoneNumber,
       customerName: customerName,
       agentVoice: agentVoice,
       scenario: scenario,
