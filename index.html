@@ -4,11 +4,11 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2308090C'/><path d='M8 6h16v5H14l8 8v7H6v-5h10L8 11Z' fill='%2300F2FE'/></svg>">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduTrack SIS | Scalable Student Information & Gradebook System</title>
-  <meta name="description" content="Binary Froster enterprise student management system built with real-time Supabase subscriptions, live attendance tracking, and parent portal.">
+  <title>EduTrack SIS | Enterprise Academic Information System & Registrar OS</title>
+  <meta name="description" content="Binary Froster enterprise student information system built with real-time academic gradebook, daily roll-call register, official transcripts, and tuition ledger.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js 3D WebGL Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -69,12 +69,53 @@
       border-radius: calc(1.25rem - 0.375rem);
       box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07);
     }
+
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+      }
+      header, nav, #tab-roster, #tab-attendance, #tab-grades, #tab-tuition, .no-print, #bf-toast-container, #bf-auth-mount, #enrollStudentModal, #guardianNoticeModal, #feePaymentModal, #editGradesModal {
+        display: none !important;
+      }
+      #transcriptModal {
+        position: static !important;
+        display: block !important;
+        background: transparent !important;
+        padding: 0 !important;
+        inset: auto !important;
+      }
+      #transcriptModalContent {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 2px solid #0F172A !important;
+        box-shadow: none !important;
+        padding: 24px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      .print-dark-text {
+        color: #0F172A !important;
+      }
+      .print-muted-text {
+        color: #475569 !important;
+      }
+      .print-border {
+        border-color: #CBD5E1 !important;
+      }
+      .print-bg-subtle {
+        background-color: #F8FAFC !important;
+      }
+      .print-hide {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-[#060A14] text-slate-200">
 
   <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 px-4 py-2 bg-[#060A14]/90 backdrop-blur-xl border-b border-white/[0.08]">
+  <header class="sticky top-0 z-40 px-4 py-2.5 bg-[#060A14]/90 backdrop-blur-xl border-b border-white/[0.08]">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
         <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
@@ -122,10 +163,10 @@
   </header>
 
   <!-- NAVIGATION TABS -->
-  <nav class="bg-[#070D1B]/80 backdrop-blur border-b border-white/[0.08] px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
+  <nav class="bg-[#070D1B]/80 backdrop-blur border-b border-white/[0.08] px-4 flex items-center gap-1 overflow-x-auto custom-scrollbar z-20">
     <button data-tab="roster" class="sis-tab active-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-sky-400 text-sky-300 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-      <span>Student Roster & 3D Performance</span>
+      <span>Student Roster & 3D Constellation</span>
     </button>
     <button data-tab="attendance" class="sis-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
@@ -134,6 +175,10 @@
     <button data-tab="grades" class="sis-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
       <span>Dynamic Gradebook & GPA</span>
+    </button>
+    <button data-tab="tuition" class="sis-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span>Tuition & Financial Ledger</span>
     </button>
   </nav>
 
@@ -146,14 +191,14 @@
       <!-- 3D ACADEMIC PERFORMANCE CONSTELLATION VIEWPORT -->
       <div class="double-bezel">
         <div class="double-bezel-inner p-5 space-y-4">
-          <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/[0.08]">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
               <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">3D Academic Performance Constellation Matrix</h3>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Cohort Average GPA: 3.86</span>
-              <button id="resetConstellationBtn" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10">
+              <span class="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20" id="constellationCohortGpaBadge">Cohort Average GPA: 3.86</span>
+              <button id="resetConstellationBtn" class="px-2.5 py-1 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10 transition-colors">
                 Reset View
               </button>
             </div>
@@ -164,103 +209,310 @@
             <div id="threejs-constellation-container" class="w-full h-full"></div>
 
             <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1">
-              <span class="bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/5">ORBIT: DRAG TO ROTATE &middot; SCROLL TO ZOOM</span>
-              <span class="text-sky-300 font-bold bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/5">NODES: STEM &middot; ARCHITECTURE &middot; ML</span>
+              <span class="bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur border border-white/10">ORBIT: DRAG TO ROTATE &middot; SCROLL TO ZOOM</span>
+              <span class="text-sky-300 font-bold bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur border border-white/10">CORE DOMAINS: DISTRIBUTED SYSTEMS &middot; ML &middot; CRYPTOGRAPHY</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Student Directory Table -->
+      <!-- Student Directory Table & Controls -->
       <div class="double-bezel">
         <div class="double-bezel-inner p-5 space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/[0.08]">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-white/[0.08]">
             <div>
-              <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Student Academic Directory</h2>
-              <p class="text-xs text-slate-400 font-sans">Class of 2027 &middot; Systems & Computing Specialization</p>
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Student Academic Directory</h2>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20" id="rosterCountBadge">8 Scholars Active</span>
+              </div>
+              <p class="text-xs text-slate-400 font-sans mt-0.5">District Class of 2027 &middot; Systems, Computing & Mathematics Division</p>
             </div>
-            <div class="relative w-full sm:w-64">
-              <input type="text" id="rosterSearchInput" placeholder="Filter by name, ID, GPA..." class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-400">
+
+            <!-- Filters & Sorting Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex items-center gap-2">
+              <div class="relative w-full sm:w-56">
+                <input type="text" id="rosterSearchInput" placeholder="Search name, ID (STU-...), email..." class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-400 font-sans">
+              </div>
+
+              <select id="rosterCohortFilter" class="bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-400 font-mono">
+                <option value="ALL">All Cohorts & Grades</option>
+                <option value="Grade 12 - Advanced Systems">Grade 12 - Advanced Systems</option>
+                <option value="Grade 11 - AP CS">Grade 11 - AP CS</option>
+                <option value="Grade 10 - Honors Math">Grade 10 - Honors Math</option>
+              </select>
+
+              <select id="rosterStandingFilter" class="bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-400 font-mono">
+                <option value="ALL">All Academic Standings</option>
+                <option value="VALEDICTORIAN_TRACK">Valedictorian Track (GPA 3.9+)</option>
+                <option value="HONORS">Honors (GPA 3.5 - 3.89)</option>
+                <option value="GOOD_STANDING">Good Standing (GPA 2.5 - 3.49)</option>
+                <option value="ACADEMIC_WARNING">Academic Warning (GPA &lt; 2.5)</option>
+                <option value="ATTENDANCE_WARNING">Attendance Alert (&lt; 85%)</option>
+              </select>
+
+              <select id="rosterSortSelect" class="bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-400 font-mono">
+                <option value="gpa_desc">Sort: GPA (High to Low)</option>
+                <option value="gpa_asc">Sort: GPA (Low to High)</option>
+                <option value="att_desc">Sort: Attendance (High to Low)</option>
+                <option value="att_asc">Sort: Attendance (Low to High)</option>
+                <option value="name_asc">Sort: Student Name (A-Z)</option>
+                <option value="id_asc">Sort: Student ID (Ascending)</option>
+              </select>
             </div>
           </div>
 
-          <div class="rounded-xl border border-white/[0.08] overflow-hidden">
-            <table class="w-full text-xs text-left">
+          <!-- Roster Table Container -->
+          <div class="rounded-xl border border-white/[0.08] overflow-x-auto custom-scrollbar">
+            <table class="w-full text-xs text-left min-w-[760px]">
               <thead class="bg-[#070D1B] text-[10px] font-mono uppercase text-slate-400 border-b border-white/[0.08]">
                 <tr>
                   <th class="p-3">Student ID</th>
-                  <th class="p-3">Full Legal Name</th>
-                  <th class="p-3">Grade Level & Cohort</th>
-                  <th class="p-3">GPA</th>
+                  <th class="p-3">Full Legal Name & Email</th>
+                  <th class="p-3">Cohort & Division</th>
+                  <th class="p-3">Cumulative GPA</th>
                   <th class="p-3">Attendance</th>
-                  <th class="p-3">Guardian</th>
-                  <th class="p-3 text-right">Actions</th>
+                  <th class="p-3">Academic Standing</th>
+                  <th class="p-3">Guardian Contact</th>
+                  <th class="p-3 text-right">Official Dossier</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/[0.06] font-mono" id="rosterTbody">
-                <!-- Dynamically populated from /api/students -->
+                <!-- Dynamically populated from JavaScript -->
               </tbody>
             </table>
           </div>
+
+          <!-- Empty State Container -->
+          <div id="rosterEmptyState" class="hidden p-8 text-center rounded-xl bg-[#080E1C] border border-white/[0.06] space-y-3">
+            <div class="w-12 h-12 rounded-full bg-white/[0.04] border border-white/[0.1] flex items-center justify-center mx-auto text-slate-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <h4 class="text-sm font-bold text-white font-mono">No Matching Scholars Found</h4>
+            <p class="text-xs text-slate-400 font-sans max-w-md mx-auto">No student records match the active combination of search query, cohort division, and standing filters.</p>
+            <button id="clearRosterFiltersBtn" class="px-3.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 text-xs font-mono font-semibold hover:bg-sky-500/30 transition-all">
+              Reset Filters & View All Scholars
+            </button>
+          </div>
+
         </div>
       </div>
 
     </div>
 
     <!-- 2. LIVE ATTENDANCE REGISTER -->
-    <div id="tab-attendance" class="sis-tab-content hidden space-y-4">
+    <div id="tab-attendance" class="sis-tab-content hidden space-y-6">
       <div class="double-bezel">
         <div class="double-bezel-inner p-5 space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/[0.08]">
+
+          <!-- Attendance Header Bar -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
             <div>
-              <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Daily Batch Roll-Call Register</h2>
-              <p class="text-xs text-slate-400 font-sans">Class: AP Computer Science &middot; Date: Wednesday, Sep 30, 2026</p>
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Daily Batch Roll-Call Register</h2>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">LIVE REGISTRAR SESSION</span>
+              </div>
+              <p class="text-xs text-slate-400 font-sans mt-0.5">Session: Engineering Specialization &middot; Date: <span id="attendanceDateLabel">Wednesday, Sep 30, 2026</span></p>
             </div>
+
             <div class="flex items-center gap-2">
-              <button id="markAllPresentBtn" class="px-3.5 py-1.5 rounded-xl border border-white/[0.1] bg-[#070D1B] hover:bg-white/[0.05] text-xs font-semibold text-slate-200 transition-all">
-                Mark All Present
+              <button id="markAllPresentBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-semibold font-mono text-emerald-300 transition-all shadow-[0_0_12px_rgba(16,185,129,0.15)]">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>Mark All Present</span>
               </button>
             </div>
           </div>
 
-          <div class="space-y-2.5" id="attendanceList">
-            <!-- Dynamically populated -->
+          <!-- Attendance Summary Telemetry KPI Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs font-mono">
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-white/[0.06]">
+              <span class="text-[10px] text-slate-500 block uppercase">Total Roll-Call</span>
+              <span class="text-lg font-bold text-white" id="attStatTotal">8 Scholars</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-emerald-500/20">
+              <span class="text-[10px] text-emerald-400 block uppercase">Present Today</span>
+              <span class="text-lg font-bold text-emerald-300" id="attStatPresent">6 (75%)</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-amber-500/20">
+              <span class="text-[10px] text-amber-400 block uppercase">Late / Tardy</span>
+              <span class="text-lg font-bold text-amber-300" id="attStatLate">1 (12.5%)</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-rose-500/20">
+              <span class="text-[10px] text-rose-400 block uppercase">Absent (Unexcused)</span>
+              <span class="text-lg font-bold text-rose-300" id="attStatAbsent">1 (12.5%)</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-sky-500/20 col-span-2 sm:col-span-1">
+              <span class="text-[10px] text-sky-400 block uppercase">Daily Aggregate</span>
+              <span class="text-lg font-bold text-sky-300" id="attStatRate">81.3%</span>
+            </div>
           </div>
+
+          <!-- Attendance Roll-Call Student Rows -->
+          <div class="space-y-2.5" id="attendanceList">
+            <!-- Dynamically populated from JavaScript -->
+          </div>
+
         </div>
       </div>
     </div>
 
     <!-- 3. DYNAMIC GRADEBOOK & GPA -->
-    <div id="tab-grades" class="sis-tab-content hidden space-y-4">
+    <div id="tab-grades" class="sis-tab-content hidden space-y-6">
       <div class="double-bezel">
-        <div class="double-bezel-inner p-5 space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-            <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Automated Weighted Gradebook</h2>
-            <span class="text-xs font-mono text-emerald-400">Exams (40%), Labs (30%), Projects (30%)</span>
+        <div class="double-bezel-inner p-5 space-y-4">
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Automated Weighted Gradebook & Curricular Analytics</h2>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">ACADEMIC AUDIT MATRIX</span>
+              </div>
+              <p class="text-xs text-slate-400 font-sans mt-0.5">Evaluation Weighting: Exams (40%), Laboratory Practicums (30%), Research Projects (30%)</p>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 self-start sm:self-auto">
+              Accredited 4.00 Grade Scale
+            </span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+          <!-- Gradebook Metric KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-mono">
             <div class="p-3.5 rounded-xl bg-[#080E1C] border border-white/[0.06]">
-              <span class="text-[10px] text-slate-500 block">HIGHEST GPA</span>
-              <span class="text-lg font-bold text-emerald-400">4.00 (Maya Chen)</span>
+              <span class="text-[10px] text-slate-500 block uppercase">Highest Cohort GPA</span>
+              <span class="text-lg font-bold text-emerald-400" id="gradeHighestGpa">4.00 (Sophia Al-Mansoor)</span>
             </div>
             <div class="p-3.5 rounded-xl bg-[#080E1C] border border-white/[0.06]">
-              <span class="text-[10px] text-slate-500 block">CLASS MEAN GPA</span>
-              <span class="text-lg font-bold text-sky-400">3.86 (High Honors)</span>
+              <span class="text-[10px] text-slate-500 block uppercase">Cohort Mean GPA</span>
+              <span class="text-lg font-bold text-sky-400" id="gradeMeanGpa">3.65 (Honors Average)</span>
             </div>
             <div class="p-3.5 rounded-xl bg-[#080E1C] border border-white/[0.06]">
-              <span class="text-[10px] text-slate-500 block">DISTRICT RETENTION</span>
-              <span class="text-lg font-bold text-white">99.2%</span>
+              <span class="text-[10px] text-slate-500 block uppercase">Honors & Valedictorian Rate</span>
+              <span class="text-lg font-bold text-white" id="gradeHonorsRate">75.0% (6/8 Cohort)</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-rose-500/20">
+              <span class="text-[10px] text-rose-400 block uppercase">Academic Warning Rate</span>
+              <span class="text-lg font-bold text-rose-300" id="gradeWarningRate">12.5% (1 Flagged)</span>
             </div>
           </div>
+
+          <!-- Gradebook Full Table -->
+          <div class="rounded-xl border border-white/[0.08] overflow-x-auto custom-scrollbar">
+            <table class="w-full text-xs text-left min-w-[840px]">
+              <thead class="bg-[#070D1B] text-[10px] font-mono uppercase text-slate-400 border-b border-white/[0.08]">
+                <tr>
+                  <th class="p-3">Scholar</th>
+                  <th class="p-3">Distributed Systems</th>
+                  <th class="p-3">Machine Learning</th>
+                  <th class="p-3">Discrete Math</th>
+                  <th class="p-3">Microarchitecture</th>
+                  <th class="p-3">Crypto Protocols</th>
+                  <th class="p-3">Cumulative GPA</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.06] font-mono" id="gradebookTbody">
+                <!-- Dynamically populated from JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. TUITION & FINANCIAL LEDGER -->
+    <div id="tab-tuition" class="sis-tab-content hidden space-y-6">
+      <div class="double-bezel">
+        <div class="double-bezel-inner p-5 space-y-4">
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Tuition Fee Ledger & Bursar Accounts</h2>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">ACADEMIC YEAR 2026-2027</span>
+              </div>
+              <p class="text-xs text-slate-400 font-sans mt-0.5">District Financial Clearinghouse & Automated Guardian Payment Ledger</p>
+            </div>
+
+            <button id="openRecordPaymentBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-sky-500/40 bg-sky-500/10 hover:bg-sky-500/20 text-xs font-semibold font-mono text-sky-300 transition-all shadow-[0_0_12px_rgba(56,189,248,0.15)]">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+              <span>Record Fee Payment</span>
+            </button>
+          </div>
+
+          <!-- Tuition Financial KPI Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-white/[0.06]">
+              <span class="text-[10px] text-slate-500 block uppercase">Total Cohort Billed</span>
+              <span class="text-lg font-bold text-white" id="tuitionStatBilled">$116,000</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-emerald-500/20">
+              <span class="text-[10px] text-emerald-400 block uppercase">Revenue Collected</span>
+              <span class="text-lg font-bold text-emerald-300" id="tuitionStatCollected">$86,000</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-rose-500/20">
+              <span class="text-[10px] text-rose-400 block uppercase">Outstanding Overdue</span>
+              <span class="text-lg font-bold text-rose-300" id="tuitionStatOverdue">$30,000</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#080E1C] border border-sky-500/20">
+              <span class="text-[10px] text-sky-400 block uppercase">Collection Efficiency</span>
+              <span class="text-lg font-bold text-sky-300" id="tuitionStatRate">74.1%</span>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="relative w-full sm:w-64">
+              <input type="text" id="tuitionSearchInput" placeholder="Filter scholar name, ID..." class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-400 font-sans">
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label class="text-[10px] font-mono text-slate-400 uppercase">Payment Status:</label>
+              <select id="tuitionStatusFilter" class="bg-[#080E1C] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-400 font-mono">
+                <option value="ALL">All Payment Statuses</option>
+                <option value="PAID">Paid in Full</option>
+                <option value="PARTIAL">Partial Balance Remaining</option>
+                <option value="OVERDUE">Delinquent / Overdue</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tuition Table -->
+          <div class="rounded-xl border border-white/[0.08] overflow-x-auto custom-scrollbar">
+            <table class="w-full text-xs text-left min-w-[760px]">
+              <thead class="bg-[#070D1B] text-[10px] font-mono uppercase text-slate-400 border-b border-white/[0.08]">
+                <tr>
+                  <th class="p-3">Scholar ID</th>
+                  <th class="p-3">Full Legal Name</th>
+                  <th class="p-3">Cohort Division</th>
+                  <th class="p-3">Total Tuition</th>
+                  <th class="p-3">Amount Paid</th>
+                  <th class="p-3">Balance Due</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3">Due Date</th>
+                  <th class="p-3 text-right">Bursar Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.06] font-mono" id="tuitionTbody">
+                <!-- Dynamically populated from JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div id="tuitionEmptyState" class="hidden p-8 text-center rounded-xl bg-[#080E1C] border border-white/[0.06] space-y-3">
+            <h4 class="text-sm font-bold text-white font-mono">No Tuition Records Found</h4>
+            <p class="text-xs text-slate-400 font-sans">No student fee records match the selected payment status filter.</p>
+          </div>
+
         </div>
       </div>
     </div>
 
   </main>
 
-  <!-- STUDENT ENROLLMENT MODAL -->
-  <div id="enrollStudentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl">
+  <!-- ========================================== -->
+  <!-- MODAL 1: STUDENT ENROLLMENT MODAL -->
+  <!-- ========================================== -->
+  <div id="enrollStudentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl no-print">
     <div class="relative w-full max-w-lg double-bezel shadow-2xl">
       <div class="double-bezel-inner p-6 space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
@@ -268,38 +520,374 @@
             <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
             <h3 class="text-sm font-bold text-white uppercase font-mono tracking-wider">Official Student Enrollment</h3>
           </div>
-          <button id="closeEnrollModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+          <button id="closeEnrollModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base transition-colors">&times;</button>
         </div>
 
         <form id="studentEnrollForm" class="space-y-3.5 text-xs font-sans">
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-slate-300 font-semibold mb-1">Full Legal Name</label>
+              <label class="block text-slate-300 font-semibold mb-1">Full Legal Name *</label>
               <input id="stuName" type="text" placeholder="e.g. Brandon Stark" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-sky-400">
+              <p class="text-[10px] text-rose-400 hidden mt-0.5" id="stuNameError">Legal name required (min 2 chars)</p>
             </div>
             <div>
-              <label class="block text-slate-300 font-semibold mb-1">Grade Level</label>
+              <label class="block text-slate-300 font-semibold mb-1">Institutional Email *</label>
+              <input id="stuEmail" type="email" placeholder="b.stark@student.edutrack.edu" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+              <p class="text-[10px] text-rose-400 hidden mt-0.5" id="stuEmailError">Valid institutional email required</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Grade Level & Cohort *</label>
               <select id="stuGrade" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
                 <option value="Grade 11 - AP CS">Grade 11 - AP CS</option>
                 <option value="Grade 12 - Advanced Systems">Grade 12 - Advanced Systems</option>
                 <option value="Grade 10 - Honors Math">Grade 10 - Honors Math</option>
               </select>
             </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Target / Baseline GPA (1.0 - 4.0)</label>
+              <input id="stuGpa" type="number" step="0.01" min="1.0" max="4.0" value="3.90" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Guardian Full Name *</label>
+              <input id="stuGuardian" type="text" placeholder="e.g. Arthur Stark" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-sky-400">
+              <p class="text-[10px] text-rose-400 hidden mt-0.5" id="stuGuardianError">Guardian name required</p>
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Guardian Phone *</label>
+              <input id="stuGuardianPhone" type="tel" placeholder="+1 (555) 678-9012" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+              <p class="text-[10px] text-rose-400 hidden mt-0.5" id="stuPhoneError">Valid phone format required</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Initial Annual Tuition Billing ($)</label>
+            <input id="stuTuitionAmount" type="number" step="100" min="0" value="14500" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(56,189,248,0.3)] active:scale-[0.99]">
+            Enroll Student & Issue Academic ID
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 2: STUDENT ACADEMIC PROFILE & TRANSCRIPT MODAL -->
+  <!-- ========================================== -->
+  <div id="transcriptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl overflow-y-auto">
+    <div id="transcriptModalContent" class="relative w-full max-w-3xl double-bezel shadow-2xl my-6">
+      <div class="double-bezel-inner p-6 md:p-8 space-y-6">
+
+        <!-- Institutional Header & Actions -->
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-white/[0.1] print-border">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-sky-400 font-bold print-dark-text">OFFICIAL DISTRICT RECORD</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-white/[0.05] text-slate-400 border border-white/10 print-border print-muted-text">SEAL: EDUTRACK-ACC-2026</span>
+            </div>
+            <h2 class="text-xl font-extrabold text-white tracking-tight font-sans print-dark-text">Official Academic Transcript & Dossier</h2>
+            <p class="text-xs text-slate-400 font-mono print-muted-text mt-0.5">Accredited Secondary & Advanced Computing Academy &middot; Issued: <span id="transIssueDate">October 01, 2026</span></p>
+          </div>
+
+          <div class="flex items-center gap-2 print-hide">
+            <button id="printTranscriptBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-mono font-bold transition-all shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+              <span>Generate Official Transcript PDF / Print</span>
+            </button>
+            <button id="closeTranscriptModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base transition-colors">&times;</button>
+          </div>
+        </div>
+
+        <!-- Student Meta Dossier Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Student Details -->
+          <div class="p-4 rounded-xl bg-[#080E1C] border border-white/[0.08] print-bg-subtle print-border space-y-2">
+            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block print-muted-text">Scholar Identification</span>
+            <div class="flex items-center justify-between">
+              <span class="text-base font-bold text-white print-dark-text" id="transStuName">Marcus Chen</span>
+              <span class="text-xs font-mono font-bold text-sky-400 px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 print-dark-text" id="transStuId">STU-101</span>
+            </div>
+            <div class="space-y-1 font-mono text-slate-300 print-dark-text text-[11px]">
+              <div><span class="text-slate-500 print-muted-text">Email:</span> <span id="transStuEmail">marcus.chen@student.edutrack.edu</span></div>
+              <div><span class="text-slate-500 print-muted-text">Cohort:</span> <span id="transStuCohort">Grade 12 - Advanced Systems</span></div>
+              <div class="pt-1 flex items-center gap-2" id="transStandingContainer">
+                <!-- Badges populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic & Guardian Overview -->
+          <div class="p-4 rounded-xl bg-[#080E1C] border border-white/[0.08] print-bg-subtle print-border space-y-2">
+            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block print-muted-text">Guardian & Verification</span>
+            <div class="space-y-1 font-mono text-slate-300 print-dark-text text-[11px]">
+              <div><span class="text-slate-500 print-muted-text">Primary Guardian:</span> <span class="text-white font-semibold print-dark-text" id="transGuardianName">David Chen</span></div>
+              <div><span class="text-slate-500 print-muted-text">Guardian Phone:</span> <span id="transGuardianPhone">+1 (555) 234-8901</span></div>
+              <div><span class="text-slate-500 print-muted-text">Guardian Email:</span> <span id="transGuardianEmail">david.chen@chenindustries.io</span></div>
+              <div class="pt-1 flex items-center justify-between text-xs">
+                <div><span class="text-slate-500 print-muted-text">Attendance:</span> <span class="font-bold text-emerald-400 print-dark-text" id="transAttendanceRate">98.2%</span></div>
+                <div><span class="text-slate-500 print-muted-text">Tuition Status:</span> <span class="font-bold text-sky-400 print-dark-text" id="transTuitionStatus">PAID</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Warnings Banner if applicable -->
+        <div id="transAlertBanner" class="hidden p-3.5 rounded-xl border flex items-center gap-3 text-xs font-mono">
+          <!-- Populated if student has warning -->
+        </div>
+
+        <!-- Course Registry & Term Grades Table -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-white font-mono uppercase tracking-wider print-dark-text">Curricular Course Registry & Earned Credits</h4>
+            <span class="text-[10px] font-mono text-slate-400 print-muted-text">Semester 1 &middot; Final Term Evaluations</span>
+          </div>
+
+          <div class="rounded-xl border border-white/[0.08] print-border overflow-hidden">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-[#070D1B] print-bg-subtle text-[10px] font-mono uppercase text-slate-400 print-muted-text border-b border-white/[0.08] print-border">
+                <tr>
+                  <th class="p-2.5">Code</th>
+                  <th class="p-2.5">Course Title</th>
+                  <th class="p-2.5">Department</th>
+                  <th class="p-2.5 text-center">Credits</th>
+                  <th class="p-2.5 text-center">Score</th>
+                  <th class="p-2.5 text-center">Grade</th>
+                  <th class="p-2.5 text-right">Points</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.06] font-mono print-border" id="transCoursesTbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Cumulative GPA Calculation Box -->
+        <div class="p-4 rounded-xl bg-[#080E1C] border border-sky-500/30 print-bg-subtle print-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+          <div>
+            <span class="text-[10px] text-slate-400 block uppercase print-muted-text">Mathematical GPA Computation Formula</span>
+            <div class="text-slate-300 print-dark-text text-[11px] mt-0.5">
+              Cumulative GPA = Sum(Credits &times; Grade Points) &divide; Sum(Credits)
+            </div>
+            <div class="text-[10px] text-sky-400 print-dark-text mt-1" id="transGpaMathBreakdown">
+              Total Quality Points: 70.8 | Total Credit Hours: 18.0
+            </div>
+          </div>
+          <div class="sm:text-right">
+            <span class="text-[10px] text-slate-400 block uppercase print-muted-text">Cumulative GPA (Unweighted)</span>
+            <span class="text-2xl font-extrabold text-emerald-400 print-dark-text" id="transCumulativeGpa">3.93</span>
+          </div>
+        </div>
+
+        <!-- Official Signatures (Visible on Print and Screen) -->
+        <div class="pt-4 border-t border-white/[0.1] print-border grid grid-cols-2 gap-8 text-[11px] font-mono text-slate-400 print-muted-text">
+          <div class="space-y-1">
+            <div class="h-8 border-b border-slate-700 print-border flex items-end">
+              <span class="text-xs text-sky-400 font-serif italic print-dark-text">Dr. Eleanor Hughes</span>
+            </div>
+            <div>District Superintendent Signature & Seal</div>
+          </div>
+          <div class="space-y-1">
+            <div class="h-8 border-b border-slate-700 print-border flex items-end">
+              <span class="text-xs text-emerald-400 font-serif italic print-dark-text">Sophia Lin</span>
+            </div>
+            <div>Head Registrar Authentication</div>
+          </div>
+        </div>
+
+        <!-- Modal Footer Actions (Hidden on Print) -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/[0.08] print-hide">
+          <button id="sendNoticeFromModalBtn" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-mono font-semibold transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <span>Send Guardian Notice</span>
+          </button>
+
+          <button id="closeTranscriptModalFooterBtn" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 font-mono text-xs transition-colors">
+            Close Dossier
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: SEND GUARDIAN NOTICE MODAL -->
+  <!-- ========================================== -->
+  <div id="guardianNoticeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl no-print">
+    <div class="relative w-full max-w-md double-bezel shadow-2xl">
+      <div class="double-bezel-inner p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+            <h3 class="text-sm font-bold text-white uppercase font-mono tracking-wider">Send Official Guardian Notice</h3>
+          </div>
+          <button id="closeNoticeModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+        </div>
+
+        <form id="guardianNoticeForm" class="space-y-3.5 text-xs font-sans">
+          <div class="p-3 rounded-xl bg-[#080E1C] border border-white/[0.06] space-y-1 font-mono text-[11px]">
+            <div><span class="text-slate-500">Student:</span> <span class="text-white font-bold" id="noticeStuName">Marcus Chen</span> <span class="text-sky-400" id="noticeStuId">(STU-101)</span></div>
+            <div><span class="text-slate-500">Guardian:</span> <span class="text-slate-200" id="noticeGuardianName">David Chen</span></div>
+            <div><span class="text-slate-500">Dispatch Rails:</span> <span class="text-emerald-400" id="noticeGuardianContact">SMS Gateway &middot; Primary Email</span></div>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Notice Classification *</label>
+            <select id="noticeTypeSelect" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400 text-xs">
+              <option value="HONORS_COMMENDATION">Academic Progress & Honors Commendation</option>
+              <option value="MIDTERM_REPORT">Official Mid-Term Academic Progress Report</option>
+              <option value="ATTENDANCE_WARNING">Attendance & Truancy Advisory Notice</option>
+              <option value="TUITION_REMINDER">Tuition Ledger Balance Due Notification</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Official Notice Text</label>
+            <textarea id="noticeMessageText" rows="4" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-slate-200 font-sans outline-none focus:border-sky-400 text-xs"></textarea>
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(56,189,248,0.3)]">
+            Transmit Official Notice via SMS & Email Gateway
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: RECORD FEE PAYMENT MODAL -->
+  <!-- ========================================== -->
+  <div id="feePaymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl no-print">
+    <div class="relative w-full max-w-lg double-bezel shadow-2xl">
+      <div class="double-bezel-inner p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <h3 class="text-sm font-bold text-white uppercase font-mono tracking-wider">Record Tuition Fee Payment</h3>
+          </div>
+          <button id="closePaymentModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+        </div>
+
+        <form id="feePaymentForm" class="space-y-3.5 text-xs font-sans">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Select Scholar *</label>
+            <select id="payStudentSelect" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Balance info card -->
+          <div class="p-3 rounded-xl bg-[#080E1C] border border-white/[0.06] flex items-center justify-between font-mono text-xs">
+            <div>
+              <span class="text-[10px] text-slate-500 uppercase block">Total Billed</span>
+              <span class="text-white font-bold" id="payModalTotalBilled">$14,500</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-emerald-400 uppercase block">Already Paid</span>
+              <span class="text-emerald-300 font-bold" id="payModalAmountPaid">$9,500</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-rose-400 uppercase block">Remaining Balance</span>
+              <span class="text-rose-400 font-bold text-sm" id="payModalRemainingBalance">$5,000</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-slate-300 font-semibold">Payment Amount ($) *</label>
+              <div class="flex items-center gap-1.5">
+                <button type="button" id="payQuickFull" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-sky-300 border border-white/10">Full Balance</button>
+                <button type="button" id="payQuickHalf" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10">50%</button>
+                <button type="button" id="payQuick1000" class="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10">$1,000</button>
+              </div>
+            </div>
+            <input id="payAmountInput" type="number" step="100" min="1" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-slate-300 font-semibold mb-1">Target GPA</label>
-              <input id="stuGpa" type="number" step="0.01" min="1.0" max="4.0" value="3.90" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+              <label class="block text-slate-300 font-semibold mb-1">Payment Rail *</label>
+              <select id="payRailSelect" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+                <option value="ACH_DIRECT_DEBIT">ACH Direct Debit</option>
+                <option value="WIRE_TRANSFER">Bank Wire Transfer</option>
+                <option value="CREDIT_CARD">Credit Card (Visa/Mastercard)</option>
+                <option value="CAMPUS_ACCOUNT">Campus Bursar Voucher</option>
+                <option value="SCHOLARSHIP">Endowment Scholarship</option>
+              </select>
             </div>
             <div>
-              <label class="block text-slate-300 font-semibold mb-1">Guardian Name</label>
-              <input id="stuGuardian" type="text" placeholder="e.g. Arthur Stark" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white outline-none focus:border-sky-400">
+              <label class="block text-slate-300 font-semibold mb-1">Transaction Ref #</label>
+              <input id="payRefInput" type="text" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Bursar Notes / Memo</label>
+            <input id="payNotesInput" type="text" placeholder="e.g. Semester 1 tuition instalment received" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-slate-200 outline-none focus:border-sky-400">
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+            Confirm & Record Payment to District Ledger
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 5: EDIT COURSE GRADE MODAL -->
+  <!-- ========================================== -->
+  <div id="editGradesModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl no-print">
+    <div class="relative w-full max-w-md double-bezel shadow-2xl">
+      <div class="double-bezel-inner p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+            <h3 class="text-sm font-bold text-white uppercase font-mono tracking-wider">Update Academic Grade</h3>
+          </div>
+          <button id="closeGradeModalBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+        </div>
+
+        <form id="editGradeForm" class="space-y-3.5 text-xs font-sans">
+          <div class="p-3 rounded-xl bg-[#080E1C] border border-white/[0.06] space-y-1 font-mono text-[11px]">
+            <div><span class="text-slate-500">Scholar:</span> <span class="text-white font-bold" id="editGradeStuName">Marcus Chen</span> <span class="text-sky-400" id="editGradeStuId">(STU-101)</span></div>
+            <div><span class="text-slate-500">Active GPA:</span> <span class="text-emerald-400 font-bold" id="editGradeCurrentGpa">3.93</span></div>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Subject Course *</label>
+            <select id="editGradeCourseSelect" class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+              <option value="CS-401">CS-401: Distributed Systems</option>
+              <option value="CS-405">CS-405: Machine Learning & Neural Nets</option>
+              <option value="MATH-302">MATH-302: Discrete Mathematics</option>
+              <option value="ENG-204">ENG-204: Microarchitecture & Hardware</option>
+              <option value="SEC-410">SEC-410: Cryptographic Protocols</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Numerical Score (0 - 100) *</label>
+              <input id="editGradeScoreInput" type="number" min="0" max="100" step="1" value="95" required class="w-full bg-[#080E1C] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono outline-none focus:border-sky-400">
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Calculated Letter Grade</label>
+              <input id="editGradeLetterDisplay" type="text" readonly value="A (4.0)" class="w-full bg-[#080E1C]/50 border border-white/[0.1] rounded-xl p-2.5 text-emerald-400 font-mono outline-none cursor-not-allowed">
             </div>
           </div>
 
           <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(56,189,248,0.3)]">
-            Enroll Student & Issue Academic ID
+            Save Grade & Recalculate Cumulative GPA
           </button>
         </form>
       </div>
