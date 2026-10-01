@@ -70,6 +70,16 @@
       border-radius: calc(1.25rem - 0.375rem);
       box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07);
     }
+    @keyframes sweep {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    .animate-sweep {
+      animation: sweep 4s linear infinite;
+    }
+    .scrub-thumb {
+      transition: width 0.1s ease, height 0.1s ease;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-[#070814] text-slate-200">
@@ -93,21 +103,37 @@
       </div>
 
       <!-- Telemetry & Action Buttons -->
-      <div class="flex items-center gap-3">
-        <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
-          <div class="flex items-center gap-1.5">
-            <span class="text-slate-500">ACCREDITATION:</span>
-            <span class="text-emerald-400 font-bold">Ed25519 Verifiable</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-slate-500">CURRICULUM:</span>
-            <span class="text-violet-300 font-bold">16 Modules &middot; io_uring</span>
-          </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Streak Metric Chip -->
+        <div id="headerStreakChip" class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span class="text-slate-400">STREAK:</span>
+          <span id="streakCountDisplay" class="text-amber-300 font-bold">14 Days</span>
         </div>
 
-        <button id="viewCertBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-[0_0_15px_rgba(139,92,246,0.25)] active:scale-[0.98]">
+        <!-- Progress Metric Chip -->
+        <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-xs font-mono">
+          <span class="text-slate-400">PROGRESS:</span>
+          <span id="headerProgressDisplay" class="text-violet-300 font-bold">12/16 (75%)</span>
+        </div>
+
+        <!-- Accreditation Chip -->
+        <div class="hidden xl:flex items-center gap-1.5 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-3">
+          <span class="text-slate-500">ACCREDITATION:</span>
+          <span class="text-emerald-400 font-bold">Ed25519 Verifiable</span>
+        </div>
+
+        <!-- 3D Certificate Stage Trigger -->
+        <button id="viewCertBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-[0_0_15px_rgba(139,92,246,0.25)] active:scale-[0.98]">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-          <span>3D Certificate Stage</span>
+          <span class="hidden sm:inline">3D Certificate Stage</span>
+          <span class="sm:hidden">Cert</span>
+        </button>
+
+        <!-- Syllabus Drawer Mobile/Quick Toggle -->
+        <button id="openSyllabusDrawerBtn" title="Toggle Lesson Syllabus Drawer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.12] hover:bg-white/[0.08] text-slate-300 hover:text-white font-mono text-xs transition-all active:scale-[0.98]">
+          <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+          <span class="hidden md:inline">Syllabus Drawer</span>
         </button>
 
         <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
@@ -121,109 +147,265 @@
     </div>
   </header>
 
-  <!-- NAVIGATION TABS -->
-  <nav class="bg-[#090B1A]/80 backdrop-blur border-b border-white/[0.08] px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
+  <!-- TELEMETRY HUD & DASHBOARD BANNER -->
+  <section class="bg-[#090B1A] border-b border-white/[0.06] px-4 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-2.5 h-2.5 rounded-full bg-violet-400 animate-ping hidden sm:block"></div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400">ACTIVE CURRICULUM:</span>
+            <span id="activeCourseTitleBanner" class="text-xs font-bold text-white truncate max-w-md">Advanced Distributed Systems & Consensus Architecture</span>
+          </div>
+          <div class="flex items-center gap-3 mt-1 text-[11px] font-mono text-slate-400">
+            <span>Instructor: <strong class="text-slate-300" id="activeInstructorBanner">Dr. Aris Thorne</strong></span>
+            <span>&middot;</span>
+            <span>Duration: <strong class="text-violet-300">14.5 Hours</strong></span>
+            <span>&middot;</span>
+            <span>Accredited: <strong class="text-emerald-400">IEEE Ed25519</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Progress Bar & Fast Actions -->
+      <div class="flex items-center gap-4">
+        <div class="w-48 sm:w-64 space-y-1">
+          <div class="flex justify-between text-[10px] font-mono">
+            <span class="text-slate-400">TRACK COMPLETION</span>
+            <span id="hudProgressPercentText" class="text-violet-300 font-bold">75% (12/16 Lessons)</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
+            <div id="hudProgressBar" class="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500" style="width: 75%"></div>
+          </div>
+        </div>
+
+        <button id="downloadSyllabusHeaderBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-slate-200 hover:text-white font-mono text-xs font-semibold transition-all whitespace-nowrap active:scale-[0.98]">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <span>Download Syllabus</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIMARY NAVIGATION TABS -->
+  <nav class="bg-[#080A18]/90 backdrop-blur border-b border-white/[0.08] px-4 flex items-center gap-1 overflow-x-auto scrollbar-none z-20">
+    <button data-tab="catalog" class="lms-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      <span>Course Catalog & Tracks</span>
+    </button>
     <button data-tab="learning" class="lms-tab active-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-violet-400 text-violet-300 transition-colors whitespace-nowrap font-mono">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       <span>Interactive Classroom & Notes</span>
     </button>
     <button data-tab="syllabus" class="lms-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-      <span>Course Syllabus (16 Lessons)</span>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+      <span>Curriculum Syllabus (16 Lessons)</span>
     </button>
     <button data-tab="quiz" class="lms-tab flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap font-mono">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       <span>Knowledge Assessment Quiz</span>
     </button>
   </nav>
 
-  <!-- MAIN CONTAINER -->
+  <!-- MAIN APPLICATION CONTAINER -->
   <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
 
-    <!-- TAB 1: INTERACTIVE CLASSROOM -->
+    <!-- ===================================================================== -->
+    <!-- TAB 0: COURSE CATALOG & DOMAIN FILTER TRACKS                          -->
+    <!-- ===================================================================== -->
+    <div id="tab-catalog" class="lms-tab-content hidden space-y-6">
+      <!-- Catalog Filter Bar -->
+      <div class="double-bezel">
+        <div class="double-bezel-inner p-5 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-violet-400"></span>
+                <span class="text-[10px] font-mono text-violet-400 font-bold uppercase tracking-wider">ENTERPRISE CURRICULUM REPOSITORY</span>
+              </div>
+              <h2 class="text-lg font-bold text-white tracking-tight mt-1">Specialized Engineering Cohorts</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Explore full-stack systems, distributed consensus architectures, and AI agent frameworks.</p>
+            </div>
+
+            <!-- Filter Tabs: All, Full-Stack, AI Engineering, Cloud DevOps -->
+            <div class="flex items-center gap-1.5 p-1 rounded-xl bg-[#060714] border border-white/[0.08] overflow-x-auto">
+              <button data-filter="all" class="catalog-filter-btn active-filter px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-violet-600 text-white transition-all whitespace-nowrap">
+                All Tracks
+              </button>
+              <button data-filter="full-stack" class="catalog-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition-all whitespace-nowrap">
+                Full-Stack
+              </button>
+              <button data-filter="ai-engineering" class="catalog-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition-all whitespace-nowrap">
+                AI Engineering
+              </button>
+              <button data-filter="cloud-devops" class="catalog-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition-all whitespace-nowrap">
+                Cloud DevOps
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Courses Grid -->
+          <div id="courseCatalogGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
+            <!-- Dynamically populated from /api/courses -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: INTERACTIVE CLASSROOM & LECTURE STAGE                          -->
+    <!-- ===================================================================== -->
     <div id="tab-learning" class="lms-tab-content space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- Video Player Frame -->
+        <!-- Video Player Frame (2 cols) -->
         <div class="lg:col-span-2 space-y-4">
           <div class="double-bezel">
             <div class="double-bezel-inner overflow-hidden shadow-2xl">
+
               <!-- Simulated Video Player Canvas / Frame -->
-              <div class="relative aspect-video bg-[#04050A] flex flex-col items-center justify-center p-6 border-b border-white/[0.08]">
-                <div class="w-16 h-16 rounded-full bg-violet-600/30 border border-violet-500/50 flex items-center justify-center text-violet-300 cursor-pointer hover:scale-110 transition-transform shadow-[0_0_20px_rgba(139,92,246,0.3)]" id="playBtn">
+              <div class="relative aspect-video bg-[#04050A] flex flex-col items-center justify-center p-6 border-b border-white/[0.08] overflow-hidden select-none">
+                <!-- Sweeping Radar / Grid Visual Effect -->
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,#1E234515_1px,transparent_1px),linear-gradient(to_bottom,#1E234515_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div class="absolute inset-x-0 h-16 bg-gradient-to-b from-transparent via-violet-500/10 to-transparent animate-sweep pointer-events-none"></div>
+
+                <!-- Central Interactive Play Button -->
+                <div class="relative z-10 w-16 h-16 rounded-full bg-violet-600/30 border border-violet-500/50 flex items-center justify-center text-violet-300 cursor-pointer hover:scale-110 transition-transform shadow-[0_0_25px_rgba(139,92,246,0.35)]" id="playBtn" title="Play or Pause Lecture">
                   <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono text-slate-300 bg-[#070814]/90 backdrop-blur px-3 py-2 rounded-xl border border-white/[0.08]">
-                  <span id="videoTimecode">04:18 / 18:42</span>
-                  <span class="text-violet-300 font-semibold truncate max-w-xs">Lesson 2.3: Zero-Copy Sockets via io_uring</span>
-                  <div class="flex items-center gap-2">
-                    <span class="px-1.5 py-0.5 rounded bg-white/[0.06] text-[10px] text-emerald-400">1080p 60fps</span>
-                    <select id="playbackSpeedSelect" class="bg-transparent text-[11px] text-slate-300 focus:outline-none cursor-pointer">
-                      <option value="1">1.0x</option>
-                      <option value="1.25">1.25x</option>
-                      <option value="1.5">1.5x</option>
-                      <option value="2">2.0x</option>
-                    </select>
+
+                <!-- Interactive Timeline Scrubber & Player Controls Bar -->
+                <div class="absolute bottom-3 left-3 right-3 z-20 space-y-2 bg-[#070814]/95 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-white/[0.08]">
+                  <!-- Scrubber Track -->
+                  <div id="videoScrubBar" class="relative w-full h-2 rounded-full bg-white/[0.1] cursor-pointer group flex items-center">
+                    <div id="videoScrubProgress" class="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400 pointer-events-none" style="width: 23%;"></div>
+                    <div id="videoScrubThumb" class="absolute w-3 h-3 rounded-full bg-white shadow pointer-events-none transform -translate-x-1/2 group-hover:scale-125 transition-transform" style="left: 23%;"></div>
+                  </div>
+
+                  <!-- Control Buttons & Metrics -->
+                  <div class="flex items-center justify-between text-xs font-mono text-slate-300 pt-0.5">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                      <!-- Play / Pause Icon Button -->
+                      <button id="videoPlayPauseBtn" title="Play/Pause" class="text-slate-300 hover:text-white transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                      </button>
+
+                      <!-- Prev / Next Lesson -->
+                      <button id="prevLessonBtn" title="Previous Lesson" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                      </button>
+                      <button id="nextLessonBtn" title="Next Lesson" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                      </button>
+
+                      <!-- Timecode -->
+                      <span id="videoTimecode" class="text-[11px] text-slate-300">04:18 / 18:42</span>
+                    </div>
+
+                    <!-- Current Lesson Title in Player -->
+                    <span id="playerLessonTitle" class="text-violet-300 font-semibold truncate max-w-[140px] sm:max-w-xs text-[11px] hidden sm:block">
+                      Lesson 2.3: Zero-Copy Sockets via io_uring
+                    </span>
+
+                    <div class="flex items-center gap-2">
+                      <span class="px-1.5 py-0.5 rounded bg-white/[0.06] text-[10px] text-emerald-400 hidden sm:inline">1080p 60fps</span>
+
+                      <!-- Speed Selector -->
+                      <div class="flex items-center gap-1 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.08]">
+                        <span class="text-[9px] text-slate-500 font-mono">SPEED:</span>
+                        <select id="playbackSpeedSelect" class="bg-transparent text-[11px] text-slate-200 focus:outline-none cursor-pointer">
+                          <option value="1" class="bg-[#090B1A]">1.0x</option>
+                          <option value="1.25" class="bg-[#090B1A]">1.25x</option>
+                          <option value="1.5" class="bg-[#090B1A]">1.5x</option>
+                          <option value="2" class="bg-[#090B1A]">2.0x</option>
+                        </select>
+                      </div>
+
+                      <!-- Volume / Mute Toggle -->
+                      <button id="volumeToggleBtn" title="Mute/Unmute Audio" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                      </button>
+
+                      <!-- Fullscreen Toggle -->
+                      <button id="fullscreenBtn" title="Toggle Fullscreen" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Lesson Info & Controls -->
-              <div class="p-5 space-y-3">
+              <div class="p-5 space-y-3.5">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-mono text-violet-400 font-bold uppercase">MODULE 2 &middot; LESSON 3 OF 16</span>
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold">AWS S3 STREAMING ACTIVE</span>
+                  <span id="currentModuleBadge" class="text-xs font-mono text-violet-400 font-bold uppercase tracking-wide">MODULE 2 &middot; LESSON 3 OF 16</span>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold">AWS S3 STREAMING ACTIVE</span>
+                  </div>
                 </div>
-                <h2 class="text-lg font-bold text-white tracking-tight">Kernel Bypass, Ring Buffers, and Async Network I/O</h2>
-                <p class="text-xs text-slate-400 leading-relaxed font-sans">
-                  In this deep-dive lesson, we explore how modern Linux kernels leverage <code>io_uring</code> to eliminate context-switching overhead in microservices processing 1M+ requests per second.
+
+                <h2 id="activeLessonHeading" class="text-lg font-bold text-white tracking-tight">Kernel Bypass, Ring Buffers, and Async Network I/O</h2>
+
+                <p id="activeLessonDescription" class="text-xs text-slate-400 leading-relaxed font-sans">
+                  In this deep-dive lesson, we explore how modern Linux kernels leverage <code>io_uring</code> to eliminate context-switching overhead in microservices processing 1M+ requests per second. We dissect fixed buffer allocations and memory-mapped submission/completion ring queues.
                 </p>
-                <div class="pt-2 flex items-center gap-3">
-                  <button id="openQuizFromVideoBtn" class="px-3.5 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-bold transition-all flex items-center gap-1.5">
+
+                <!-- Interactive Stage Action Buttons -->
+                <div class="pt-2 flex flex-wrap items-center gap-3">
+                  <button id="markCompleteBtn" class="px-3.5 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-mono text-xs font-semibold transition-all flex items-center gap-1.5 active:scale-[0.98]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span id="markCompleteBtnLabel">Mark Lesson Complete</span>
+                  </button>
+
+                  <button id="openQuizFromVideoBtn" class="px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-bold transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(139,92,246,0.25)] active:scale-[0.98]">
                     <span>Take Module Quiz</span>
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                   </button>
-                  <button id="markCompleteBtn" class="px-3.5 py-1.5 rounded-xl border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 font-mono text-xs font-semibold transition-all">
-                    Mark Lesson Finished
+
+                  <button id="downloadSyllabusBtn" class="px-3.5 py-2 rounded-xl border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 font-mono text-xs font-semibold transition-all flex items-center gap-1.5 active:scale-[0.98]">
+                    <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>Download Syllabus</span>
+                  </button>
+
+                  <button id="openDrawerFromVideoBtn" class="px-3.5 py-2 rounded-xl border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 font-mono text-xs font-semibold transition-all flex items-center gap-1.5 active:scale-[0.98]">
+                    <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                    <span>Browse Syllabus Drawer</span>
                   </button>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
 
-        <!-- Synchronized Notes Notebook -->
+        <!-- Synchronized Notes Notebook (1 col) -->
         <div class="lg:col-span-1">
           <div class="double-bezel h-full">
             <div class="double-bezel-inner p-5 flex flex-col space-y-4 h-full">
               <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-                <h3 class="text-xs font-bold text-white font-mono uppercase tracking-wider">Engineering Notebook</h3>
-                <span class="text-[10px] font-mono text-slate-400">Timestamped</span>
+                <div>
+                  <h3 class="text-xs font-bold text-white font-mono uppercase tracking-wider">Engineering Notebook</h3>
+                  <p class="text-[10px] text-slate-400 font-mono">Synchronized with Timecode</p>
+                </div>
+                <button id="exportNotesBtn" title="Export Notes as Markdown" class="px-2 py-1 rounded bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-violet-300 hover:text-white transition-colors border border-white/[0.08]">
+                  Export Notes
+                </button>
               </div>
 
-              <div class="flex-1 space-y-2.5 overflow-y-auto max-h-80 custom-scrollbar pr-1" id="notesList">
-                <div class="p-3 rounded-xl bg-[#070916] border border-white/[0.06] text-xs space-y-1">
-                  <div class="flex justify-between font-mono text-[10px]">
-                    <span class="text-violet-400 font-bold">[01:45]</span>
-                    <span class="text-slate-500">Saved</span>
-                  </div>
-                  <p class="text-slate-300">Context switching cost: ~1.2 microseconds per syscall when handling 50k sockets.</p>
-                </div>
-
-                <div class="p-3 rounded-xl bg-[#070916] border border-white/[0.06] text-xs space-y-1">
-                  <div class="flex justify-between font-mono text-[10px]">
-                    <span class="text-violet-400 font-bold">[03:20]</span>
-                    <span class="text-slate-500">Saved</span>
-                  </div>
-                  <p class="text-slate-300">Shared memory submission queues (SQ) and completion queues (CQ) avoid kernel traps.</p>
-                </div>
+              <!-- Notes Feed -->
+              <div class="flex-1 space-y-2.5 overflow-y-auto max-h-80 lg:max-h-[380px] custom-scrollbar pr-1" id="notesList">
+                <!-- Dynamically populated or rendered -->
               </div>
 
               <!-- Add Note Form -->
-              <div class="pt-2 border-t border-white/[0.08]">
+              <div class="pt-2 border-t border-white/[0.08] space-y-2">
+                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                  <span>RECORD TIMESTAMP:</span>
+                  <span id="noteCurrentTimeBadge" class="text-violet-400 font-bold">[04:18]</span>
+                </div>
                 <div class="flex gap-2">
-                  <input type="text" id="newNoteInput" placeholder="Add engineering note..." class="flex-1 bg-[#070916] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-400">
-                  <button id="addNoteBtn" class="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-mono font-bold text-xs rounded-xl transition-colors">Add</button>
+                  <input type="text" id="newNoteInput" placeholder="Add engineering note at timestamp..." class="flex-1 bg-[#070916] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-400 transition-colors">
+                  <button id="addNoteBtn" class="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-mono font-bold text-xs rounded-xl transition-colors active:scale-[0.98]">Add</button>
                 </div>
               </div>
             </div>
@@ -233,15 +415,32 @@
       </div>
     </div>
 
-    <!-- TAB 2: COURSE SYLLABUS -->
+    <!-- ===================================================================== -->
+    <!-- TAB 2: COURSE SYLLABUS (EXPANDABLE CHAPTERS)                          -->
+    <!-- ===================================================================== -->
     <div id="tab-syllabus" class="lms-tab-content hidden space-y-4">
       <div class="double-bezel">
-        <div class="double-bezel-inner p-5 space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-            <h2 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Advanced Distributed Systems Syllabus</h2>
-            <span class="text-xs font-mono text-emerald-400 font-bold">12 / 16 Lessons Completed</span>
+        <div class="double-bezel-inner p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/[0.08] gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">16 MODULE CURRICULUM TREE</span>
+              </div>
+              <h2 class="text-base font-bold text-white tracking-tight mt-1">Advanced Distributed Systems Syllabus</h2>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="syllabusProgressSummary" class="text-xs font-mono text-emerald-400 font-bold px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                12 / 16 Lessons Completed
+              </span>
+              <button id="downloadSyllabusTabBtn" class="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-mono font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 active:scale-[0.98]">
+                <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span>Download Syllabus</span>
+              </button>
+            </div>
           </div>
 
+          <!-- Expandable Chapters Accordion Container -->
           <div id="syllabusContainer" class="space-y-3">
             <!-- Dynamically populated from /api/courses -->
           </div>
@@ -249,85 +448,116 @@
       </div>
     </div>
 
-    <!-- TAB 3: KNOWLEDGE QUIZ ASSESSMENT -->
+    <!-- ===================================================================== -->
+    <!-- TAB 3: KNOWLEDGE QUIZ ASSESSMENT                                      -->
+    <!-- ===================================================================== -->
     <div id="tab-quiz" class="lms-tab-content hidden space-y-4">
       <div class="double-bezel">
         <div class="double-bezel-inner p-6 space-y-5">
-          <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/[0.08] gap-3">
             <div>
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
                 <span class="text-[10px] font-mono text-violet-400 font-bold uppercase tracking-wider">ADAPTIVE KNOWLEDGE EVALUATION</span>
               </div>
               <h2 class="text-base font-bold text-white mt-1">Module 2 Final Certification Exam</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Select answers to test comprehension. Instant architectural feedback provided per choice.</p>
             </div>
-            <span class="text-xs font-mono text-cyan-400 px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/20">Passing Threshold: 80%</span>
+            <div class="flex items-center gap-3">
+              <span id="quizScoreTallyChip" class="text-xs font-mono text-violet-300 px-2.5 py-1 rounded bg-violet-500/10 border border-violet-500/20">Current Score: 0%</span>
+              <span class="text-xs font-mono text-cyan-400 px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/20">Passing Threshold: 80%</span>
+            </div>
           </div>
 
-          <form id="quizForm" class="space-y-5">
+          <!-- Quiz Submission Feedback Banner (Hidden by default) -->
+          <div id="quizResultBanner" class="hidden p-4 rounded-xl border transition-all"></div>
+
+          <form id="quizForm" class="space-y-6">
+
             <!-- Question 1 -->
-            <div class="p-4 rounded-xl bg-[#070916] border border-white/[0.06] space-y-3">
-              <span class="text-xs font-mono text-violet-400 font-bold">QUESTION 1 OF 3</span>
+            <div class="quiz-question-card p-4 rounded-xl bg-[#070916] border border-white/[0.06] space-y-3" data-qid="q1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-violet-400 font-bold">QUESTION 1 OF 3</span>
+                <span class="quiz-status-pill text-[10px] font-mono text-slate-500 px-2 py-0.5 rounded bg-white/[0.03]">Pending Answer</span>
+              </div>
               <p class="text-xs font-semibold text-white">What primary mechanism enables io_uring to avoid kernel context switches during high-throughput network packet ingestion?</p>
               <div class="space-y-2 text-xs">
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q1" value="A" class="accent-violet-500" required>
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q1" value="A" class="mt-0.5 accent-violet-500" required>
                   <span class="text-slate-300">Shared memory circular ring buffers mapped into both user and kernel address space</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q1" value="B" class="accent-violet-500">
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q1" value="B" class="mt-0.5 accent-violet-500">
                   <span class="text-slate-300">Synchronous thread pool spinning on epoll file descriptors</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q1" value="C" class="accent-violet-500">
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q1" value="C" class="mt-0.5 accent-violet-500">
                   <span class="text-slate-300">Hardware interrupt vector overriding via PCI root complexes</span>
                 </label>
               </div>
+              <!-- Instant Feedback Container -->
+              <div class="quiz-feedback-box hidden p-3 rounded-lg text-xs font-mono space-y-1"></div>
             </div>
 
             <!-- Question 2 -->
-            <div class="p-4 rounded-xl bg-[#070916] border border-white/[0.06] space-y-3">
-              <span class="text-xs font-mono text-violet-400 font-bold">QUESTION 2 OF 3</span>
+            <div class="quiz-question-card p-4 rounded-xl bg-[#070916] border border-white/[0.06] space-y-3" data-qid="q2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-violet-400 font-bold">QUESTION 2 OF 3</span>
+                <span class="quiz-status-pill text-[10px] font-mono text-slate-500 px-2 py-0.5 rounded bg-white/[0.03]">Pending Answer</span>
+              </div>
               <p class="text-xs font-semibold text-white">Why are fixed buffer registrations (IORING_REGISTER_BUFFERS) critical for sub-millisecond tail latency?</p>
               <div class="space-y-2 text-xs">
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q2" value="A" class="accent-violet-500" required>
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q2" value="A" class="mt-0.5 accent-violet-500" required>
                   <span class="text-slate-300">They eliminate dynamic get_user_pages() page table locking overhead per I/O operation</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q2" value="B" class="accent-violet-500">
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q2" value="B" class="mt-0.5 accent-violet-500">
                   <span class="text-slate-300">They force CPU caches to flush instantly after socket reads</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q2" value="C" class="accent-violet-500">
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q2" value="C" class="mt-0.5 accent-violet-500">
                   <span class="text-slate-300">They increase Linux memory limits beyond physical RAM boundaries</span>
                 </label>
               </div>
+              <!-- Instant Feedback Container -->
+              <div class="quiz-feedback-box hidden p-3 rounded-lg text-xs font-mono space-y-1"></div>
             </div>
 
             <!-- Question 3 -->
-            <div class="p-4 rounded-xl bg-[#070916] border border-white/[0.06] space-y-3">
-              <span class="text-xs font-mono text-violet-400 font-bold">QUESTION 3 OF 3</span>
+            <div class="quiz-question-card p-4 rounded-xl bg-[#070916] border border-white/[0.06] space-y-3" data-qid="q3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-violet-400 font-bold">QUESTION 3 OF 3</span>
+                <span class="quiz-status-pill text-[10px] font-mono text-slate-500 px-2 py-0.5 rounded bg-white/[0.03]">Pending Answer</span>
+              </div>
               <p class="text-xs font-semibold text-white">In Raft consensus, what invariant guarantees that an elected leader possesses all previously committed log entries?</p>
               <div class="space-y-2 text-xs">
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q3" value="A" class="accent-violet-500" required>
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q3" value="A" class="mt-0.5 accent-violet-500" required>
                   <span class="text-slate-300">Leader Completeness Property enforced via RequestVote candidate term and log index checks</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q3" value="B" class="accent-violet-500">
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q3" value="B" class="mt-0.5 accent-violet-500">
                   <span class="text-slate-300">Strict 2-phase commit consensus locks on disk write headers</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer">
-                  <input type="radio" name="q3" value="C" class="accent-violet-500">
+                <label class="quiz-option-label flex items-start gap-2.5 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-transparent transition-all cursor-pointer">
+                  <input type="radio" name="q3" value="C" class="mt-0.5 accent-violet-500">
                   <span class="text-slate-300">Randomized client heartbeat intervals exceeding election timeouts</span>
                 </label>
               </div>
+              <!-- Instant Feedback Container -->
+              <div class="quiz-feedback-box hidden p-3 rounded-lg text-xs font-mono space-y-1"></div>
             </div>
 
-            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] active:scale-[0.98]">
-              Submit Examination & Verify Credential Issuance
-            </button>
+            <!-- Form Action Buttons -->
+            <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+              <button type="submit" id="submitExamBtn" class="flex-1 w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] active:scale-[0.98]">
+                Submit Examination & Verify Credential Issuance
+              </button>
+              <button type="button" id="retakeQuizBtn" class="w-full sm:w-auto px-5 py-3 rounded-xl border border-white/[0.12] hover:bg-white/[0.05] text-slate-300 font-mono text-xs font-semibold transition-all">
+                Retake Exam
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -335,7 +565,41 @@
 
   </main>
 
-  <!-- 3D HOLOGRAPHIC CREDENTIAL STAGE MODAL -->
+  <!-- ======================================================================= -->
+  <!-- SLIDE-OUT SYLLABUS DRAWER (MOBILE & QUICK ACCESS)                       -->
+  <!-- ======================================================================= -->
+  <div id="syllabusDrawer" class="hidden fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-md transition-all">
+    <div class="relative w-full max-w-md h-full bg-[#080A1A] border-l border-white/[0.1] shadow-2xl flex flex-col p-5 overflow-hidden">
+      <!-- Drawer Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-violet-400"></span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-violet-400 font-bold">SYLLABUS DRAWER</span>
+          </div>
+          <h3 class="text-sm font-bold text-white mt-0.5">Distributed Systems Curriculum</h3>
+        </div>
+        <button id="closeSyllabusDrawerBtn" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+      </div>
+
+      <!-- Drawer Content -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar my-4 space-y-3" id="drawerSyllabusList">
+        <!-- Dynamically rendered copy of syllabus chapters -->
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="pt-3 border-t border-white/[0.08] flex items-center justify-between">
+        <span class="text-[11px] font-mono text-slate-400">16 Total Lessons</span>
+        <button id="downloadSyllabusDrawerBtn" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-semibold transition-all">
+          Download Outline
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- 3D HOLOGRAPHIC CREDENTIAL STAGE MODAL                                   -->
+  <!-- ======================================================================= -->
   <div id="threejs-cert-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl">
     <div class="relative w-full max-w-2xl double-bezel shadow-2xl">
       <div class="double-bezel-inner p-6 space-y-4">
@@ -373,9 +637,11 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-end gap-2 pt-1">
-          <button id="downloadCertBtn" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-bold transition-all shadow">
-            Export Cryptographic Diploma
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-[11px] font-mono text-slate-500">IEEE & ISO/IEC 27001 Accredited</span>
+          <button id="downloadCertBtn" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)] active:scale-[0.98] flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span>Download Certificate</span>
           </button>
         </div>
       </div>

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2308090C'/><path d='M8 6h16v5H14l8 8v7H6v-5h10L8 11Z' fill='%2300F2FE'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23050D0A'/><path d='M8 6h16v5H14l8 8v7H6v-5h10L8 11Z' fill='%2310B981'/></svg>">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PropValuate | Real Estate Machine Learning Valuation Engine</title>
-  <meta name="description" content="Binary Froster spatial machine learning property valuation model trained on 500K+ UK transactions delivering 92% RICS valuation accuracy.">
+  <title>MetroVal ML | Enterprise Real Estate Valuation Engine</title>
+  <meta name="description" content="Binary Froster spatial econometric machine learning valuation engine trained on 500K+ Land Registry transactions delivering 92.4% RICS valuation accuracy.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js 3D WebGL Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -64,54 +64,123 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 1.25rem;
       padding: 0.375rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
     .double-bezel-inner {
       background: #091712;
       border-radius: calc(1.25rem - 0.375rem);
       box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07);
     }
+    .sub-bezel {
+      background: #06120E;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 0.75rem;
+    }
+    input[type=range] {
+      accent-color: #10B981;
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+      }
+      header, #threejs-arch-container, .no-print, button, form button {
+        display: none !important;
+      }
+      .double-bezel {
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      .double-bezel-inner {
+        background: #ffffff !important;
+        box-shadow: none !important;
+      }
+      .print-report-header {
+        display: block !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-[#050D0A] text-slate-200">
 
   <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 px-4 py-2 bg-[#050D0A]/90 backdrop-blur-xl border-b border-white/[0.08]">
+  <header class="sticky top-0 z-40 px-4 py-2.5 bg-[#050D0A]/95 backdrop-blur-xl border-b border-white/[0.08]">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo & App Identification -->
       <div class="flex items-center gap-3">
         <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600/30 via-teal-600/20 to-cyan-500/30 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            PV
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600/30 via-teal-600/20 to-cyan-500/30 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+            MV
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-bold text-sm tracking-tight text-white group-hover:text-emerald-300 transition-colors">PropValuate ML</span>
-              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold tracking-wider">92% RICS ACCURACY</span>
+              <span class="font-bold text-sm tracking-tight text-white group-hover:text-emerald-300 transition-colors">MetroVal ML</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold tracking-wider">92.4% RICS ACCURACY</span>
             </div>
-            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">SPATIAL ECONOMETRIC VALUATION ENGINE</p>
+            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">SPATIAL ECONOMETRIC VALUATION PLATFORM</p>
           </div>
         </a>
       </div>
 
-      <!-- Telemetry & Actions -->
-      <div class="flex items-center gap-3">
-        <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-slate-500">TRAINED COMPS:</span>
-            <span class="text-emerald-300 font-bold">500,000+ Land Registry</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-slate-500">SUBMARKET CONFIDENCE:</span>
-            <span class="text-cyan-400 font-bold">95% CI (RICS Red Book)</span>
+      <!-- Telemetry Info -->
+      <div class="hidden xl:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-500">TRAINED COMPS:</span>
+          <span class="text-emerald-300 font-bold">500,000+ HM Land Registry</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-500">CONFIDENCE:</span>
+          <span class="text-cyan-400 font-bold">95% CI (RICS Red Book)</span>
+        </div>
+      </div>
+
+      <!-- Actions & Controls -->
+      <div class="flex items-center gap-2.5">
+        
+        <!-- Currency Toggle -->
+        <div class="flex items-center p-0.5 rounded-lg bg-[#06120E] border border-white/[0.1] text-xs font-mono">
+          <button id="currencyGbpBtn" type="button" class="px-2.5 py-1 rounded text-white bg-emerald-600 font-bold transition-all">GBP [£]</button>
+          <button id="currencyUsdBtn" type="button" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">USD [$]</button>
+        </div>
+
+        <!-- Saved Properties Drawer Trigger -->
+        <button id="savedPropertiesBtn" type="button" class="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-200 text-xs font-semibold transition-all">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+          <span class="hidden sm:inline">Saved</span>
+          <span id="savedCountBadge" class="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">0</span>
+        </button>
+
+        <!-- Export Appraisal Report Menu -->
+        <div class="relative">
+          <button id="exportDropdownBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-200 text-xs font-semibold transition-all">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span class="hidden sm:inline">Export Appraisal</span>
+            <span class="sm:hidden">Export</span>
+            <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+
+          <!-- Dropdown Options -->
+          <div id="exportMenu" class="hidden absolute right-0 mt-2 w-56 p-1.5 rounded-2xl bg-[#07130F] border border-white/[0.12] shadow-2xl z-50 text-xs font-mono">
+            <button id="printDossierBtn" type="button" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/[0.06] text-slate-200 transition-colors flex items-center justify-between">
+              <span>Print RICS Dossier (PDF)</span>
+              <span class="text-emerald-400">[PRINT]</span>
+            </button>
+            <button id="exportJsonBtn" type="button" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/[0.06] text-slate-200 transition-colors flex items-center justify-between">
+              <span>Download Model JSON</span>
+              <span class="text-cyan-400">[JSON]</span>
+            </button>
+            <button id="exportCsvBtn" type="button" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/[0.06] text-slate-200 transition-colors flex items-center justify-between">
+              <span>Export Comps CSV</span>
+              <span class="text-amber-400">[CSV]</span>
+            </button>
           </div>
         </div>
 
-        <button id="printDossierBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-200 text-xs font-semibold transition-all">
-          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          <span>Export Dossier</span>
-        </button>
-
-        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
+        <a href="https://binaryfroster.com/portfolio" class="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
           <span>Portfolio</span>
           <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
@@ -122,69 +191,127 @@
     </div>
   </header>
 
+  <!-- PRINT-ONLY DOSSIER HEADER -->
+  <div class="print-report-header hidden p-6 border-b border-slate-300 mb-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold font-mono text-slate-900">METROVAL RICS APPRAISAL DOSSIER</h1>
+        <p class="text-xs text-slate-600 font-mono">HM Land Registry Spatial Econometric Valuation Record</p>
+      </div>
+      <div class="text-right text-xs font-mono text-slate-600">
+        <p>Valuation Standard: RICS Red Book Global</p>
+        <p id="printTimestamp">Generated: October 2026</p>
+      </div>
+    </div>
+  </div>
+
   <!-- MAIN CONTAINER -->
   <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <!-- LEFT COLUMN: PROPERTY SPECIFICATION INPUTS (5 COLS) -->
+      <!-- ================================================================= -->
+      <!-- LEFT COLUMN: PROPERTY SPECIFICATION & FINANCIAL CALCULATORS (5 COLS) -->
+      <!-- ================================================================= -->
       <div class="lg:col-span-5 space-y-6">
+
+        <!-- Spatial Parameters Card -->
         <div class="double-bezel">
           <div class="double-bezel-inner p-5 space-y-4">
+            
             <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 <h2 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Property Spatial Parameters</h2>
               </div>
-              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded">FastAPI Model Active</span>
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded">LightGBM Inference Active</span>
             </div>
 
-            <form id="valuationForm" class="space-y-4 text-xs">
-              <!-- Borough -->
+            <form id="valuationForm" class="space-y-4 text-xs" onsubmit="return false;">
+
+              <!-- Borough / Submarket Selection -->
               <div>
-                <label class="block text-slate-300 font-semibold mb-1 font-sans">London Borough / Submarket</label>
-                <select id="boroughSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white font-medium focus:border-emerald-400 focus:outline-none">
-                  <option value="kensington">Royal Borough of Kensington & Chelsea (Prime Central)</option>
+                <label for="boroughSelect" class="block text-slate-300 font-semibold mb-1 font-sans">Submarket / Regional Cluster</label>
+                <select id="boroughSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white font-medium focus:border-emerald-400 focus:outline-none transition-colors">
                   <option value="westminster" selected>City of Westminster (Mayfair, Belgravia & Soho)</option>
+                  <option value="kensington">Royal Borough of Kensington & Chelsea (Prime Central)</option>
                   <option value="camden">Camden & Primrose Hill</option>
                   <option value="islington">Islington & Highbury</option>
                   <option value="hackney">Hackney & Shoreditch Tech Cluster</option>
-                  <option value="greenwich">Royal Borough of Greenwich</option>
+                  <option value="southwark">Southwark & London Bridge Riverside</option>
                   <option value="richmond">Richmond upon Thames</option>
+                  <option value="greenwich">Royal Borough of Greenwich</option>
                 </select>
               </div>
 
-              <!-- Property Class & Era -->
+              <!-- Postcode / Zip Code Input with Validation -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label for="postcodeInput" class="text-slate-300 font-semibold font-sans">Postcode / Zip Code Verification</label>
+                  <span id="postcodeStatus" class="font-mono text-[10px] text-emerald-400">Prime Central W1</span>
+                </div>
+                <div class="relative">
+                  <input type="text" id="postcodeInput" value="W1K 2HP" placeholder="e.g. W1K 2HP, SW7 2AZ, NW3 4RY, 10021" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono uppercase tracking-wider focus:border-emerald-400 focus:outline-none transition-colors">
+                  <span class="absolute right-3 top-2.5 text-[10px] font-mono text-slate-500 pointer-events-none">GEO-CODED</span>
+                </div>
+              </div>
+
+              <!-- Property Typology & Architectural Era -->
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-slate-300 font-semibold mb-1 font-sans">Property Typology</label>
-                  <select id="typeSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white focus:border-emerald-400 focus:outline-none">
-                    <option value="flat">Luxury Flat / Apartment</option>
+                  <label for="typeSelect" class="block text-slate-300 font-semibold mb-1 font-sans">Property Typology</label>
+                  <select id="typeSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white focus:border-emerald-400 focus:outline-none transition-colors">
                     <option value="terraced" selected>Terraced Townhouse</option>
+                    <option value="flat">Luxury Flat / Apartment</option>
                     <option value="semi">Semi-Detached House</option>
                     <option value="detached">Detached Residence</option>
                     <option value="penthouse">Penthouse Suite</option>
+                    <option value="mews">Mews Residence</option>
                   </select>
                 </div>
 
                 <div>
-                  <label class="block text-slate-300 font-semibold mb-1 font-sans">Architectural Era</label>
-                  <select id="eraSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white focus:border-emerald-400 focus:outline-none">
-                    <option value="victorian" selected>Victorian / Georgian (Period)</option>
-                    <option value="edwardian">Edwardian (1900-1920)</option>
+                  <label for="eraSelect" class="block text-slate-300 font-semibold mb-1 font-sans">Architectural Era</label>
+                  <select id="eraSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white focus:border-emerald-400 focus:outline-none transition-colors">
+                    <option value="victorian" selected>Victorian (1837-1901)</option>
+                    <option value="georgian">Georgian (1714-1837)</option>
+                    <option value="edwardian">Edwardian (1901-1920)</option>
                     <option value="postwar">Mid-Century (1950-1980)</option>
-                    <option value="contemporary">Contemporary Glass & Steel (2020+)</option>
+                    <option value="contemporary">Contemporary (2020+)</option>
                   </select>
                 </div>
               </div>
 
-              <!-- Square Footage Slider -->
+              <!-- Year Built Input & Sync -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="yearBuiltInput" class="block text-slate-300 font-semibold mb-1 font-sans">Year Built</label>
+                  <input type="number" id="yearBuiltInput" min="1750" max="2026" value="1885" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white font-mono focus:border-emerald-400 focus:outline-none">
+                </div>
+                <div>
+                  <label for="epcSelect" class="block text-slate-300 font-semibold mb-1 font-sans">Energy Efficiency (EPC)</label>
+                  <select id="epcSelect" class="w-full bg-[#06120E] border border-white/[0.1] rounded-xl p-2.5 text-white focus:border-emerald-400 focus:outline-none font-mono">
+                    <option value="A">Band A (Zero Carbon Spec)</option>
+                    <option value="B" selected>Band B (High Efficiency)</option>
+                    <option value="C">Band C (Standard)</option>
+                    <option value="D">Band D (Historical Baseline)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Square Footage Slider + Number Input (Synchronized) -->
               <div>
                 <div class="flex justify-between items-center mb-1">
-                  <label class="text-slate-300 font-semibold font-sans">Gross Internal Usable Area (GIA)</label>
+                  <label for="sqftSlider" class="text-slate-300 font-semibold font-sans">Gross Internal Usable Area (GIA)</label>
                   <span id="sqftLabel" class="font-mono text-emerald-400 font-bold text-xs">1,450 sq ft (134.7 m²)</span>
                 </div>
-                <input type="range" id="sqftSlider" min="400" max="4500" step="50" value="1450" class="w-full accent-emerald-400 bg-slate-800 rounded h-1.5 cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <input type="range" id="sqftSlider" min="400" max="4500" step="25" value="1450" class="flex-1 accent-emerald-400 bg-slate-800 rounded h-1.5 cursor-pointer">
+                  <div class="flex items-center w-24 border border-white/[0.1] rounded-lg bg-[#06120E] px-2 py-1">
+                    <input type="number" id="sqftInput" min="300" max="15000" step="25" value="1450" class="w-full bg-transparent text-white font-mono text-xs focus:outline-none text-right">
+                    <span class="text-[10px] text-slate-500 font-mono ml-1">sqft</span>
+                  </div>
+                </div>
                 <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
                   <span>400 sq ft</span>
                   <span>2,450 sq ft</span>
@@ -192,24 +319,40 @@
                 </div>
               </div>
 
-              <!-- Bedrooms & Bathrooms -->
+              <!-- Bedrooms & Bathrooms Incrementors -->
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-slate-300 font-semibold mb-1 font-sans">Bedrooms</label>
                   <div class="flex items-center border border-white/[0.1] rounded-xl bg-[#06120E] overflow-hidden">
-                    <button type="button" id="bedMinus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold">-</button>
+                    <button type="button" id="bedMinus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold transition-colors">-</button>
                     <span id="bedCount" class="flex-1 text-center font-mono font-bold text-white text-sm">3</span>
-                    <button type="button" id="bedPlus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold">+</button>
+                    <button type="button" id="bedPlus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold transition-colors">+</button>
                   </div>
                 </div>
 
                 <div>
                   <label class="block text-slate-300 font-semibold mb-1 font-sans">Bathrooms</label>
                   <div class="flex items-center border border-white/[0.1] rounded-xl bg-[#06120E] overflow-hidden">
-                    <button type="button" id="bathMinus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold">-</button>
+                    <button type="button" id="bathMinus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold transition-colors">-</button>
                     <span id="bathCount" class="flex-1 text-center font-mono font-bold text-white text-sm">2</span>
-                    <button type="button" id="bathPlus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold">+</button>
+                    <button type="button" id="bathPlus" class="px-3.5 py-2 text-slate-400 hover:text-white font-mono font-bold transition-colors">+</button>
                   </div>
+                </div>
+              </div>
+
+              <!-- Condition Grade Slider (Prompt Requirement) -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label for="conditionSlider" class="text-slate-300 font-semibold font-sans">Condition Specification Grade</label>
+                  <span id="conditionLabel" class="font-mono text-cyan-400 font-bold text-[11px]">Grade 4: High Spec (+12%)</span>
+                </div>
+                <input type="range" id="conditionSlider" min="1" max="5" step="1" value="4" class="w-full accent-cyan-400 bg-slate-800 rounded h-1.5 cursor-pointer">
+                <div class="flex justify-between text-[9px] text-slate-500 font-mono mt-1">
+                  <span>1: Distressed</span>
+                  <span>2: Fair</span>
+                  <span>3: Standard</span>
+                  <span>4: High-Spec</span>
+                  <span>5: Turnkey Luxury</span>
                 </div>
               </div>
 
@@ -225,14 +368,128 @@
                 </label>
                 <label class="flex items-center gap-2.5 cursor-pointer">
                   <input type="checkbox" id="stationCheck" checked class="accent-emerald-400 rounded">
-                  <span class="text-slate-300">&lt; 300m to Underground / Elizabeth Line Station</span>
+                  <span class="text-slate-300">Rapid Transit Station Proximity (&lt; 300m)</span>
                 </label>
               </div>
 
-              <button type="button" id="recalculateBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] active:scale-[0.98]">
-                Run Gradient-Boosted Valuation Model
-              </button>
+              <!-- Run Valuation & Save Buttons -->
+              <div class="pt-2 flex items-center gap-3">
+                <button type="button" id="recalculateBtn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-[0.98] flex items-center justify-center gap-2">
+                  <svg id="recalculateSpinner" class="hidden w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                  <span id="recalculateText">Run Valuation Engine</span>
+                </button>
+
+                <button type="button" id="savePropertyBtn" title="Save this property scenario to local ledger" class="px-4 py-3 rounded-xl bg-[#06120E] hover:bg-white/[0.08] border border-white/[0.1] text-amber-400 font-mono text-xs font-bold transition-all active:scale-[0.98] flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                  <span>Save</span>
+                </button>
+              </div>
+
             </form>
+          </div>
+        </div>
+
+        <!-- MORTGAGE & INVESTMENT ROI CALCULATOR (Prompt Requirement) -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-5 space-y-4">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Mortgage & Investment ROI Engine</h3>
+              </div>
+              <span class="text-[10px] font-mono text-cyan-400">Real-Time Amortization</span>
+            </div>
+
+            <div class="space-y-3.5 text-xs">
+              
+              <!-- Down Payment Slider -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label for="downPaymentSlider" class="text-slate-300 font-semibold font-sans">Down Payment Equity</label>
+                  <span id="downPaymentAmount" class="font-mono text-emerald-400 font-bold text-xs">20% (£501,100)</span>
+                </div>
+                <input type="range" id="downPaymentSlider" min="5" max="50" step="5" value="20" class="w-full accent-emerald-400 bg-slate-800 rounded h-1.5 cursor-pointer">
+                <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                  <span>5% (High Leverage)</span>
+                  <span>20% (Standard)</span>
+                  <span>50% (Conservative)</span>
+                </div>
+              </div>
+
+              <!-- Interest Rate Slider -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label for="interestRateSlider" class="text-slate-300 font-semibold font-sans">Mortgage Benchmark Interest Rate</label>
+                  <span id="interestRateLabel" class="font-mono text-cyan-400 font-bold text-xs">5.25% Fixed</span>
+                </div>
+                <input type="range" id="interestRateSlider" min="2.0" max="9.0" step="0.25" value="5.25" class="w-full accent-cyan-400 bg-slate-800 rounded h-1.5 cursor-pointer">
+                <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                  <span>2.0%</span>
+                  <span>5.25% (BoE Baseline)</span>
+                  <span>9.0%</span>
+                </div>
+              </div>
+
+              <!-- Loan Term Selector -->
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1 font-sans">Amortization Period</label>
+                <div class="grid grid-cols-4 gap-2 font-mono text-xs">
+                  <button type="button" data-term="15" class="term-btn py-1.5 rounded-lg bg-[#06120E] border border-white/[0.1] hover:border-emerald-500/50 text-slate-300 text-center transition-all">15 Yrs</button>
+                  <button type="button" data-term="20" class="term-btn py-1.5 rounded-lg bg-[#06120E] border border-white/[0.1] hover:border-emerald-500/50 text-slate-300 text-center transition-all">20 Yrs</button>
+                  <button type="button" data-term="25" class="term-btn py-1.5 rounded-lg bg-emerald-600/30 border border-emerald-500 text-emerald-300 font-bold text-center transition-all">25 Yrs</button>
+                  <button type="button" data-term="30" class="term-btn py-1.5 rounded-lg bg-[#06120E] border border-white/[0.1] hover:border-emerald-500/50 text-slate-300 text-center transition-all">30 Yrs</button>
+                </div>
+              </div>
+
+              <!-- Payment Breakdown Grid -->
+              <div class="p-3.5 rounded-xl bg-[#06120E] border border-white/[0.08] space-y-3 font-mono">
+                
+                <div class="flex justify-between items-baseline">
+                  <span class="text-slate-400 text-[11px]">ESTIMATED MONTHLY OUTLAY:</span>
+                  <span id="monthlyTotalPayment" class="text-lg font-bold text-white tracking-tight">£12,042 / mo</span>
+                </div>
+
+                <!-- Visual Breakdown Bar -->
+                <div class="w-full h-2 rounded-full overflow-hidden bg-slate-800 flex">
+                  <div id="breakdownPrincipalBar" class="bg-emerald-500 h-full" style="width: 82%" title="Principal & Interest"></div>
+                  <div id="breakdownTaxBar" class="bg-cyan-500 h-full" style="width: 18%" title="Taxes & Insurance"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[10px] pt-1">
+                  <div>
+                    <span class="text-slate-500 block">PRINCIPAL & INTEREST:</span>
+                    <span id="monthlyPrincipalInterest" class="text-slate-200 font-bold text-xs">£9,874 / mo</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-500 block">TAX & INSURANCE (EST):</span>
+                    <span id="monthlyTaxInsurance" class="text-slate-200 font-bold text-xs">£2,168 / mo</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Investment Yield & Cash Flow Telemetry -->
+              <div class="grid grid-cols-3 gap-2 font-mono text-xs">
+                <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
+                  <span class="text-[9px] text-slate-500 block uppercase">EST RENT</span>
+                  <span id="roiMonthlyRent" class="text-emerald-400 font-bold text-xs">£7,934/mo</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
+                  <span class="text-[9px] text-slate-500 block uppercase">GROSS YIELD</span>
+                  <span id="roiGrossYield" class="text-cyan-400 font-bold text-xs">3.80%</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
+                  <span class="text-[9px] text-slate-500 block uppercase">5Y EQUITY GAIN</span>
+                  <span id="roi5yEquity" class="text-white font-bold text-xs">+£560K</span>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
 
@@ -243,38 +500,56 @@
               <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Submarket Macro Telemetry</h3>
               <span class="text-[10px] font-mono text-emerald-400">Quarterly Trend</span>
             </div>
-            <div id="submarketMetrics" class="grid grid-cols-3 gap-2 text-xs font-mono">
+            <div id="submarketMetrics" class="grid grid-cols-4 gap-2 text-xs font-mono">
               <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
-                <span class="text-[10px] text-slate-500 block">12M GROWTH</span>
-                <span id="metricGrowth" class="text-emerald-400 font-bold text-sm">+4.8%</span>
+                <span class="text-[9px] text-slate-500 block">12M GROWTH</span>
+                <span id="metricGrowth" class="text-emerald-400 font-bold text-xs sm:text-sm">+4.8%</span>
               </div>
               <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
-                <span class="text-[10px] text-slate-500 block">GROSS YIELD</span>
-                <span id="metricYield" class="text-cyan-400 font-bold text-sm">3.92%</span>
+                <span class="text-[9px] text-slate-500 block">GROSS YIELD</span>
+                <span id="metricYield" class="text-cyan-400 font-bold text-xs sm:text-sm">3.92%</span>
               </div>
               <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
-                <span class="text-[10px] text-slate-500 block">DAYS ON MARKET</span>
-                <span id="metricDom" class="text-slate-200 font-bold text-sm">28 Days</span>
+                <span class="text-[9px] text-slate-500 block">DAYS ON MKT</span>
+                <span id="metricDom" class="text-slate-200 font-bold text-xs sm:text-sm">28 Days</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-[#06120E] border border-white/[0.06]">
+                <span class="text-[9px] text-slate-500 block">5Y CAGR</span>
+                <span id="metricCagr" class="text-emerald-300 font-bold text-xs sm:text-sm">+5.2%</span>
               </div>
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- RIGHT COLUMN: 3D ARCHITECTURAL MODEL & PREDICTION (7 COLS) -->
+      <!-- ================================================================= -->
+      <!-- RIGHT COLUMN: 3D MODEL, VALUATION HERO, CHART & COMPS (7 COLS) -->
+      <!-- ================================================================= -->
       <div class="lg:col-span-7 space-y-6">
 
         <!-- 3D ARCHITECTURAL MASSING MODEL VIEWPORT -->
         <div class="double-bezel">
           <div class="double-bezel-inner p-5 space-y-3">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">3D Parametric Architectural Massing Model</h3>
               </div>
-              <div class="flex items-center gap-2">
-                <button id="resetArchCameraBtn" class="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-[10px] font-mono text-slate-300 border border-white/10 transition-colors">
-                  Reset Angle
+              
+              <!-- 3D Viewport Controls (Prompt Requirements) -->
+              <div class="flex items-center gap-1.5 font-mono text-[10px]">
+                <button type="button" id="wireframeToggleBtn" class="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10 transition-colors" title="Toggle Wireframe Blueprint vs Solid Massing">
+                  Wireframe: OFF
+                </button>
+                <button type="button" id="lightingToggleBtn" class="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-cyan-300 border border-white/10 transition-colors" title="Toggle Day vs Cyber Night Lighting">
+                  Light: Studio
+                </button>
+                <button type="button" id="autoRotateToggleBtn" class="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-emerald-300 border border-white/10 transition-colors" title="Toggle 360 Camera Auto-Orbit">
+                  Orbit: OFF
+                </button>
+                <button type="button" id="resetArchCameraBtn" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white border border-white/10 transition-colors" title="Reset Camera Angle">
+                  Reset
                 </button>
               </div>
             </div>
@@ -283,18 +558,21 @@
             <div class="rounded-xl bg-[#040A08] border border-white/[0.08] relative overflow-hidden h-72 group">
               <div id="threejs-arch-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
-              <!-- HUD Overlay -->
+              <!-- HUD Top Overlay -->
               <div class="absolute top-3 left-3 pointer-events-none">
                 <div class="flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-emerald-300">
                   <span id="hudFloors">3 Storeys</span>
                   <span>&middot;</span>
                   <span id="hudSqft">1,450 sq ft GIA</span>
+                  <span>&middot;</span>
+                  <span id="hudModeBadge" class="text-cyan-400">Solid Mass</span>
                 </div>
               </div>
 
+              <!-- HUD Bottom Overlay -->
               <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1">
-                <span class="bg-black/50 px-2 py-0.5 rounded backdrop-blur border border-white/5">INTERACTIVE 3D: DRAG TO ROTATE &middot; SCROLL TO ZOOM</span>
-                <span id="hudPriceBadge" class="text-emerald-400 font-bold bg-black/50 px-2 py-0.5 rounded backdrop-blur border border-white/5">£1,425,000</span>
+                <span class="bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/10 hidden sm:inline">DRAG TO ORBIT &middot; SCROLL TO ZOOM</span>
+                <span id="hudPriceBadge" class="text-emerald-400 font-bold bg-black/60 px-2.5 py-0.5 rounded backdrop-blur border border-white/10 ml-auto">£2,505,500</span>
               </div>
             </div>
           </div>
@@ -302,32 +580,63 @@
 
         <!-- Valuation Estimate Hero Banner -->
         <div class="double-bezel">
-          <div class="double-bezel-inner p-6 space-y-4 bg-gradient-to-br from-[#0A241B] to-[#081B14]">
-            <div class="flex items-center justify-between text-xs font-mono text-emerald-400">
+          <div class="double-bezel-inner p-6 space-y-4 bg-gradient-to-br from-[#0A241B] via-[#091D15] to-[#06140F]">
+            
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-emerald-400">
               <span class="tracking-wider uppercase font-semibold">PREDICTED FAIR MARKET VALUATION (RICS RED BOOK)</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">92% CONFIDENCE</span>
+              <div class="flex items-center gap-2">
+                <span id="confidenceScoreBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">92.4% CONFIDENCE</span>
+                <span id="liquidityScoreBadge" class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">TIER 1 LIQUID</span>
+              </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-baseline gap-2">
-              <span class="text-4xl md:text-5xl font-black text-white font-mono tracking-tight" id="estimatedPrice">£1,425,000</span>
-              <span class="text-xs font-mono text-slate-400" id="unitPriceLabel">£982 / sq ft</span>
+            <div class="flex flex-col sm:flex-row sm:items-baseline gap-3">
+              <span class="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight" id="estimatedPrice">£2,505,500</span>
+              <span class="text-sm font-mono text-slate-400" id="unitPriceLabel">£1,728 / sq ft</span>
             </div>
 
             <!-- Confidence Spread -->
             <div class="pt-4 border-t border-emerald-500/20 grid grid-cols-2 gap-4 text-xs font-mono">
               <div>
                 <span class="text-slate-400 text-[10px] block">CONSERVATIVE VALUATION (95% CI)</span>
-                <span class="text-slate-200 font-bold text-sm" id="lowerBound">£1,360,000</span>
+                <span class="text-slate-200 font-bold text-sm" id="lowerBound">£2,392,500</span>
               </div>
               <div>
                 <span class="text-slate-400 text-[10px] block">OPTIMISTIC SPREAD (95% CI)</span>
-                <span class="text-emerald-400 font-bold text-sm" id="upperBound">£1,490,000</span>
+                <span class="text-emerald-400 font-bold text-sm" id="upperBound">£2,618,000</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Price Drivers & Dynamic SHAP Force Attribution -->
+        <!-- HISTORICAL APPRECIATION & 3Y PROJECTION CHART (Prompt Requirement) -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-5 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Historical Appreciation & 3Y ML Projection</h3>
+                <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">5Y Track + 3Y Forecast</span>
+              </div>
+              <div class="flex items-center gap-3 text-[10px] font-mono">
+                <span class="text-slate-400">CAGR: <strong id="chartCagrBadge" class="text-emerald-400">+5.2%</strong></span>
+                <span class="text-slate-400">Total: <strong id="chartTotalGainBadge" class="text-cyan-400">+22.4%</strong></span>
+              </div>
+            </div>
+
+            <!-- Responsive SVG / Canvas Chart Viewport -->
+            <div id="historicalChartContainer" class="w-full h-48 rounded-xl bg-[#06120E] border border-white/[0.06] p-3 flex flex-col justify-between relative">
+              <!-- Dynamically populated interactive SVG chart with confidence band -->
+            </div>
+
+            <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 px-1">
+              <span>Historical Actuals (2021-2025)</span>
+              <span class="text-emerald-400 font-bold">Current Spot (2026)</span>
+              <span>LightGBM Confidence Corridor (2027-2029)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic SHAP Feature Contribution Waterfall -->
         <div class="double-bezel">
           <div class="double-bezel-inner p-5 space-y-3">
             <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
@@ -340,14 +649,28 @@
           </div>
         </div>
 
-        <!-- Real Comparable Sales (Comps) -->
+        <!-- Geospatial Transaction Comps (< 0.5 miles) with Sorting -->
         <div class="double-bezel">
           <div class="double-bezel-inner p-5 space-y-3">
-            <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-              <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Geospatial Transaction Comps (&lt; 0.5 miles)</h3>
-              <span class="text-[10px] font-mono text-emerald-400">HM Land Registry Live</span>
+            
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Geospatial Transaction Comps (&lt; 0.5 miles)</h3>
+                <span id="compsCountBadge" class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">6 Comps</span>
+              </div>
+
+              <!-- Sorting Controls (Prompt Requirement) -->
+              <div class="flex items-center gap-1 text-[10px] font-mono">
+                <span class="text-slate-500 mr-1">Sort:</span>
+                <button type="button" id="compSortSimilarity" class="comp-sort-btn px-2 py-0.5 rounded bg-emerald-600/30 text-emerald-300 border border-emerald-500/50">Similarity</button>
+                <button type="button" id="compSortProximity" class="comp-sort-btn px-2 py-0.5 rounded bg-white/[0.04] text-slate-400 hover:text-white border border-white/5">Proximity</button>
+                <button type="button" id="compSortPriceDesc" class="comp-sort-btn px-2 py-0.5 rounded bg-white/[0.04] text-slate-400 hover:text-white border border-white/5">Price [High]</button>
+                <button type="button" id="compSortPriceAsc" class="comp-sort-btn px-2 py-0.5 rounded bg-white/[0.04] text-slate-400 hover:text-white border border-white/5">Price [Low]</button>
+              </div>
             </div>
-            <div id="compsFeed" class="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+
+            <!-- Comps Feed Container -->
+            <div id="compsFeed" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
               <!-- Dynamically populated from /api/comps -->
             </div>
           </div>
@@ -358,6 +681,34 @@
     </div>
 
   </main>
+
+  <!-- ================================================================= -->
+  <!-- SAVED PROPERTIES MODAL / DRAWER -->
+  <!-- ================================================================= -->
+  <div id="savedPropertiesModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="relative w-full max-w-2xl p-1.5 rounded-3xl bg-white/[0.05] border border-white/[0.15] shadow-2xl backdrop-blur-2xl">
+      <div class="rounded-2xl bg-[#06120E] p-6 text-slate-200 space-y-4">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <h3 class="text-sm font-bold text-white font-mono uppercase tracking-wider">Saved Property Valuation Scenarios</h3>
+          </div>
+          <button id="savedPropertiesClose" type="button" class="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white flex items-center justify-center font-mono text-base">&times;</button>
+        </div>
+
+        <div id="savedPropertiesList" class="space-y-2.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="flex justify-between items-center pt-2 border-t border-white/[0.08] text-xs font-mono">
+          <span class="text-slate-500">Stored in Local Valuation Ledger</span>
+          <button id="clearSavedBtn" type="button" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all">Clear All</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <script src="auth.js"></script>
   <script src="app.js"></script>

@@ -331,6 +331,14 @@
     const closeModal = () => modal.classList.add('hidden');
     document.getElementById('bf-modal-close')?.addEventListener('click', closeModal);
     document.getElementById('bf-modal-close-footer')?.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
 
     modal.querySelectorAll('.persona-option').forEach(el => {
       el.addEventListener('click', () => {
