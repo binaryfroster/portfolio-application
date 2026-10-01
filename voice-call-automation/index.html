@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VocalFlow | Enterprise AI Voice Telephony Engine</title>
-  <meta name="description" content="Binary Froster autonomous voice telephony agent powered by OpenAI Whisper, GPT-4, and real-time SIP trunking achieving 70% call deflection.">
+  <meta name="description" content="Binary Froster autonomous voice telephony agent powered by OpenAI Whisper, GPT-4, Llama 3.3, and real-time SIP trunking achieving 70% call deflection.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -112,7 +112,7 @@
 
         <button id="simulateCallBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-[0_0_20px_rgba(168,85,247,0.25)] active:scale-[0.98]">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-          <span>Simulate Inbound Call</span>
+          <span>Simulate Inbound</span>
         </button>
 
         <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
@@ -150,14 +150,14 @@
             </div>
 
             <!-- Caller Identification Banner -->
-            <div class="p-3.5 rounded-xl bg-[#090C16] border border-white/[0.06] flex items-center justify-between">
+            <div class="p-3.5 rounded-xl bg-[#090C16] border border-white/[0.06] flex items-center justify-between" id="callerIdentityCard">
               <div>
-                <div class="text-[10px] font-mono text-purple-400 tracking-wider font-semibold">CALLER IDENTITY (CRM MATCH)</div>
+                <div class="text-[10px] font-mono text-purple-400 tracking-wider font-semibold" id="callerIdentityTag">CALLER IDENTITY (CRM MATCH)</div>
                 <h3 class="text-sm font-bold text-white mt-0.5" id="callerName">Alex Rivera (Customer #CR-9481)</h3>
-                <p class="text-[11px] text-slate-400 font-mono">+44 20 7946 0912 &middot; Heathrow Priority Support</p>
+                <p class="text-[11px] text-slate-400 font-mono" id="callerPhoneSubtitle">+44 20 7946 0912 &middot; Heathrow Priority Support</p>
               </div>
               <div class="text-right">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/30">AGENT: SARAH (NEURAL)</span>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/30" id="callerAgentBadge">AGENT: SARAH (NEURAL)</span>
               </div>
             </div>
 
@@ -217,7 +217,7 @@
             <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Live Speech-to-Text Stream (OpenAI Whisper)</h3>
+                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Live Speech-to-Text Stream</h3>
               </div>
               <span id="streamLatencyBadge" class="text-[10px] font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">Latency: 140ms</span>
             </div>
@@ -234,7 +234,7 @@
 
             <!-- Manual Speech / Text Input for Quick Testing -->
             <div class="pt-2 flex gap-2">
-              <input id="userSpeechInput" type="text" placeholder="Type a response to simulate customer voice input..." class="flex-1 px-3 py-2 rounded-xl bg-[#07090E] border border-white/[0.1] text-xs text-white focus:border-purple-500 outline-none">
+              <input id="userSpeechInput" type="text" placeholder="Type a response to test conversational voice reasoning..." class="flex-1 px-3 py-2 rounded-xl bg-[#07090E] border border-white/[0.1] text-xs text-white focus:border-purple-500 outline-none">
               <button id="sendSpeechInputBtn" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold transition-all">
                 Send Input
               </button>
@@ -244,8 +244,182 @@
 
       </div>
 
-      <!-- RIGHT: SENTIMENT, INTENT & TELEPHONY PIPELINE (5 COLS) -->
+      <!-- RIGHT: WORLD CALLING DIALER & TELEPHONY PIPELINE (5 COLS) -->
       <div class="lg:col-span-5 space-y-6">
+
+        <!-- GLOBAL OUTBOUND DIALER & CARRIER GATEWAY -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-5 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">World Telephony Dialer</h3>
+              </div>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/30">PSTN &middot; SIP &middot; WEBRTC</span>
+            </div>
+
+            <!-- Target Phone Destination Input -->
+            <div class="space-y-2">
+              <label class="block text-[11px] font-mono text-slate-300 uppercase tracking-wider font-semibold">Destination Phone Number</label>
+              <div class="flex gap-2">
+                <select id="countryCodeSelect" class="bg-[#080B14] border border-white/[0.1] rounded-xl px-2.5 py-2 text-white font-mono text-xs focus:border-cyan-400 outline-none w-28">
+                  <option value="+91" selected>+91 (IN)</option>
+                  <option value="+1">+1 (US)</option>
+                  <option value="+44">+44 (UK)</option>
+                  <option value="+971">+971 (AE)</option>
+                  <option value="+61">+61 (AU)</option>
+                  <option value="+49">+49 (DE)</option>
+                  <option value="+65">+65 (SG)</option>
+                </select>
+                <input id="targetPhoneNumberInput" type="tel" value="+91 7647958412" placeholder="+91 7647958412" class="flex-1 bg-[#07090E] border border-white/[0.12] rounded-xl px-3 py-2 text-white font-mono text-xs focus:border-cyan-400 outline-none tracking-wider">
+              </div>
+
+              <!-- Quick Target Presets -->
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                <span class="text-[10px] font-mono text-slate-500">PRESETS:</span>
+                <button type="button" class="preset-number-btn px-2 py-0.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono text-[10px] transition-all" data-number="+91 7647958412" data-name="Binary Froster HQ">
+                  +91 7647958412 [BF HQ]
+                </button>
+                <button type="button" class="preset-number-btn px-2 py-0.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.08] font-mono text-[10px] transition-all" data-number="+44 20 7946 0912" data-name="Heathrow Priority Desk">
+                  +44 20 7946 0912 [UK]
+                </button>
+                <button type="button" class="preset-number-btn px-2 py-0.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.08] font-mono text-[10px] transition-all" data-number="+1 415 555 2671" data-name="Silicon Valley Desk">
+                  +1 415 555 2671 [US]
+                </button>
+              </div>
+            </div>
+
+            <!-- DTMF Interactive Keypad -->
+            <div class="p-3 rounded-2xl bg-[#090C16] border border-white/[0.06] space-y-2">
+              <div class="flex justify-between items-center px-1">
+                <span class="text-[10px] font-mono text-slate-400 uppercase">DTMF Telephony Keypad</span>
+                <span class="text-[9px] font-mono text-cyan-400">AUDIO SYNTHESIS ON</span>
+              </div>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="1">
+                  <span>1</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">&nbsp;</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="2">
+                  <span>2</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">ABC</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="3">
+                  <span>3</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">DEF</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="4">
+                  <span>4</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">GHI</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="5">
+                  <span>5</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">JKL</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="6">
+                  <span>6</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">MNO</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="7">
+                  <span>7</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">PQRS</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="8">
+                  <span>8</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">TUV</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="9">
+                  <span>9</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">WXYZ</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="*">
+                  <span>*</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">&nbsp;</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="0">
+                  <span>0</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">+</span>
+                </button>
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="#">
+                  <span>#</span>
+                  <span class="text-[8px] text-slate-500 font-normal mt-0.5">&nbsp;</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Call Routing & LLM Options -->
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 font-mono text-[10px] uppercase mb-1">Telephony Carrier Route</label>
+                <select id="telephonyModeSelect" class="w-full bg-[#080B14] border border-white/[0.1] rounded-xl p-2 text-white font-mono text-xs focus:border-cyan-400 outline-none">
+                  <option value="twilio_carrier" selected>Twilio PSTN Outbound (Carrier Cellular/Landline)</option>
+                  <option value="neural_webrtc">VocalFlow WebRTC Neural Bridge (In-Browser Mic)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 font-mono text-[10px] uppercase mb-1">Conversational LLM Gateway</label>
+                <select id="llmGatewaySelect" class="w-full bg-[#080B14] border border-white/[0.1] rounded-xl p-2 text-white font-mono text-xs focus:border-cyan-400 outline-none">
+                  <option value="omniroute">OmniRoute Local Proxy (Port 20128) - 1M Free Tokens</option>
+                  <option value="groq" selected>Groq Cloud Llama 3.3 70B (Sub-100ms TTFT)</option>
+                  <option value="gemini">Google Gemini 2.5 Flash (Direct Multimodal)</option>
+                  <option value="edge_deterministic">VocalFlow Deterministic Voice Engine (&lt;20ms)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Outbound Action Button -->
+            <button id="placeOutboundCallBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 active:scale-[0.98]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+              <span id="placeOutboundCallBtnText">Dial +91 7647958412 Now</span>
+            </button>
+
+            <!-- Live Carrier Telemetry Status Box -->
+            <div id="carrierSignalBox" class="p-3 rounded-xl bg-[#090C16] border border-white/[0.06] text-[11px] font-mono space-y-1.5">
+              <div class="flex justify-between text-slate-400">
+                <span>SIP SIGNALING:</span>
+                <span id="sipSignalingStatus" class="text-emerald-400 font-bold">STANDBY (READY)</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>CARRIER GATEWAY:</span>
+                <span id="carrierGatewayName" class="text-slate-200">TRAI Mumbai / Twilio Trunk</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>NETWORK JITTER:</span>
+                <span class="text-cyan-400">1.8ms &middot; 0.0% loss</span>
+              </div>
+            </div>
+
+            <!-- Twilio Credentials Configuration Accordion -->
+            <details class="group rounded-xl bg-white/[0.02] border border-white/[0.08] p-3 text-xs">
+              <summary class="cursor-pointer font-mono text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
+                <span>Twilio Gateway &amp; Credentials Setup</span>
+                <span class="text-slate-500 group-open:rotate-180 transition-transform">&darr;</span>
+              </summary>
+              <div class="pt-3 space-y-2.5 font-mono text-[11px]">
+                <p class="text-slate-400 leading-relaxed font-sans">
+                  Under Twilio Free Trial rules, Indian destinations (+91) must be verified via OTP in your Twilio Console under <span class="text-cyan-400 font-mono">Phone Numbers &gt; Verified Caller IDs</span>.
+                </p>
+                <div>
+                  <label class="block text-[10px] text-slate-500 uppercase mb-0.5">Twilio Account SID</label>
+                  <input id="cfgTwilioSid" type="text" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-2.5 py-1.5 rounded-lg bg-[#07090e] border border-white/[0.1] text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-slate-500 uppercase mb-0.5">Twilio Auth Token</label>
+                  <input id="cfgTwilioToken" type="password" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-2.5 py-1.5 rounded-lg bg-[#07090e] border border-white/[0.1] text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-slate-500 uppercase mb-0.5">Twilio Phone Number</label>
+                  <input id="cfgTwilioPhone" type="text" placeholder="+1XXXXXXXXXX" class="w-full px-2.5 py-1.5 rounded-lg bg-[#07090e] border border-white/[0.1] text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <button id="saveTwilioCfgBtn" type="button" class="w-full py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-white font-mono text-[10px] transition-all">
+                  Save Gateway Credentials to Local Session
+                </button>
+              </div>
+            </details>
+
+          </div>
+        </div>
 
         <!-- Acoustic Sentiment Telemetry -->
         <div class="double-bezel">
@@ -279,8 +453,8 @@
 
             <div class="p-3.5 rounded-xl bg-[#090C16] border border-white/[0.06] space-y-1">
               <span class="text-[10px] font-mono text-purple-400 uppercase font-semibold">CLASSIFIED INTENT:</span>
-              <div class="text-xs font-semibold text-white">Flight Rescheduling & Baggage Allowance Inquiry</div>
-              <p class="text-[11px] text-slate-400 mt-1">Autonomous Resolution: CRM Ticket auto-updated, electronic itinerary dispatch triggered via Twilio SIP trunk.</p>
+              <div class="text-xs font-semibold text-white" id="classifiedIntentText">Enterprise Systems Concierge &middot; Priority Routing</div>
+              <p class="text-[11px] text-slate-400 mt-1" id="classifiedIntentDesc">Autonomous Resolution: Real-time neural LLM reasoning active via SIP trunk with sub-150ms conversational latency.</p>
             </div>
           </div>
         </div>
@@ -294,7 +468,8 @@
               <div>
                 <label class="block text-slate-300 font-semibold mb-1">Voice Synthesis Persona</label>
                 <select id="voicePersonaSelect" class="w-full bg-[#080B14] border border-white/[0.1] rounded-xl p-2.5 text-white font-medium focus:border-purple-400 focus:outline-none">
-                  <option value="sarah" selected>Sarah (Warm, British English, Conversational)</option>
+                  <option value="sarah" selected>Sarah (Warm, Conversational Neural Voice)</option>
+                  <option value="aditi">Aditi (Clear Indian English &middot; Polly.Aditi)</option>
                   <option value="david">David (Concise, Technical, Direct)</option>
                   <option value="elena">Elena (Multilingual Operations Specialist)</option>
                 </select>
@@ -315,7 +490,7 @@
                 </div>
                 <div class="flex justify-between text-slate-400 text-[11px]">
                   <span>AUDIO CODEC:</span>
-                  <span class="text-slate-200">Opus 24kHz / G.711u</span>
+                  <span class="text-slate-200">Opus 48kHz / G.711u</span>
                 </div>
                 <div class="flex justify-between text-slate-400 text-[11px]">
                   <span>MOS QUALITY SCORE:</span>
