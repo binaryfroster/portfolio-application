@@ -22,7 +22,8 @@
         'schedule_discharge',
         'narcotics_prescription',
         'hipaa_audit_ledger_override',
-        'critical_code_blue_broadcast'
+        'critical_code_blue_broadcast',
+        'bed_transfer'
       ]
     },
     {
@@ -36,7 +37,10 @@
       permissions: [
         'patient_intake',
         'clinical_triage',
+        'schedule_discharge',
         'narcotics_prescription',
+        'critical_code_blue_broadcast',
+        'bed_transfer',
         'biometric_telemetry_stream'
       ]
     },
@@ -78,12 +82,12 @@
     window.dispatchEvent(new CustomEvent('bf:auth-changed', { detail: user }));
   }
 
-  function showToast(message, type = 'info', duration = 3500) {
+  function showToast(message, type = 'info', duration = 4000) {
     let container = document.getElementById('bf-toast-container');
     if (!container) {
       container = document.createElement('div');
       container.id = 'bf-toast-container';
-      container.className = 'fixed bottom-5 right-5 z-[99999] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4';
+      container.className = 'fixed bottom-5 right-5 z-[99999] flex flex-col gap-2 pointer-events-none max-w-md w-full px-4';
       document.body.appendChild(container);
     }
 
@@ -99,6 +103,12 @@
         badge: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
         label: '[CLINICAL ALERT]',
         glow: 'shadow-[0_0_20px_rgba(244,63,94,0.15)]'
+      },
+      emergency: {
+        border: 'border-rose-500/80',
+        badge: 'bg-rose-600/30 text-rose-300 border-rose-500/60 font-bold',
+        label: '[CODE BLUE]',
+        glow: 'shadow-[0_0_30px_rgba(244,63,94,0.35)]'
       },
       warning: {
         border: 'border-amber-500/40',
