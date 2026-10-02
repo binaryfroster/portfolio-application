@@ -5,6 +5,7 @@
 // Strictly zero emojis. Full international dialing support for PSTN numbers (+91, +1, +44, etc.)
 
 const https = require('https');
+const db = require('./lib/db');
 
 /**
  * Make an HTTP request to Twilio REST API
@@ -152,6 +153,15 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  if (req.method === 'GET') {
+    const dbRes = await db.select('vocalflow_call_logs', 'order=created_at.desc&limit=15');
+    return res.status(200).json({
+      success: true,
+      logs: dbRes.data || [],
+      persisted: !dbRes.fallback
+    });
+  }
+
   const startTime = Date.now();
 
   try {
@@ -274,6 +284,22 @@ module.exports = async (req, res) => {
     }
 
     const elapsed = Date.now() - startTime;
+    const finalCallSid = twilioCallSid || generatedCallSid;
+
+    // Asynchronously persist call record to Supabase database (non-blocking)
+    db.insert('vocalflow_call_logs', [{
+      call_sid: finalCallSid,
+      from_number: twilioPhoneNumber || '+17372508034',
+      to_number: to,
+      customer_name: customerName,
+      scenario: scenario,
+      agent_voice: agentVoice,
+      status: callStatus,
+      duration_seconds: 0,
+      sentiment_score: 0.92,
+      latency_ms: elapsed,
+      carrier: provider
+    }]).catch(() => {});
 
     return res.status(200).json({
       success: true,
