@@ -365,9 +365,10 @@
         display: none !important;
       }
       .bf-suite-menu {
-        width: 280px;
-        left: auto;
-        right: 0;
+        width: 290px;
+        left: 0;
+        right: auto;
+        max-width: calc(100vw - 24px);
       }
     }
   `;
