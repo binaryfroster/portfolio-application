@@ -2,6 +2,8 @@
 // Endpoints: GET, POST, PATCH, PUT, DELETE /api/inventory
 // Binary Froster Enterprise ERP Suite - Strictly zero emojis
 
+const db = require('./lib/db');
+
 let inventoryStore = [
   { sku: 'SKU-8841', name: 'Silicon Heat Sinks (Alu-22)', bay: 'Bay B-08', category: 'Thermal', stock: 14, min: 50, cost: 14.50 },
   { sku: 'SKU-4912', name: 'Titanium Hex Screws M4', bay: 'Bay A-02', category: 'Fasteners', stock: 820, min: 500, cost: 0.45 },
@@ -106,6 +108,18 @@ module.exports = async (req, res) => {
     };
 
     inventoryStore.unshift(newSkuRecord);
+
+    // Asynchronously persist to Supabase flowops_inventory
+    db.insert('flowops_inventory', [{
+      sku: newSkuRecord.sku,
+      description: newSkuRecord.name,
+      bay: newSkuRecord.bay,
+      stock: newSkuRecord.stock,
+      safety_min: newSkuRecord.min,
+      unit_cost: newSkuRecord.cost,
+      category: newSkuRecord.category,
+      status: newSkuRecord.stock <= newSkuRecord.min ? 'Low Stock' : 'In Stock'
+    }]).catch(() => {});
 
     return res.status(201).json({
       success: true,
