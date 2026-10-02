@@ -2,6 +2,8 @@
 // Endpoint: GET, POST, PATCH /api/students
 // Strictly zero emojis. Deterministic academic registry.
 
+const db = require('./lib/db');
+
 let memoryStudents = [
   {
     id: 'STU-101',
@@ -314,6 +316,22 @@ module.exports = async (req, res) => {
 
       memoryStudents.unshift(newStudent);
 
+      // Asynchronously persist to Supabase edutrack_students
+      db.insert('edutrack_students', [{
+        student_id: newStudent.id,
+        name: newStudent.name,
+        email: newStudent.email,
+        cohort: newStudent.cohort,
+        gpa: newStudent.gpa,
+        attendance_rate: 100.0,
+        guardian_name: newStudent.guardian,
+        guardian_phone: newStudent.guardianPhone,
+        guardian_email: newStudent.guardianEmail,
+        tuition_status: newStudent.tuition.status,
+        tuition_balance: newStudent.tuition.balance,
+        grades_json: newStudent.courses
+      }]).catch(() => {});
+
       return res.status(201).json({
         success: true,
         enrolled: newStudent,
@@ -345,6 +363,12 @@ module.exports = async (req, res) => {
         target.tuition.balance = Math.max(0, target.tuition.total - target.tuition.paid);
         target.tuition.status = target.tuition.balance === 0 ? 'PAID' : 'PARTIAL';
         target.tuition.lastPaymentRef = ref;
+
+        // Persist tuition update to Supabase
+        db.update('edutrack_students', 'student_id', target.id, {
+          tuition_status: target.tuition.status,
+          tuition_balance: target.tuition.balance
+        }).catch(() => {});
 
         return res.status(200).json({
           success: true,

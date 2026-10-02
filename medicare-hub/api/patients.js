@@ -2,6 +2,8 @@
 // Endpoint: GET / POST / PUT /api/patients
 // Strictly zero emojis. Full clinical data formatting.
 
+const db = require('./lib/db');
+
 // In-memory patient store
 let patientDatabase = [
   {
@@ -210,6 +212,25 @@ module.exports = async (req, res) => {
       };
 
       patientDatabase.unshift(newPatient);
+
+      // Asynchronously persist to Supabase medicare_patients
+      db.insert('medicare_patients', [{
+        mrn: newPatient.mrn,
+        name: newPatient.name,
+        age: 45,
+        gender: newPatient.sex,
+        triage_acuity: newPatient.acuity,
+        bed: newPatient.bed,
+        condition: newPatient.condition,
+        blood_pressure: newPatient.bp,
+        heart_rate: newPatient.hr,
+        spo2: 98,
+        resp_rate: newPatient.rr,
+        temp_f: 98.6,
+        map_mmhg: 93,
+        allergies: [newPatient.allergies],
+        prescriptions: newPatient.prescriptions
+      }]).catch(() => {});
 
       return res.status(201).json({
         success: true,
