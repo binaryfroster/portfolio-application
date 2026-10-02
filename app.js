@@ -1696,6 +1696,23 @@
     setupQuizInteractions();
   }
 
+  async function loadServerlessProgress() {
+    try {
+      const res = await fetch('/api/progress?student=Dr.+Aris+Thorne');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.streakDays) {
+          STATE.streakDays = data.streakDays;
+          if (DOM.streakCountDisplay) {
+            DOM.streakCountDisplay.textContent = `${data.streakDays} Days`;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Serverless progress sync in offline fallback:', e);
+    }
+  }
+
   // =========================================================================
   // INITIALIZATION
   // =========================================================================
@@ -1706,5 +1723,6 @@
   updateMarkCompleteBtnUI();
   updateTelemetryUI();
   loadCoursesCatalog();
+  loadServerlessProgress();
 
 })();
