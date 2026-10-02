@@ -3,6 +3,8 @@
 // Endpoint: POST /api/chat
 // Strictly zero emojis.
 
+const db = require('./lib/db');
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -10,6 +12,17 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // GET: Retrieve conversation history by session
+  if (req.method === 'GET') {
+    const sessionId = req.query?.sessionId || 'default';
+    const dbRes = await db.select('nexus_conversations', `session_id=eq.${encodeURIComponent(sessionId)}&order=created_at.asc&limit=50`);
+    return res.status(200).json({
+      success: true,
+      messages: dbRes.data || [],
+      persisted: !dbRes.fallback
+    });
   }
 
   try {
@@ -235,6 +248,30 @@ The query was verified against internal architecture specifications and standard
     const ttftMs = Math.floor(Math.random() * 25) + 38; // 38ms - 62ms
     const totalLatencyMs = ttftMs + Math.floor(outputTokens * 1.8);
     const tokensPerSec = Math.round((outputTokens / ((totalLatencyMs - ttftMs) / 1000)) * 10) / 10 || 76.5;
+
+    // Persist conversation turns to database if configured
+    const sessionId = body.sessionId || 'session-' + Date.now().toString(36);
+    const turnIndex = typeof body.turnIndex === 'number' ? body.turnIndex : 1;
+    db.insert('nexus_conversations', [
+      {
+        session_id: sessionId,
+        turn_index: turnIndex,
+        speaker: 'user',
+        text: prompt,
+        ttft_ms: 0,
+        tokens_per_sec: 0,
+        citations_json: []
+      },
+      {
+        session_id: sessionId,
+        turn_index: turnIndex + 1,
+        speaker: 'assistant',
+        text: responseText,
+        ttft_ms: ttftMs,
+        tokens_per_sec: tokensPerSec,
+        citations_json: citations
+      }
+    ]).catch(() => {});
 
     // Handle SSE streaming if requested
     if (stream) {
