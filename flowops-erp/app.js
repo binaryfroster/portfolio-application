@@ -228,14 +228,16 @@
     const height = factoryContainer.clientHeight || 360;
 
     scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x06090e, 0.025);
 
     camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
-    camera.position.set(9.0, 9.5, 9.0);
+    camera.position.set(7.8, 8.2, 7.8);
     camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x050812, 0);
     factoryContainer.innerHTML = '';
     factoryContainer.appendChild(renderer.domElement);
 

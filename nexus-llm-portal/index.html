@@ -102,7 +102,7 @@
 <body class="min-h-screen flex flex-col antialiased bg-[#08090C] text-slate-200 overflow-hidden select-none">
 
   <!-- TOP NAVIGATION HEADER -->
-  <header class="h-14 border-b border-brand-border bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between z-20 shrink-0">
+  <header class="h-16 border-b border-brand-border bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between z-20 shrink-0">
     <div class="flex items-center gap-2 sm:gap-3">
       <!-- Mobile menu trigger -->
       <button id="mobileMenuBtn" class="lg:hidden p-1.5 rounded-lg border border-brand-border text-slate-400 hover:text-white hover:bg-slate-800/60" aria-label="Toggle Navigation">
@@ -110,16 +110,16 @@
       </button>
 
       <!-- Logo & System Brand -->
-      <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 sm:gap-2.5 group">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500/20 via-blue-600/30 to-indigo-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-mono font-bold text-sm tracking-tighter group-hover:border-cyan-400 transition-colors shadow-inner">
+      <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 via-blue-600/30 to-indigo-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-mono font-bold text-sm tracking-tighter group-hover:border-cyan-400 transition-colors shadow-inner">
           BF
         </div>
-        <div>
+        <div class="flex flex-col justify-center">
           <div class="flex items-center gap-1.5 sm:gap-2">
             <span class="font-bold text-xs sm:text-sm tracking-tight text-white">NEXUS LLM</span>
             <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold tracking-wider">v2.5 Core</span>
           </div>
-          <p class="text-[9px] text-slate-400 font-mono tracking-wider hidden sm:block">ENTERPRISE COGNITIVE FABRIC</p>
+          <p class="text-[9px] text-slate-400 font-mono tracking-wider hidden sm:block mt-0.5 leading-none">ENTERPRISE COGNITIVE FABRIC</p>
         </div>
       </a>
     </div>
@@ -211,7 +211,7 @@
   <div class="flex-1 flex overflow-hidden relative">
 
     <!-- LEFT SIDEBAR: SESSIONS & KNOWLEDGE BASE -->
-    <aside id="sidebar" class="fixed inset-y-14 left-0 z-30 w-72 bg-[#0A0D15] border-r border-brand-border flex flex-col transition-transform duration-200 -translate-x-full lg:translate-x-0 lg:static">
+    <aside id="sidebar" class="fixed top-16 bottom-0 left-0 z-30 w-72 bg-[#0A0D15] border-r border-brand-border flex flex-col transition-transform duration-200 -translate-x-full lg:translate-x-0 lg:static">
       <!-- New Chat Button -->
       <div class="p-3 border-b border-brand-border">
         <button id="newChatBtn" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 text-xs font-bold tracking-wide transition-all shadow-sm">
@@ -417,7 +417,7 @@
     <div id="settingsBackdrop" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm hidden transition-opacity"></div>
 
     <!-- PARAMETERS DRAWER (MODAL OVERLAY) -->
-    <div id="settingsDrawer" class="fixed inset-y-0 right-0 z-40 w-80 sm:w-96 bg-[#0C1019] border-l border-brand-border p-5 sm:p-6 shadow-2xl transition-transform duration-200 translate-x-full overflow-y-auto custom-scrollbar">
+    <div id="settingsDrawer" class="fixed inset-y-0 right-0 z-40 w-80 sm:w-[380px] max-w-[95vw] bg-[#0C1019] border-l border-brand-border p-4 sm:p-6 shadow-2xl transition-transform duration-200 translate-x-full overflow-y-auto custom-scrollbar box-border">
       <div class="flex items-center justify-between pb-4 border-b border-brand-border">
         <h3 class="text-sm font-bold text-white tracking-wide uppercase font-mono">Inference Parameters</h3>
         <button id="closeSettingsBtn" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">

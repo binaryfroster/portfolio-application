@@ -131,8 +131,8 @@
           </div>
         </div>
 
-        <button id="simulateCallBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-[0_0_20px_rgba(168,85,247,0.25)] active:scale-[0.98]">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+        <button id="simulateCallBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/40 text-purple-200 font-semibold text-xs transition-all shadow-sm active:scale-[0.98]">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
           <span id="simulateCallBtnText">Simulate Inbound</span>
         </button>
 
@@ -188,8 +188,9 @@
 
             <!-- 3D HOLOGRAPHIC AUDIO VISUALIZER VIEWPORT -->
             <div class="rounded-xl bg-[#060810] border border-white/[0.08] relative overflow-hidden flex flex-col items-center justify-center h-64 group">
+              <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15),transparent_70%)]"></div>
               <!-- Three.js Canvas Container -->
-              <div id="threejs-audio-container" class="w-full h-full cursor-grab active:cursor-grabbing flex items-center justify-center"></div>
+              <div id="threejs-audio-container" class="w-full h-full cursor-grab active:cursor-grabbing flex items-center justify-center relative z-0"></div>
               
               <!-- 3D Visualizer HUD Overlays -->
               <div class="absolute top-3 left-3 pointer-events-none">
@@ -347,6 +348,47 @@
           </div>
         </div>
 
+        <!-- Acoustic Sentiment Telemetry (Balanced under Live Transcript) -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-5 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Acoustic Sentiment Telemetry</h3>
+              </div>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Low Risk</span>
+            </div>
+
+            <div class="space-y-3 text-xs font-mono">
+              <div>
+                <div class="flex justify-between text-slate-300 mb-1">
+                  <span>Customer Satisfaction Index</span>
+                  <span class="text-emerald-400 font-bold" id="satisfactionVal">88% (Positive)</span>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full w-[88%] rounded-full transition-all duration-500" id="satisfactionBar"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-1">
+                  <span>Stress Pitch Frequency</span>
+                  <span class="text-cyan-400 font-bold" id="frustrationVal">6% (Calm)</span>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full w-[6%] rounded-full transition-all duration-500" id="frustrationBar"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-[#090C16] border border-white/[0.06] space-y-1">
+              <span class="text-[10px] font-mono text-purple-400 uppercase font-semibold">CLASSIFIED INTENT:</span>
+              <div class="text-xs font-semibold text-white" id="classifiedIntentText">Enterprise Systems Concierge &middot; Priority Routing</div>
+              <p class="text-[11px] text-slate-400 mt-1" id="classifiedIntentDesc">Autonomous Resolution: Real-time neural LLM reasoning active via SIP trunk with sub-150ms conversational latency.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- RIGHT: WORLD CALLING DIALER & TELEPHONY PIPELINE (5 COLS) -->
@@ -464,51 +506,51 @@
                 <span class="text-[9px] font-mono text-cyan-400">AUDIO SYNTHESIS ON</span>
               </div>
               <div class="grid grid-cols-3 gap-1.5">
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="1">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="1">
                   <span>1</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">&nbsp;</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="2">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="2">
                   <span>2</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">ABC</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="3">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="3">
                   <span>3</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">DEF</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="4">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="4">
                   <span>4</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">GHI</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="5">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="5">
                   <span>5</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">JKL</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="6">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="6">
                   <span>6</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">MNO</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="7">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="7">
                   <span>7</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">PQRS</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="8">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="8">
                   <span>8</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">TUV</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="9">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="9">
                   <span>9</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">WXYZ</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="*">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="*">
                   <span>*</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">&nbsp;</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="0">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="0">
                   <span>0</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">+</span>
                 </button>
-                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] active:bg-cyan-500/20 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all leading-none" data-key="#">
+                <button type="button" class="dtmf-key py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/40 active:scale-95 active:bg-cyan-500/30 border border-white/[0.06] text-white font-mono text-sm font-bold flex flex-col items-center justify-center transition-all duration-75 leading-none shadow-sm" data-key="#">
                   <span>#</span>
                   <span class="text-[8px] text-slate-500 font-normal mt-0.5">&nbsp;</span>
                 </button>
@@ -608,43 +650,6 @@
           </div>
         </div>
 
-        <!-- Acoustic Sentiment Telemetry -->
-        <div class="double-bezel">
-          <div class="double-bezel-inner p-5 space-y-4">
-            <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-              <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">Acoustic Sentiment Telemetry</h3>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Low Risk</span>
-            </div>
-
-            <div class="space-y-3 text-xs font-mono">
-              <div>
-                <div class="flex justify-between text-slate-300 mb-1">
-                  <span>Customer Satisfaction Index</span>
-                  <span class="text-emerald-400 font-bold" id="satisfactionVal">88% (Positive)</span>
-                </div>
-                <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                  <div class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full w-[88%] rounded-full transition-all duration-500" id="satisfactionBar"></div>
-                </div>
-              </div>
-
-              <div>
-                <div class="flex justify-between text-slate-300 mb-1">
-                  <span>Stress Pitch Frequency</span>
-                  <span class="text-cyan-400 font-bold" id="frustrationVal">6% (Calm)</span>
-                </div>
-                <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                  <div class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full w-[6%] rounded-full transition-all duration-500" id="frustrationBar"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-[#090C16] border border-white/[0.06] space-y-1">
-              <span class="text-[10px] font-mono text-purple-400 uppercase font-semibold">CLASSIFIED INTENT:</span>
-              <div class="text-xs font-semibold text-white" id="classifiedIntentText">Enterprise Systems Concierge &middot; Priority Routing</div>
-              <p class="text-[11px] text-slate-400 mt-1" id="classifiedIntentDesc">Autonomous Resolution: Real-time neural LLM reasoning active via SIP trunk with sub-150ms conversational latency.</p>
-            </div>
-          </div>
-        </div>
 
         <!-- Voice Agent Telephony Configuration -->
         <div class="double-bezel">

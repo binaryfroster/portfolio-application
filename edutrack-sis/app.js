@@ -375,12 +375,13 @@
     scene.fog = new THREE.FogExp2(0x040814, 0.035);
 
     camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
-    camera.position.set(0, 0, 13.5);
+    camera.position.set(0, 0, 9.8);
     camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x040814, 0);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 

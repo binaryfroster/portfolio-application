@@ -557,10 +557,11 @@
 
             <!-- Three.js Canvas Container -->
             <div class="rounded-xl bg-[#040A08] border border-white/[0.08] relative overflow-hidden h-72 group">
-              <div id="threejs-arch-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+              <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.14),transparent_70%)]"></div>
+              <div id="threejs-arch-container" class="w-full h-full cursor-grab active:cursor-grabbing relative z-0"></div>
 
               <!-- HUD Top Overlay -->
-              <div class="absolute top-3 left-3 pointer-events-none">
+              <div class="absolute top-3 left-3 pointer-events-none z-10">
                 <div class="flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-emerald-300">
                   <span id="hudFloors">3 Storeys</span>
                   <span>&middot;</span>
@@ -571,7 +572,7 @@
               </div>
 
               <!-- HUD Bottom Overlay -->
-              <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1">
+              <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1 z-10">
                 <span class="bg-black/60 px-2 py-0.5 rounded backdrop-blur border border-white/10 hidden sm:inline">DRAG TO ORBIT &middot; SCROLL TO ZOOM</span>
                 <span id="hudPriceBadge" class="text-emerald-400 font-bold bg-black/60 px-2.5 py-0.5 rounded backdrop-blur border border-white/10 ml-auto">£2,505,500</span>
               </div>
@@ -580,18 +581,20 @@
         </div>
 
         <!-- Valuation Estimate Hero Banner -->
-        <div class="double-bezel">
-          <div class="double-bezel-inner p-6 space-y-4 bg-gradient-to-br from-[#0A241B] via-[#091D15] to-[#06140F]">
+        <div class="double-bezel shadow-[0_0_50px_-10px_rgba(16,185,129,0.25)]">
+          <div class="double-bezel-inner p-6 space-y-4 bg-gradient-to-br from-[#0A241B] via-[#091D15] to-[#06140F] relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-52 h-52 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-16 -bottom-16 w-52 h-52 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
             
-            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-emerald-400">
+            <div class="relative z-10 flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-emerald-400">
               <span class="tracking-wider uppercase font-semibold">PREDICTED FAIR MARKET VALUATION (RICS RED BOOK)</span>
               <div class="flex items-center gap-2">
                 <span id="confidenceScoreBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">92.4% CONFIDENCE</span>
-                <span id="liquidityScoreBadge" class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">TIER 1 LIQUID</span>
+                <span id="liquidityScoreBadge" class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">TIER 1 LIQUID</span>
               </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-baseline gap-3">
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-baseline gap-3">
               <span class="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight" id="estimatedPrice">£2,505,500</span>
               <span class="text-sm font-mono text-slate-400" id="unitPriceLabel">£1,728 / sq ft</span>
             </div>

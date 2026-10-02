@@ -1477,7 +1477,19 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
         <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span class="truncate max-w-[140px]">${cit.doc}</span>
       `;
+      tag.addEventListener('mouseenter', () => {
+        const cluster = VECTOR_CLUSTERS.find(c => cit.doc && (cit.doc.toLowerCase().includes(c.doc.split('.')[0].toLowerCase()) || c.doc.toLowerCase().includes(cit.doc.toLowerCase())));
+        if (cluster && vectorGroup) {
+          targetRotation.x = -cluster.pos[1] * 0.12;
+          targetRotation.y = cluster.pos[0] * 0.12;
+        }
+      });
       tag.addEventListener('click', () => {
+        const cluster = VECTOR_CLUSTERS.find(c => cit.doc && (cit.doc.toLowerCase().includes(c.doc.split('.')[0].toLowerCase()) || c.doc.toLowerCase().includes(cit.doc.toLowerCase())));
+        if (cluster && vectorGroup) {
+          targetRotation.x = -cluster.pos[1] * 0.12;
+          targetRotation.y = cluster.pos[0] * 0.12;
+        }
         if (citationDocName) citationDocName.textContent = cit.doc;
         if (citationTitle) citationTitle.textContent = cit.chunk;
         if (citationContent) citationContent.textContent = cit.text;

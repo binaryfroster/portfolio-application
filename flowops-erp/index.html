@@ -174,8 +174,11 @@
               <span class="text-emerald-400 font-bold" id="kpiOeeBadge">WORLD-CLASS</span>
             </div>
             <div class="flex items-baseline justify-between">
-              <div class="text-2xl font-bold text-white font-mono" id="kpiOeeDisplay">92.3%</div>
-              <span class="text-[10px] font-mono text-cyan-400">Target: 85.0%</span>
+              <div class="text-2xl font-bold text-white font-mono tabular-nums" id="kpiOeeDisplay">92.3%</div>
+              <!-- Inline SVG Sparkline -->
+              <svg class="w-16 h-5 stroke-emerald-400 fill-none" viewBox="0 0 64 20">
+                <polyline stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="0,15 8,12 16,14 24,9 32,11 40,7 48,8 56,4 64,3" />
+              </svg>
             </div>
             <div class="w-full bg-[#080C16] rounded-full h-1.5 overflow-hidden">
               <div id="kpiOeeBar" class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-full w-[92.3%] rounded-full transition-all duration-500"></div>
@@ -196,8 +199,11 @@
               <span class="text-cyan-400 font-bold">+2.8% MoM</span>
             </div>
             <div class="flex items-baseline justify-between">
-              <div class="text-2xl font-bold text-white font-mono" id="kpiOnTimeDisplay">98.4%</div>
-              <span class="text-[10px] font-mono text-emerald-400">SLA 97.0%</span>
+              <div class="text-2xl font-bold text-white font-mono tabular-nums" id="kpiOnTimeDisplay">98.4%</div>
+              <!-- Inline SVG Sparkline -->
+              <svg class="w-16 h-5 stroke-cyan-400 fill-none" viewBox="0 0 64 20">
+                <polyline stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="0,12 8,10 16,11 24,8 32,9 40,6 48,6 56,4 64,3" />
+              </svg>
             </div>
             <div class="w-full bg-[#080C16] rounded-full h-1.5 overflow-hidden">
               <div id="kpiOnTimeBar" class="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[98.4%] rounded-full transition-all duration-500"></div>
@@ -216,8 +222,11 @@
               <span class="text-emerald-400 font-bold">6-SIGMA</span>
             </div>
             <div class="flex items-baseline justify-between">
-              <div class="text-2xl font-bold text-white font-mono" id="kpiScrapDisplay">0.38%</div>
-              <span class="text-[10px] font-mono text-emerald-400">TOLERANCE &lt;0.50%</span>
+              <div class="text-2xl font-bold text-white font-mono tabular-nums" id="kpiScrapDisplay">0.38%</div>
+              <!-- Inline SVG Sparkline -->
+              <svg class="w-16 h-5 stroke-emerald-400 fill-none" viewBox="0 0 64 20">
+                <polyline stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="0,5 8,6 16,7 24,9 32,8 40,11 48,13 56,15 64,16" />
+              </svg>
             </div>
             <div class="w-full bg-[#080C16] rounded-full h-1.5 overflow-hidden">
               <div id="kpiScrapBar" class="bg-emerald-400 h-full w-[19%] rounded-full transition-all duration-500"></div>
@@ -235,7 +244,13 @@
               <span class="font-bold tracking-wider text-slate-300">TOTAL INVENTORY VALUE</span>
               <span class="text-emerald-400 font-bold" id="kpiSkuCountBadge">8 SKUs</span>
             </div>
-            <div class="text-2xl font-bold text-white font-mono" id="kpiInventoryDisplay">$1,842,500</div>
+            <div class="flex items-baseline justify-between">
+              <div class="text-2xl font-bold text-white font-mono tabular-nums" id="kpiInventoryDisplay">$1,842,500</div>
+              <!-- Inline SVG Sparkline -->
+              <svg class="w-16 h-5 stroke-emerald-400 fill-none" viewBox="0 0 64 20">
+                <polyline stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="0,16 8,14 16,13 24,10 32,11 40,8 48,7 56,5 64,3" />
+              </svg>
+            </div>
             <div class="flex items-center justify-between text-[11px] text-slate-400 font-sans">
               <span>Equiv: <span class="font-mono text-slate-300" id="kpiInventoryGbpDisplay">&pound;1,455,575</span></span>
               <span class="text-emerald-400 font-mono font-semibold">+18.4% Output</span>
@@ -273,7 +288,8 @@
 
           <!-- Three.js Canvas Container & Floating HUD -->
           <div class="rounded-xl bg-[#050812] border border-white/[0.08] relative overflow-hidden h-80 sm:h-96 group">
-            <div id="threejs-factory-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+            <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(0,242,254,0.08),rgba(16,185,129,0.05)_50%,transparent_75%)]"></div>
+            <div id="threejs-factory-container" class="w-full h-full cursor-grab active:cursor-grabbing relative z-0"></div>
 
             <!-- Pallet Slot Inspector HUD Panel (Overlay) -->
             <div id="palletSlotInspectorHud" class="hidden absolute top-4 right-4 max-w-sm w-full p-1 rounded-2xl bg-black/80 backdrop-blur-xl border border-cyan-500/40 shadow-2xl z-30 transition-all">

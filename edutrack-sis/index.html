@@ -207,12 +207,61 @@
 
           <!-- Three.js Canvas Container -->
           <div class="rounded-xl bg-[#040814] border border-white/[0.08] relative overflow-hidden h-64 group cursor-grab active:cursor-grabbing">
-            <div id="threejs-constellation-container" class="w-full h-full"></div>
+            <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.14),transparent_70%)]"></div>
+            <div id="threejs-constellation-container" class="w-full h-full relative z-0"></div>
 
-            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1">
+            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400 pointer-events-none px-1 z-10">
               <span class="bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur border border-white/10">ORBIT: DRAG TO ROTATE &middot; SCROLL TO ZOOM</span>
               <span class="text-sky-300 font-bold bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur border border-white/10">CORE DOMAINS: DISTRIBUTED SYSTEMS &middot; ML &middot; CRYPTOGRAPHY</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Cohort Metric KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- 1. Cohort Average GPA -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-4 space-y-1.5">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span class="font-bold tracking-wider text-slate-300">COHORT AVERAGE GPA</span>
+              <span class="text-emerald-400 font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px]">TIER 1</span>
+            </div>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white font-mono tabular-nums">3.66 <span class="text-xs text-slate-500 font-normal">/ 4.00</span></span>
+              <span class="text-[10px] font-mono text-cyan-400 font-semibold">+0.12 YoY</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Distributed Systems &amp; Cryptography Division</p>
+          </div>
+        </div>
+
+        <!-- 2. Term Retention Rate -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-4 space-y-1.5">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span class="font-bold tracking-wider text-slate-300">TERM RETENTION RATE</span>
+              <span class="text-cyan-400 font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-[10px]">99.8% SLA</span>
+            </div>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white font-mono tabular-nums">97.4%</span>
+              <span class="text-[10px] font-mono text-emerald-400 font-semibold">Exemplary</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Zero involuntary withdrawals recorded this term</p>
+          </div>
+        </div>
+
+        <!-- 3. Dean's Honors List -->
+        <div class="double-bezel">
+          <div class="double-bezel-inner p-4 space-y-1.5">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span class="font-bold tracking-wider text-slate-300">HONORS DISTINCTION</span>
+              <span class="text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[10px]">GPA &ge; 3.75</span>
+            </div>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white font-mono tabular-nums">42% <span class="text-xs text-slate-500 font-normal">of Scholars</span></span>
+              <span class="text-[10px] font-mono text-amber-300 font-semibold">Class of 2027</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Published peer-reviewed technical research</p>
           </div>
         </div>
       </div>

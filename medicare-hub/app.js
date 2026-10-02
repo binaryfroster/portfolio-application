@@ -704,7 +704,7 @@
       const isDischarged = p.status === 'Discharged';
 
       let acuityBadge = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
-      if (p.acuity === 'Critical') acuityBadge = 'bg-rose-500/15 text-rose-300 border-rose-500/40 font-bold';
+      if (p.acuity === 'Critical') acuityBadge = 'bg-rose-500/20 text-rose-300 border-rose-500/50 font-bold animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.3)]';
       else if (p.acuity === 'Urgent') acuityBadge = 'bg-amber-500/15 text-amber-300 border-amber-500/40';
 
       const hasSevereAllergy = p.allergies && p.allergies.toLowerCase() !== 'none recorded' && p.allergies.toLowerCase() !== 'none';
@@ -826,16 +826,16 @@
     if (statusBP) {
       if (systolic >= 140 || diastolic >= 90) {
         statusBP.textContent = 'Stage 2 Hypertension';
-        statusBP.className = 'text-[9px] text-rose-400 block truncate';
+        statusBP.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words';
       } else if (systolic >= 130 || diastolic >= 80) {
         statusBP.textContent = 'Stage 1 Hypertension';
-        statusBP.className = 'text-[9px] text-amber-400 block truncate';
+        statusBP.className = 'text-[9px] text-amber-400 block leading-tight whitespace-normal break-words';
       } else if (systolic < 90 || diastolic < 60) {
         statusBP.textContent = 'Hypotensive';
-        statusBP.className = 'text-[9px] text-rose-400 block truncate';
+        statusBP.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words';
       } else {
         statusBP.textContent = 'Normotensive';
-        statusBP.className = 'text-[9px] text-emerald-400 block truncate';
+        statusBP.className = 'text-[9px] text-emerald-400 block leading-tight whitespace-normal break-words';
       }
     }
 
@@ -843,16 +843,16 @@
     if (statusHR) {
       if (p.hr > 120) {
         statusHR.textContent = 'Severe Tachycardia';
-        statusHR.className = 'text-[9px] text-rose-400 block truncate font-bold';
+        statusHR.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words font-bold';
       } else if (p.hr > 100) {
         statusHR.textContent = 'Sinus Tachycardia';
-        statusHR.className = 'text-[9px] text-amber-400 block truncate';
+        statusHR.className = 'text-[9px] text-amber-400 block leading-tight whitespace-normal break-words';
       } else if (p.hr < 60) {
         statusHR.textContent = 'Sinus Bradycardia';
-        statusHR.className = 'text-[9px] text-amber-400 block truncate';
+        statusHR.className = 'text-[9px] text-amber-400 block leading-tight whitespace-normal break-words';
       } else {
         statusHR.textContent = 'Resting Sinus';
-        statusHR.className = 'text-[9px] text-emerald-400 block truncate';
+        statusHR.className = 'text-[9px] text-emerald-400 block leading-tight whitespace-normal break-words';
       }
     }
 
@@ -861,13 +861,13 @@
       const spo2Num = parseInt(p.spo2, 10) || 98;
       if (spo2Num < 92) {
         statusSpO2.textContent = 'Critical Hypoxia';
-        statusSpO2.className = 'text-[9px] text-rose-400 block truncate font-bold';
+        statusSpO2.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words font-bold';
       } else if (spo2Num < 95) {
         statusSpO2.textContent = 'Borderline Hypoxia';
-        statusSpO2.className = 'text-[9px] text-amber-400 block truncate';
+        statusSpO2.className = 'text-[9px] text-amber-400 block leading-tight whitespace-normal break-words';
       } else {
         statusSpO2.textContent = 'Optimal Saturation';
-        statusSpO2.className = 'text-[9px] text-emerald-400 block truncate';
+        statusSpO2.className = 'text-[9px] text-emerald-400 block leading-tight whitespace-normal break-words';
       }
     }
 
@@ -876,13 +876,13 @@
       const rrNum = parseInt(p.rr, 10) || 16;
       if (rrNum > 22) {
         statusRR.textContent = 'Tachypnea';
-        statusRR.className = 'text-[9px] text-rose-400 block truncate';
+        statusRR.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words';
       } else if (rrNum < 12) {
         statusRR.textContent = 'Bradypnea';
-        statusRR.className = 'text-[9px] text-amber-400 block truncate';
+        statusRR.className = 'text-[9px] text-amber-400 block leading-tight whitespace-normal break-words';
       } else {
         statusRR.textContent = 'Normal Eupnea';
-        statusRR.className = 'text-[9px] text-emerald-400 block truncate';
+        statusRR.className = 'text-[9px] text-emerald-400 block leading-tight whitespace-normal break-words';
       }
     }
 
@@ -891,13 +891,13 @@
       const tempNum = parseFloat(p.temp) || 98.6;
       if (tempNum >= 100.4) {
         statusTemp.textContent = 'Febrile Pyrexia';
-        statusTemp.className = 'text-[9px] text-rose-400 block truncate';
+        statusTemp.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words';
       } else if (tempNum < 96.8) {
         statusTemp.textContent = 'Hypothermic';
-        statusTemp.className = 'text-[9px] text-amber-400 block truncate';
+        statusTemp.className = 'text-[9px] text-amber-400 block leading-tight whitespace-normal break-words';
       } else {
         statusTemp.textContent = 'Afebrile';
-        statusTemp.className = 'text-[9px] text-emerald-400 block truncate';
+        statusTemp.className = 'text-[9px] text-emerald-400 block leading-tight whitespace-normal break-words';
       }
     }
 
@@ -905,10 +905,10 @@
     if (statusMAP) {
       if (mapVal < 65) {
         statusMAP.textContent = 'Poor Perfusion';
-        statusMAP.className = 'text-[9px] text-rose-400 block truncate font-bold';
+        statusMAP.className = 'text-[9px] text-rose-400 block leading-tight whitespace-normal break-words font-bold';
       } else {
         statusMAP.textContent = 'Adequate Perfusion';
-        statusMAP.className = 'text-[9px] text-emerald-400 block truncate';
+        statusMAP.className = 'text-[9px] text-emerald-400 block leading-tight whitespace-normal break-words';
       }
     }
 
