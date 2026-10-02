@@ -3,6 +3,8 @@
 // Binary Froster Enterprise Valuation Architecture
 // Strictly zero emojis. Mathematically sound, resilient against NaN and missing fields.
 
+const db = require('./lib/db');
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -10,6 +12,15 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  if (req.method === 'GET') {
+    const dbRes = await db.select('metroval_saved_properties', 'order=created_at.desc&limit=25');
+    return res.status(200).json({
+      success: true,
+      savedProperties: dbRes.data || [],
+      persisted: !dbRes.fallback
+    });
   }
 
   try {
@@ -238,8 +249,36 @@ module.exports = async (req, res) => {
       }
     ];
 
+    // Persist property record if action is save
+    let savedRecordId = null;
+    if (body.action === 'save') {
+      const propRef = `PROP-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 1000)}`;
+      db.insert('metroval_saved_properties', [{
+        property_ref: propRef,
+        borough: boroughNames[boroughKey] || boroughKey,
+        postcode: postcode,
+        typology: typeNames[typeKey] || typeKey,
+        sqft: sqft,
+        bedrooms: bedrooms,
+        bathrooms: bathrooms,
+        condition_grade: conditionGrade,
+        year_built: yearBuilt,
+        estimated_price: finalPrice,
+        currency: currency,
+        price_per_sqft: pricePerSqFt,
+        confidence_low: lowBound,
+        confidence_high: highBound,
+        mortgage_quote_json: {
+          grossYieldPercent,
+          estimatedMonthlyRent
+        }
+      }]).catch(() => {});
+      savedRecordId = propRef;
+    }
+
     return res.status(200).json({
       success: true,
+      savedRecordId: savedRecordId,
       timestamp: new Date().toISOString(),
       model: 'MetroVal LightGBM Spatial Econometric v4.8 (RICS Red Book Aligned)',
       accuracyScore: '92.4% (R² = 0.941)',
