@@ -265,3 +265,136 @@ test('5. Serverless API contract testing across all 7 applications', async () =>
     assert.ok(postRes.body && postRes.body.success === true && typeof postRes.body.completion === 'string', 'Nexus chat POST failed');
   }
 });
+
+test('6. Secondary and telemetry API endpoint verification', async () => {
+  // 6.1 Telemetry API
+  {
+    const telemApi = await import(`file://${path.join(BASE_DIR, 'voice-call-automation', 'api', 'telemetry.js').replace(/\\/g, '/')}`);
+    const handler = telemApi.default || telemApi;
+    const { req, res } = createMockReqRes({ method: 'GET' });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && (res.body.success === true || res.body.status === 'ONLINE'));
+  }
+
+  // 6.2 Real Estate Comps & Analytics
+  {
+    const compsApi = await import(`file://${path.join(BASE_DIR, 'real-estate-predictor', 'api', 'comps.js').replace(/\\/g, '/')}`);
+    const handler = compsApi.default || compsApi;
+    const { req, res } = createMockReqRes({ method: 'GET', query: { borough: 'westminster' } });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && res.body.success === true && Array.isArray(res.body.comps));
+  }
+
+  // 6.3 LearnBridge Courses Catalog
+  {
+    const coursesApi = await import(`file://${path.join(BASE_DIR, 'learnbridge-lms', 'api', 'courses.js').replace(/\\/g, '/')}`);
+    const handler = coursesApi.default || coursesApi;
+    const { req, res } = createMockReqRes({ method: 'GET' });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && res.body.success === true && Array.isArray(res.body.courses));
+  }
+
+  // 6.4 MediCare Vitals Telemetry
+  {
+    const vitalsApi = await import(`file://${path.join(BASE_DIR, 'medicare-hub', 'api', 'vitals.js').replace(/\\/g, '/')}`);
+    const handler = vitalsApi.default || vitalsApi;
+    const { req, res } = createMockReqRes({ method: 'GET', query: { mrn: 'MRN-78421' } });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && res.body.success === true);
+  }
+
+  // 6.5 FlowOps Kanban Stages
+  {
+    const kanbanApi = await import(`file://${path.join(BASE_DIR, 'flowops-erp', 'api', 'kanban.js').replace(/\\/g, '/')}`);
+    const handler = kanbanApi.default || kanbanApi;
+    const { req, res } = createMockReqRes({ method: 'GET' });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && res.body.success === true && Array.isArray(res.body.orders || res.body.columns));
+  }
+
+  // 6.6 EduTrack Attendance Ledger
+  {
+    const attApi = await import(`file://${path.join(BASE_DIR, 'edutrack-sis', 'api', 'attendance.js').replace(/\\/g, '/')}`);
+    const handler = attApi.default || attApi;
+    const { req, res } = createMockReqRes({ method: 'GET' });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && res.body.success === true);
+  }
+
+  // 6.7 Nexus Knowledge Base Documents
+  {
+    const ragApi = await import(`file://${path.join(BASE_DIR, 'nexus-llm-portal', 'api', 'rag.js').replace(/\\/g, '/')}`);
+    const handler = ragApi.default || ragApi;
+    const { req, res } = createMockReqRes({ method: 'GET' });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body && res.body.success === true && Array.isArray(res.body.documents));
+  }
+});
+
+test('7. Boundary validation & error handling across serverless endpoints', async () => {
+  // Empty prompt on Nexus chat should return 400
+  {
+    const chatApi = await import(`file://${path.join(BASE_DIR, 'nexus-llm-portal', 'api', 'chat.js').replace(/\\/g, '/')}`);
+    const handler = chatApi.default || chatApi;
+    const { req, res } = createMockReqRes({ method: 'POST', body: { prompt: '' } });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 400);
+    assert.strictEqual(res.body.success, false);
+  }
+
+  // Extreme or negative values on Real Estate Predictor should clamp gracefully
+  {
+    const predictApi = await import(`file://${path.join(BASE_DIR, 'real-estate-predictor', 'api', 'predict.js').replace(/\\/g, '/')}`);
+    const handler = predictApi.default || predictApi;
+    const { req, res } = createMockReqRes({
+      method: 'POST',
+      body: { sqft: -9999, bedrooms: -5, bathrooms: -2, conditionGrade: 999 }
+    });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.ok(res.body.success === true);
+    assert.ok(typeof (res.body.estimatedPrice || res.body.price) === 'number');
+    assert.ok(!isNaN(res.body.estimatedPrice || res.body.price));
+  }
+
+  // FlowOps stock update action
+  {
+    const invApi = await import(`file://${path.join(BASE_DIR, 'flowops-erp', 'api', 'inventory.js').replace(/\\/g, '/')}`);
+    const handler = invApi.default || invApi;
+    const { req, res } = createMockReqRes({
+      method: 'POST',
+      body: { action: 'update_stock', sku: 'SKU-8841', stock: 25 }
+    });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.strictEqual(res.body.stock, 25);
+  }
+});
+
+test('8. CORS & Preflight OPTIONS handling across all applications', async () => {
+  const apis = [
+    path.join(BASE_DIR, 'voice-call-automation', 'api', 'call.js'),
+    path.join(BASE_DIR, 'real-estate-predictor', 'api', 'predict.js'),
+    path.join(BASE_DIR, 'learnbridge-lms', 'api', 'progress.js'),
+    path.join(BASE_DIR, 'medicare-hub', 'api', 'patients.js'),
+    path.join(BASE_DIR, 'flowops-erp', 'api', 'inventory.js'),
+    path.join(BASE_DIR, 'edutrack-sis', 'api', 'students.js'),
+    path.join(BASE_DIR, 'nexus-llm-portal', 'api', 'chat.js')
+  ];
+
+  for (const apiPath of apis) {
+    const mod = await import(`file://${apiPath.replace(/\\/g, '/')}`);
+    const handler = mod.default || mod;
+    const { req, res } = createMockReqRes({ method: 'OPTIONS' });
+    await handler(req, res);
+    assert.strictEqual(res.statusCode, 200);
+    assert.strictEqual(res.headers['Access-Control-Allow-Origin'], '*');
+  }
+});

@@ -694,10 +694,33 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
   const uploadProgressBar = document.getElementById('uploadProgressBar');
   const uploadStatusText = document.getElementById('uploadStatusText');
 
+  async function loadPersistedSessionHistory() {
+    try {
+      const res = await fetch(`/api/chat?sessionId=${encodeURIComponent(state.activeSessionId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.messages && data.messages.length > 0) {
+          const session = state.sessions.find(s => s.id === state.activeSessionId);
+          if (session) {
+            session.messages = data.messages.map(m => ({
+              role: m.speaker || m.role,
+              content: m.text || m.content,
+              citations: m.citations_json || []
+            }));
+            renderActiveSession();
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Persisted chat history check in offline fallback:', e.message);
+    }
+  }
+
   function init() {
     initThreeVectorGraph();
     renderSessionList();
     renderActiveSession();
+    loadPersistedSessionHistory();
     loadRagDocuments();
     updateTelemetry();
 

@@ -34,6 +34,28 @@ module.exports = async (req, res) => {
 
   // 1. GET: Retrieve inventory items and telemetry metrics
   if (req.method === 'GET') {
+    try {
+      const dbRes = await db.select('flowops_inventory', 'order=sku.asc&limit=50');
+      if (!dbRes.fallback && Array.isArray(dbRes.data) && dbRes.data.length > 0) {
+        const existingSkus = new Set(inventoryStore.map(i => i.sku));
+        for (const row of dbRes.data) {
+          if (!existingSkus.has(row.sku)) {
+            inventoryStore.push({
+              sku: row.sku,
+              name: row.description || row.sku,
+              bay: row.bay || 'Bay A-01',
+              category: row.category || 'General',
+              stock: Number(row.stock) || 0,
+              min: Number(row.safety_min) || 10,
+              cost: Number(row.unit_cost) || 1.00
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // Graceful fallback to in-memory store
+    }
+
     const totalCount = inventoryStore.length;
     const lowStockCount = inventoryStore.filter(item => item.stock <= item.min).length;
     const totalAssetValueUsd = inventoryStore.reduce((acc, it) => acc + (Number(it.stock) * Number(it.cost) || 0), 0);
@@ -57,9 +79,25 @@ module.exports = async (req, res) => {
     });
   }
 
-  // 2. POST: Add new SKU or perform cycle count
+  // 2. POST: Add new SKU or perform cycle count or update stock
   if (req.method === 'POST') {
     const { action, sku, name, bay, category, stock, min, cost } = body;
+
+    if (action === 'update_stock') {
+      const cleanSku = String(sku || '').trim().toUpperCase();
+      const newStock = Math.max(0, parseInt(stock, 10) || 0);
+      const found = inventoryStore.find(i => i.sku === cleanSku);
+      if (found) {
+        found.stock = newStock;
+      }
+      db.update('flowops_inventory', `sku=eq.${encodeURIComponent(cleanSku)}`, { stock: newStock }).catch(() => {});
+      return res.status(200).json({
+        success: true,
+        action: 'update_stock',
+        sku: cleanSku,
+        stock: newStock
+      });
+    }
 
     if (action === 'cycle_count') {
       lastAuditTimestamp = new Date().toISOString();

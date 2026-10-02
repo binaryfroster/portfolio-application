@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
   );
 
   return res.status(200).json({
+    success: true,
     status: 'ONLINE',
     runtime: 'Vercel Serverless Edge / Node.js 20.x',
     activeSessions: 4,
