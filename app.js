@@ -982,7 +982,64 @@
     list.unshift(newEntry);
     localStorage.setItem(SAVED_STORAGE_KEY, JSON.stringify(list.slice(0, 20)));
     updateSavedBadge();
+
+    // Asynchronously persist to Supabase metroval_saved_properties
+    fetch('/api/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'save',
+        sqft,
+        bedrooms,
+        bathrooms,
+        zipCode: postcode,
+        borough: boroughSelect ? boroughSelect.value : 'westminster',
+        propertyType: typeSelect ? typeSelect.value : 'terraced',
+        conditionGrade,
+        yearBuilt: yearBuiltInput ? yearBuiltInput.value : 1885,
+        currency: activeCurrency
+      })
+    }).catch(err => console.warn('Saved property background database sync offline fallback:', err));
+
     if (window.showToast) window.showToast(`Property scenario saved: ${postcode} (${newEntry.priceFormatted})`, 'success');
+  }
+
+  async function syncSavedPropertiesFromDatabase() {
+    try {
+      const res = await fetch('/api/predict');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.savedProperties && data.savedProperties.length > 0) {
+          const localList = getSavedProperties();
+          const existingRefs = new Set(localList.map(item => item.id || item.property_ref));
+          for (const sp of data.savedProperties) {
+            const ref = sp.property_ref || sp.id;
+            if (!existingRefs.has(ref)) {
+              localList.push({
+                id: ref,
+                timestamp: new Date(sp.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                price: Number(sp.estimated_price) || 850000,
+                priceFormatted: `${currencySymbol}${(Number(sp.estimated_price) || 850000).toLocaleString('en-US')}`,
+                unitPrice: Number(sp.price_per_sqft) || 650,
+                borough: sp.borough || 'London',
+                boroughKey: (sp.borough || 'westminster').toLowerCase().replace(/\s+/g, '-'),
+                postcode: sp.postcode || 'SW1A 1AA',
+                type: sp.typology || 'Townhouse',
+                sqft: sp.sqft || 1450,
+                bedrooms: sp.bedrooms || 3,
+                bathrooms: sp.bathrooms || 2,
+                conditionGrade: sp.condition_grade || 3,
+                currency: sp.currency || 'GBP'
+              });
+            }
+          }
+          localStorage.setItem(SAVED_STORAGE_KEY, JSON.stringify(localList.slice(0, 30)));
+          updateSavedBadge();
+        }
+      }
+    } catch (e) {
+      console.warn('Saved properties database sync offline fallback:', e.message);
+    }
   }
 
   function renderSavedPropertiesModal() {
@@ -1386,6 +1443,7 @@
   // Initialization
   initThreeJS();
   updateSavedBadge();
+  syncSavedPropertiesFromDatabase();
   updateConditionBadge();
   runValuation();
   loadCompsAndAnalytics();
