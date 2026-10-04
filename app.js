@@ -1611,7 +1611,13 @@
   const confirmPropQuoteBtn = document.getElementById('confirmPropQuoteBtn');
   const printPropQuoteBtn = document.getElementById('printPropQuoteBtn');
 
-  document.querySelectorAll('#openPropQuotationBtn').forEach(btn => {
+  const openPropQuoteBtns = [
+    ...document.querySelectorAll('#openPropQuotationBtn'),
+    document.getElementById('openPropQuotationBtnHeader'),
+    document.getElementById('directActionPlanBtn')
+  ].filter(Boolean);
+
+  openPropQuoteBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       updatePropEstimator();
       const dateEl = document.getElementById('propQuoteDate');
@@ -1620,6 +1626,19 @@
       }
       if (propQuotationModal) propQuotationModal.classList.remove('hidden');
     });
+  });
+
+  // Direct Action Orientation Deck Triggers
+  document.getElementById('directActionPredictBtn')?.addEventListener('click', () => {
+    const calcBtn = document.getElementById('predictBtn');
+    if (calcBtn) calcBtn.click();
+  });
+
+  document.getElementById('directActionCompsBtn')?.addEventListener('click', () => {
+    const compsEl = document.getElementById('compsTableContainer') || document.getElementById('compsSection') || document.querySelector('[data-comps]');
+    if (compsEl) {
+      compsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 
   closePropQuotationModal?.addEventListener('click', () => {
