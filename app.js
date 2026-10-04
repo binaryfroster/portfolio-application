@@ -14,6 +14,7 @@
   let activePatient = null;
   let currentFilter = 'all'; // 'all' | 'critical' | 'urgent' | 'stable'
   let currentSort = 'acuity'; // 'acuity' | 'hr' | 'name' | 'bed'
+  let currentLabPanel = 'cmp'; // 'cmp' | 'cbc' | 'lipid'
   let searchQuery = '';
   let liveTelemetryActive = true;
   let telemetryInterval = null;
@@ -803,6 +804,12 @@
     // Update Vitals Display
     updateVitalsDisplay(patient);
 
+    // Update HL7/FHIR Lab Observation Panel
+    renderLabObservations(patient, currentLabPanel);
+
+    // Update ICD-10 & CMS-1500 Billing Tear-Sheet
+    renderBillingDiagnosesAndCpt(patient);
+
     // Update Pharmacy target patient dropdown
     if (rxPatientSelect) {
       rxPatientSelect.value = patient.mrn;
@@ -937,6 +944,174 @@
         ecgWaveLabel.className = 'text-teal-400 font-bold bg-black/70 px-2 py-0.5 rounded backdrop-blur border border-white/5';
       }
     }
+  }
+
+  // =========================================================================
+  // HL7 / FHIR DIAGNOSTIC OBSERVATION PANEL & LOINC ENGINES
+  // =========================================================================
+  function renderLabObservations(patient, panel) {
+    const tableBody = document.getElementById('labObservationsTableBody');
+    if (!tableBody || !patient) return;
+
+    const isDiabetic = (patient.condition || '').toLowerCase().includes('diabet');
+    const isCardiac = (patient.condition || '').toLowerCase().includes('coronary') || (patient.condition || '').toLowerCase().includes('stemi') || (patient.acuity === 'Critical');
+    const isTrauma = (patient.condition || '').toLowerCase().includes('trauma');
+
+    let labData = [];
+
+    if (panel === 'cmp') {
+      labData = [
+        { test: 'Sodium', loinc: '2951-2', value: isTrauma ? '134' : '140', units: 'mmol/L', ref: '135 - 145', flag: isTrauma ? 'LOW' : 'NORMAL' },
+        { test: 'Potassium', loinc: '2823-3', value: isCardiac ? '4.9' : '4.2', units: 'mmol/L', ref: '3.5 - 5.0', flag: 'NORMAL' },
+        { test: 'Chloride', loinc: '2075-0', value: '102', units: 'mmol/L', ref: '96 - 106', flag: 'NORMAL' },
+        { test: 'Carbon Dioxide (CO2)', loinc: '2028-9', value: isTrauma ? '20' : '25', units: 'mmol/L', ref: '23 - 29', flag: isTrauma ? 'LOW' : 'NORMAL' },
+        { test: 'Blood Urea Nitrogen (BUN)', loinc: '3094-0', value: isDiabetic ? '22' : '15', units: 'mg/dL', ref: '7 - 20', flag: isDiabetic ? 'HIGH' : 'NORMAL' },
+        { test: 'Creatinine, Serum', loinc: '2160-0', value: isDiabetic ? '1.3' : '0.9', units: 'mg/dL', ref: '0.6 - 1.2', flag: isDiabetic ? 'ELEVATED' : 'NORMAL' },
+        { test: 'Glucose, Fasting', loinc: '2345-7', value: isDiabetic ? '164' : '96', units: 'mg/dL', ref: '70 - 99', flag: isDiabetic ? 'HIGH' : 'NORMAL' },
+        { test: 'Calcium, Total', loinc: '17861-6', value: '9.3', units: 'mg/dL', ref: '8.5 - 10.2', flag: 'NORMAL' }
+      ];
+    } else if (panel === 'cbc') {
+      labData = [
+        { test: 'White Blood Cell (WBC)', loinc: '6690-2', value: (patient.condition || '').includes('Pneumonia') ? '14.8' : '7.4', units: 'K/uL', ref: '4.5 - 11.0', flag: (patient.condition || '').includes('Pneumonia') ? 'HIGH' : 'NORMAL' },
+        { test: 'Red Blood Cell (RBC)', loinc: '789-8', value: isTrauma ? '3.40' : '4.85', units: 'M/uL', ref: '4.20 - 5.80', flag: isTrauma ? 'LOW' : 'NORMAL' },
+        { test: 'Hemoglobin', loinc: '718-7', value: isTrauma ? '9.8' : '14.6', units: 'g/dL', ref: '13.5 - 17.5', flag: isTrauma ? 'CRITICAL LOW' : 'NORMAL' },
+        { test: 'Hematocrit', loinc: '4544-3', value: isTrauma ? '29.4' : '43.2', units: '%', ref: '38.8 - 50.0', flag: isTrauma ? 'LOW' : 'NORMAL' },
+        { test: 'Platelet Count', loinc: '777-3', value: isTrauma ? '138' : '260', units: 'K/uL', ref: '150 - 450', flag: isTrauma ? 'LOW' : 'NORMAL' },
+        { test: 'Mean Corpuscular Volume (MCV)', loinc: '787-2', value: '89.2', units: 'fL', ref: '80.0 - 100.0', flag: 'NORMAL' }
+      ];
+    } else if (panel === 'lipid') {
+      labData = [
+        { test: 'Total Cholesterol', loinc: '2093-3', value: isCardiac ? '242' : '182', units: 'mg/dL', ref: '< 200', flag: isCardiac ? 'HIGH' : 'OPTIMAL' },
+        { test: 'Triglycerides', loinc: '2571-8', value: isDiabetic ? '198' : '124', units: 'mg/dL', ref: '< 150', flag: isDiabetic ? 'ELEVATED' : 'NORMAL' },
+        { test: 'HDL Cholesterol (Direct)', loinc: '2085-9', value: '48', units: 'mg/dL', ref: '> 40', flag: 'NORMAL' },
+        { test: 'LDL Cholesterol (Calculated)', loinc: '13457-7', value: isCardiac ? '158' : '98', units: 'mg/dL', ref: '< 100', flag: isCardiac ? 'HIGH' : 'OPTIMAL' },
+        { test: 'Cholesterol / HDL Ratio', loinc: '9830-1', value: isCardiac ? '5.04' : '3.79', units: 'ratio', ref: '< 4.5', flag: isCardiac ? 'BORDERLINE' : 'NORMAL' }
+      ];
+    }
+
+    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    tableBody.innerHTML = labData.map(d => {
+      let flagClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+      if (d.flag.includes('CRITICAL')) flagClass = 'text-rose-300 bg-rose-500/20 border-rose-500/40 font-bold';
+      else if (d.flag.includes('HIGH') || d.flag.includes('LOW')) flagClass = 'text-amber-300 bg-amber-500/15 border-amber-500/30';
+      else if (d.flag.includes('ELEVATED') || d.flag.includes('BORDERLINE')) flagClass = 'text-cyan-300 bg-cyan-500/15 border-cyan-500/30';
+
+      return `
+        <tr class="hover:bg-white/[0.02] transition-colors">
+          <td class="p-2.5 font-medium text-white">${d.test}</td>
+          <td class="p-2.5 text-teal-400">${d.loinc}</td>
+          <td class="p-2.5 font-bold text-slate-100">${d.value} <span class="text-[9px] text-slate-400 font-normal">${d.units}</span></td>
+          <td class="p-2.5 text-slate-400">${d.ref}</td>
+          <td class="p-2.5"><span class="px-1.5 py-0.5 rounded text-[9px] border font-bold ${flagClass}">[${d.flag}]</span></td>
+          <td class="p-2.5 text-right text-slate-500">${timestamp}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Hook lab panel switcher tabs
+  document.querySelectorAll('.lab-panel-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentLabPanel = tab.getAttribute('data-panel') || 'cmp';
+      document.querySelectorAll('.lab-panel-tab').forEach(t => {
+        t.className = 'lab-panel-tab px-2.5 py-1 rounded-lg bg-white/[0.03] text-slate-400 hover:text-white border border-white/5';
+      });
+      tab.className = 'lab-panel-tab px-2.5 py-1 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/40 font-bold';
+      if (activePatient) {
+        renderLabObservations(activePatient, currentLabPanel);
+      }
+    });
+  });
+
+  // =========================================================================
+  // ICD-10 DIAGNOSTIC & CPT BILLING CODE TEAR-SHEET
+  // =========================================================================
+  function renderBillingDiagnosesAndCpt(patient) {
+    const diagList = document.getElementById('billingDiagnosesList');
+    const cptList = document.getElementById('billingCptList');
+    const reimVal = document.getElementById('totalReimbursementVal');
+    if (!diagList || !cptList || !patient) return;
+
+    let diags = [];
+    let cpts = [];
+
+    const cond = (patient.condition || '').toLowerCase();
+
+    if (cond.includes('hypertens')) {
+      diags = [
+        { code: 'I10', desc: 'Essential (primary) hypertension', type: 'Principal' },
+        { code: 'Z79.899', desc: 'Long term current other drug therapy', type: 'Secondary' }
+      ];
+      cpts = [
+        { code: '99214', desc: 'Office O/P Est Mod 30-39 min', fee: 218.00 },
+        { code: '93000', desc: '12-Lead Electrocardiogram Complete', fee: 42.00 },
+        { code: '80053', desc: 'Comprehensive Metabolic Panel', fee: 38.50 }
+      ];
+    } else if (cond.includes('diabet')) {
+      diags = [
+        { code: 'E11.65', desc: 'Type 2 diabetes with hyperglycemia', type: 'Principal' },
+        { code: 'Z79.84', desc: 'Long term use of oral hypoglycemic drugs', type: 'Secondary' }
+      ];
+      cpts = [
+        { code: '99214', desc: 'Office O/P Est Mod 30-39 min', fee: 218.00 },
+        { code: '83036', desc: 'Hemoglobin A1c Glycosylated', fee: 44.00 },
+        { code: '80053', desc: 'Comprehensive Metabolic Panel', fee: 38.50 }
+      ];
+    } else if (cond.includes('stemi') || cond.includes('coronary')) {
+      diags = [
+        { code: 'I21.09', desc: 'STEMI involving other anterior wall', type: 'Principal' },
+        { code: 'R07.9', desc: 'Chest pain, unspecified (Angina)', type: 'Secondary' },
+        { code: 'I49.9', desc: 'Cardiac arrhythmia, unspecified', type: 'Secondary' }
+      ];
+      cpts = [
+        { code: '99291', desc: 'Critical Care Evaluation First 30-74 min', fee: 412.00 },
+        { code: '93005', desc: 'Continuous ECG Tracing Monitoring', fee: 68.00 },
+        { code: '84484', desc: 'Troponin, Quantitative Cardiac Marker', fee: 52.00 }
+      ];
+    } else if (cond.includes('trauma') || cond.includes('shock')) {
+      diags = [
+        { code: 'S36.031A', desc: 'Moderate laceration of spleen, init enc', type: 'Principal' },
+        { code: 'R57.1', desc: 'Hypovolemic hemorrhagic shock', type: 'Secondary' }
+      ];
+      cpts = [
+        { code: '99291', desc: 'Critical Care Evaluation First 30-74 min', fee: 412.00 },
+        { code: '36430', desc: 'Transfusion, Blood or Blood Component', fee: 185.00 },
+        { code: '85025', desc: 'Complete Blood Count (CBC) with diff', fee: 32.50 }
+      ];
+    } else {
+      diags = [
+        { code: 'J18.9', desc: 'Pneumonia, unspecified organism', type: 'Principal' },
+        { code: 'R06.02', desc: 'Shortness of breath (Dyspnea)', type: 'Secondary' }
+      ];
+      cpts = [
+        { code: '99214', desc: 'Office O/P Est Mod 30-39 min', fee: 218.00 },
+        { code: '71046', desc: 'Radiologic Exam Chest 2 Views', fee: 65.00 },
+        { code: '85025', desc: 'Complete Blood Count (CBC) with diff', fee: 32.50 }
+      ];
+    }
+
+    diagList.innerHTML = diags.map(d => `
+      <div class="flex items-center justify-between p-1.5 rounded bg-white/[0.02]">
+        <span class="text-teal-300 font-bold">${d.code}</span>
+        <span class="text-slate-300 text-[11px] truncate px-2">${d.desc}</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded ${d.type === 'Principal' ? 'bg-teal-500/10 text-teal-300 font-bold' : 'bg-slate-500/10 text-slate-400'}">${d.type}</span>
+      </div>
+    `).join('');
+
+    let total = 0;
+    cptList.innerHTML = cpts.map(c => {
+      total += c.fee;
+      return `
+        <div class="flex items-center justify-between p-1.5 rounded bg-white/[0.02]">
+          <span class="text-cyan-300 font-bold">${c.code}</span>
+          <span class="text-slate-300 text-[11px] truncate px-2">${c.desc}</span>
+          <span class="text-white font-bold">$${c.fee.toFixed(2)}</span>
+        </div>
+      `;
+    }).join('');
+
+    if (reimVal) reimVal.textContent = `$${total.toFixed(2)}`;
   }
 
   // Live Biotelemetry Stream Simulation
@@ -1717,6 +1892,151 @@ INTEGRITY SEAL:       SHA256:0x${Math.floor(Math.random() * 0xffffffffffff).toSt
   });
 
   // =========================================================================
+  // 12. HOSPITAL HEALTH SYSTEM ENTERPRISE ESTIMATOR & SIZING ENGINE
+  // =========================================================================
+  const MEDICARE_PLANS = {
+    clinic: { name: 'Community Clinic Station', base: 650, beds: 25, providers: 5 },
+    regional: { name: 'Regional Medical Center', base: 2450, beds: 150, providers: 25 },
+    sovereign: { name: 'Sovereign Health System', base: 6800, beds: 850, providers: 150 }
+  };
+
+  let activeMedicarePlan = 'regional';
+  let medicareBeds = 120;
+  let medicareProviders = 20;
+
+  const medicareBedsSlider = document.getElementById('medicareBedsSlider');
+  const medicareBedsLabel = document.getElementById('medicareBedsLabel');
+  const medicareProvidersSlider = document.getElementById('medicareProvidersSlider');
+  const medicareProvidersLabel = document.getElementById('medicareProvidersLabel');
+  const medicareLegacyCost = document.getElementById('medicareLegacyCost');
+  const medicarePlatformCost = document.getElementById('medicarePlatformCost');
+  const medicareNetSavings = document.getElementById('medicareNetSavings');
+  const medicareAnnualSavings = document.getElementById('medicareAnnualSavings');
+
+  function updateMedicareEstimator() {
+    const plan = MEDICARE_PLANS[activeMedicarePlan] || MEDICARE_PLANS.regional;
+    const legacyCost = (medicareBeds * 75) + (medicareProviders * 470);
+    const extraBeds = Math.max(0, medicareBeds - plan.beds);
+    const extraProviders = Math.max(0, medicareProviders - plan.providers);
+    const platformCost = plan.base + (extraBeds * 14) + (extraProviders * 85);
+    const monthlySavings = Math.max(0, legacyCost - platformCost);
+    const annualSavings = monthlySavings * 12;
+
+    if (medicareBedsLabel) medicareBedsLabel.textContent = `${medicareBeds} Beds`;
+    if (medicareProvidersLabel) medicareProvidersLabel.textContent = `${medicareProviders} Clinicians`;
+    if (medicareLegacyCost) medicareLegacyCost.textContent = `$${legacyCost.toLocaleString('en-US')} / mo`;
+    if (medicarePlatformCost) {
+      medicarePlatformCost.textContent = `$${platformCost.toLocaleString('en-US')} / mo`;
+      const sub = medicarePlatformCost.nextElementSibling;
+      if (sub) {
+        sub.textContent = (extraBeds > 0 || extraProviders > 0)
+          ? `Base $${plan.base.toLocaleString()} + capacity overage`
+          : `All ${medicareBeds} beds included in base`;
+      }
+    }
+    if (medicareNetSavings) medicareNetSavings.textContent = `$${monthlySavings.toLocaleString('en-US')} / mo`;
+    if (medicareAnnualSavings) medicareAnnualSavings.textContent = `$${annualSavings.toLocaleString('en-US')} / yr`;
+
+    // Modal sync
+    const modalPlanName = document.getElementById('modalMedicarePlanName');
+    const modalPlanCost = document.getElementById('modalMedicarePlanCost');
+    const modalCapacity = document.getElementById('modalMedicareCapacity');
+    const modalSavings = document.getElementById('modalMedicareSavings');
+    if (modalPlanName) modalPlanName.textContent = plan.name;
+    if (modalPlanCost) modalPlanCost.textContent = `$${platformCost.toLocaleString('en-US')} / mo`;
+    if (modalCapacity) modalCapacity.textContent = `${medicareBeds} Beds / ${medicareProviders} Clinicians`;
+    if (modalSavings) modalSavings.textContent = `$${annualSavings.toLocaleString('en-US')}`;
+  }
+
+  // Plan Card Selection Listeners
+  document.querySelectorAll('.medicare-plan-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const planKey = card.getAttribute('data-plan');
+      if (!planKey || !MEDICARE_PLANS[planKey]) return;
+      activeMedicarePlan = planKey;
+
+      document.querySelectorAll('.medicare-plan-card').forEach(c => {
+        c.classList.remove('border-teal-500', 'border-2', 'bg-teal-950/20', 'shadow-[0_0_30px_rgba(0,210,211,0.2)]');
+        c.classList.add('border-white/[0.08]', 'border', 'bg-[#070D1B]');
+        const btn = c.querySelector('.select-medicare-plan-btn');
+        if (btn) {
+          btn.className = 'select-medicare-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+          btn.textContent = `Select ${c.getAttribute('data-plan').toUpperCase()} Plan`;
+        }
+      });
+
+      card.classList.remove('border-white/[0.08]', 'bg-[#070D1B]');
+      card.classList.add('border-teal-500', 'border-2', 'bg-teal-950/20', 'shadow-[0_0_30px_rgba(0,210,211,0.2)]');
+      const activeBtn = card.querySelector('.select-medicare-plan-btn');
+      if (activeBtn) {
+        activeBtn.className = 'select-medicare-plan-btn mt-6 w-full py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(0,210,211,0.3)]';
+        activeBtn.textContent = 'Selected Plan';
+      }
+
+      updateMedicareEstimator();
+      if (window.showToast) window.showToast(`Selected ${MEDICARE_PLANS[planKey].name} tier.`, 'info');
+    });
+  });
+
+  medicareBedsSlider?.addEventListener('input', (e) => {
+    medicareBeds = parseInt(e.target.value, 10) || 120;
+    updateMedicareEstimator();
+  });
+
+  medicareProvidersSlider?.addEventListener('input', (e) => {
+    medicareProviders = parseInt(e.target.value, 10) || 20;
+    updateMedicareEstimator();
+  });
+
+  // Quotation Modal Triggers
+  const medicareQuotationModal = document.getElementById('medicareQuotationModal');
+  const closeMedicareQuotationModal = document.getElementById('closeMedicareQuotationModal');
+  const confirmMedicareQuoteBtn = document.getElementById('confirmMedicareQuoteBtn');
+  const printMedicareQuoteBtn = document.getElementById('printMedicareQuoteBtn');
+
+  const openQuoteBtns = [
+    document.getElementById('openMedicareQuotationBtn'),
+    document.getElementById('openMedicareQuotationBtnBottom')
+  ];
+
+  openQuoteBtns.forEach(btn => {
+    btn?.addEventListener('click', () => {
+      updateMedicareEstimator();
+      const dateEl = document.getElementById('medicareQuoteDate');
+      if (dateEl) {
+        dateEl.textContent = `DATE: ${new Date().toISOString().split('T')[0]}`;
+      }
+      if (medicareQuotationModal) medicareQuotationModal.classList.remove('hidden');
+    });
+  });
+
+  closeMedicareQuotationModal?.addEventListener('click', () => {
+    if (medicareQuotationModal) medicareQuotationModal.classList.add('hidden');
+  });
+
+  medicareQuotationModal?.addEventListener('click', (e) => {
+    if (e.target === medicareQuotationModal) {
+      medicareQuotationModal.classList.add('hidden');
+    }
+  });
+
+  confirmMedicareQuoteBtn?.addEventListener('click', () => {
+    const org = document.getElementById('medicareQuoteOrg')?.value || 'Hospital Partner';
+    const signer = document.getElementById('medicareQuoteSigner')?.value || 'Chief Medical Officer';
+    if (window.showToast) {
+      window.showToast(`Health System SLA & HIPAA BAA Locked for ${org} (${signer}).`, 'success');
+    }
+    if (medicareQuotationModal) medicareQuotationModal.classList.add('hidden');
+  });
+
+  printMedicareQuoteBtn?.addEventListener('click', () => {
+    if (window.showToast) window.showToast('Preparing executive Health System quotation for export...', 'info');
+    setTimeout(() => {
+      window.print();
+    }, 400);
+  });
+
+  // =========================================================================
   // INITIALIZATION
   // =========================================================================
   initThreeJSHeart();
@@ -1725,5 +2045,6 @@ INTEGRITY SEAL:       SHA256:0x${Math.floor(Math.random() * 0xffffffffffff).toSt
   renderDispatchedRxTable();
   loadAuditLogs();
   startTelemetryStream();
+  updateMedicareEstimator();
 
 })();
