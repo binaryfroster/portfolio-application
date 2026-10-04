@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta name="bf-app-id" content="flowops-erp">
@@ -81,23 +81,23 @@
   <!-- TOP APP BAR -->
   <header class="sticky top-0 z-40 px-4 py-2.5 bg-[#07090F]/90 backdrop-blur-xl border-b border-white/[0.08]">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 shrink-0">
         <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600/30 via-cyan-600/20 to-blue-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600/30 via-cyan-600/20 to-blue-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.2)] shrink-0">
             FO
           </div>
-          <div>
-            <div class="flex items-center gap-2">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap">
               <span class="font-bold text-sm tracking-tight text-white group-hover:text-emerald-300 transition-colors">FlowOps ERP</span>
-              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold tracking-wider">PLANT #04 ACTIVE</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold tracking-wider">MES 4.0 ACTIVE</span>
             </div>
-            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">MANUFACTURING EXECUTION SYSTEM (MES)</p>
+            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block whitespace-nowrap">MANUFACTURING EXECUTION SYSTEM (MES)</p>
           </div>
         </a>
       </div>
 
       <!-- Live Telemetry Badges & Header Actions -->
-      <div class="flex items-center gap-2.5 sm:gap-3">
+      <div class="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-nowrap whitespace-nowrap">
         <div class="hidden xl:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
           <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -114,30 +114,36 @@
           </div>
         </div>
 
-        <button id="openNewPOModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] active:scale-[0.98]">
+        <button id="openNewPOModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] active:scale-[0.98] shrink-0 whitespace-nowrap">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           <span class="hidden sm:inline">Create Purchase Order</span>
           <span class="sm:hidden">New PO</span>
         </button>
 
-        <button id="openNewWOModalBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold text-xs transition-all active:scale-[0.98]">
+        <button id="openNewWOModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold text-xs transition-all active:scale-[0.98] shrink-0 whitespace-nowrap">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
           <span class="hidden md:inline">Add Work Order</span>
           <span class="md:hidden">New WO</span>
         </button>
 
-        <button id="openNewSKUModalBtn" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10 font-semibold text-xs transition-all active:scale-[0.98]">
+        <button id="openNewSKUModalBtn" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10 font-semibold text-xs transition-all active:scale-[0.98] shrink-0 whitespace-nowrap">
           <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
           <span>Add SKU</span>
         </button>
 
-        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
+        <!-- Direct SOW Plan Quote Trigger in Header -->
+        <button id="openFlowOpsQuotationBtnHeader" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.12] text-xs font-mono font-medium transition-all shrink-0 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>Plan & SOW Quote</span>
+        </button>
+
+        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all shrink-0 whitespace-nowrap">
           <span>Portfolio</span>
           <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
 
         <!-- Enterprise Auth Mount -->
-        <div id="bf-auth-mount"></div>
+        <div id="bf-auth-mount" class="shrink-0 flex items-center"></div>
       </div>
     </div>
   </header>
@@ -160,6 +166,107 @@
 
   <!-- CONTENT PANELS -->
   <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- DIRECT ACTION WORKSPACE & ORIENTATION DECK (ABOVE THE FOLD) -->
+    <section class="double-bezel">
+      <div class="double-bezel-inner p-4 sm:p-5 space-y-4">
+        
+        <!-- Header Orientation Strip -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">
+                DIRECT ACTION WORKSPACE
+              </span>
+              <span class="text-xs text-slate-400 font-mono">PLANT FLOOR CONTROLS &amp; SOW</span>
+            </div>
+            <h1 class="font-serif italic text-lg sm:text-xl text-white font-normal tracking-tight">
+              Manufacturing Operations &amp; 3D Digital Twin Command
+            </h1>
+            <p class="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
+              Dispatch CNC production batches, inspect real-time 3D warehouse high-bay inventory, or configure an enterprise MES deployment plan below.
+            </p>
+          </div>
+
+          <!-- Quick Telemetry Pill -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="px-3 py-1.5 rounded-xl bg-[#07090E] border border-white/[0.06] text-right font-mono">
+              <span class="text-[9px] text-slate-500 block uppercase">PLANT TELEMETRY</span>
+              <span class="text-xs text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                94.2% Capacity Active
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Primary Action Cards ("What You Can Do Right Now") -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          
+          <!-- Card 1: Direct Demo / Dispatch Batch -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-emerald-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-emerald-400 font-bold tracking-wider uppercase">01 &middot; DIRECT ACTION</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">LIVE DISPATCH</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Dispatch Production Batch</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Queue CNC machining work orders, simulate multi-level BOM explosion, and record machine center cycle times.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionBatchBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Dispatch Work Order</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Specialized Secondary Capability / 3D Floor Audit -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-cyan-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-cyan-400 font-bold tracking-wider uppercase">02 &middot; 3D DIGITAL TWIN</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-semibold">HIGH-BAY</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Audit 3D Warehouse Floor</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Inspect isometric plant layout, inspect AGV guide rails, and review automated high-bay pallet rack occupancy.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionFloorBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-white border border-cyan-500/25 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                <span>Inspect 3D Factory</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: THE FIRST PLAN ITSELF (Manufacturing Enterprise SOW) -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-emerald-500/[0.08] to-teal-500/[0.04] border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between shadow-[0_0_20px_rgba(16,185,129,0.08)] group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-emerald-300 font-bold tracking-wider uppercase">03 &middot; THE FIRST PLAN</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 font-bold">ENTERPRISE SOW</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Manufacturing Enterprise SOW Plan</h2>
+              <p class="text-xs text-slate-300 leading-relaxed font-sans">
+                Configure plant licensing tier, OPC-UA edge node volume, automated multi-level BOM explosion, and generate signed MES quotation.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.08]">
+              <button id="directActionPlanBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <span>Configure Plan &amp; View SOW Quote</span>
+                <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
 
     <!-- 1. DASHBOARD CONTROL ROOM & 3D DIGITAL TWIN -->
     <div id="tab-dashboard" class="tab-content space-y-6">
