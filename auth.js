@@ -152,12 +152,12 @@
       if (!headerRight) return;
       mount = document.createElement('div');
       mount.id = 'bf-auth-mount';
-      mount.className = 'flex items-center gap-2 relative';
+      mount.className = 'flex items-center gap-2 relative shrink-0';
       headerRight.prepend(mount);
     }
 
     mount.innerHTML = `
-      <div class="relative">
+      <div class="relative shrink-0">
         <button id="bf-user-menu-btn" class="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.1] transition-all text-left">
           <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center font-mono font-bold text-[10px] text-white shadow-inner">
             ${user.avatar}

@@ -1250,13 +1250,42 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
       });
     }
 
-    // Quotation Modal Actions
-    if (openNexusQuotationBtn && nexusQuotationModal) {
-      openNexusQuotationBtn.addEventListener('click', () => {
+    // Quotation Modal Actions & Direct Action Triggers
+    const openNexusHeaderBtn = document.getElementById('openNexusQuotationBtnHeader');
+    const directActionPlanBtn = document.getElementById('directActionPlanBtn');
+
+    [openNexusQuotationBtn, openNexusHeaderBtn, directActionPlanBtn].forEach((btn) => {
+      btn?.addEventListener('click', () => {
         updateEstimatorCalculations();
-        nexusQuotationModal.classList.remove('hidden');
+        if (nexusQuotationModal) nexusQuotationModal.classList.remove('hidden');
       });
-    }
+    });
+
+    // Direct Action Card 1: Execute Copilot Query
+    const directActionPromptBtn = document.getElementById('directActionPromptBtn');
+    directActionPromptBtn?.addEventListener('click', () => {
+      if (promptInput) {
+        promptInput.value = 'Audit our multi-tenant cryptographic session and edge rate limit architecture';
+        promptInput.style.height = 'auto';
+        promptInput.style.height = Math.min(160, promptInput.scrollHeight) + 'px';
+        promptInput.focus();
+        handleSendMessage();
+      }
+    });
+
+    // Direct Action Card 2: Semantic Vector Manifold
+    const directActionGraphBtn = document.getElementById('directActionGraphBtn');
+    directActionGraphBtn?.addEventListener('click', () => {
+      if (typeof fireQueryRay === 'function') {
+        fireQueryRay(0);
+      }
+      const graph = document.getElementById('graphContainer');
+      if (graph) {
+        graph.scrollIntoView({ behavior: 'smooth' });
+      }
+      if (window.BFAuth) window.BFAuth.showToast('3D Vector Knowledge Graph energized.', 'info');
+    });
+
     if (closeNexusQuotationBtn && nexusQuotationModal) {
       closeNexusQuotationBtn.addEventListener('click', () => {
         nexusQuotationModal.classList.add('hidden');
