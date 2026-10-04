@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta name="bf-app-id" content="medicare-hub">
@@ -103,60 +103,65 @@
   </div>
 
   <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 px-4 py-2 bg-[#07090E]/90 backdrop-blur-xl border-b border-white/[0.08]">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
-          <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white font-mono font-bold text-xs">
+  <header class="sticky top-0 z-40 px-3 sm:px-6 py-2.5 bg-[#07090E]/95 backdrop-blur-xl border-b border-white/[0.08]">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3 flex-nowrap min-w-0 w-full">
+      
+      <!-- Brand & Identification -->
+      <div class="flex items-center gap-2.5 shrink-0 min-w-0">
+        <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-300 font-mono font-bold text-xs shrink-0">
             MC
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-serif italic font-normal text-sm tracking-tight text-white group-hover:text-teal-300 transition-colors">MediCare Hub</span>
-              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 font-semibold tracking-wider">HIPAA LEVEL 3</span>
+          <div class="flex flex-col justify-center min-w-0 text-left">
+            <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap">
+              <span class="font-serif italic font-normal text-sm sm:text-base tracking-tight text-white group-hover:text-teal-300 transition-colors whitespace-nowrap">MediCare Hub</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 font-semibold tracking-wider whitespace-nowrap shrink-0">HIPAA LEVEL 3</span>
             </div>
-            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">CLINICAL EHR & BIOTELEMETRY CORE</p>
+            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden md:block whitespace-nowrap truncate mt-0.5">CLINICAL EHR & BIOTELEMETRY CORE</p>
           </div>
         </a>
       </div>
 
-      <!-- Telemetry & Actions -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-            <span class="text-slate-500">TRIAGE CENSUS:</span>
-            <span class="text-teal-300 font-bold" id="queueStat">6 Inpatients (2 Critical)</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-slate-500">EHR VAULT:</span>
-            <span class="text-emerald-400 font-bold">AES-256-GCM Validated</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-slate-500">TELEMETRY:</span>
-            <span class="text-cyan-400 font-bold">250 Hz Continuous</span>
-          </div>
+      <!-- Telemetry Info (Hidden on smaller screens, never wraps or shifts layout) -->
+      <div class="hidden xl:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4 shrink-0 whitespace-nowrap">
+        <div class="flex items-center gap-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse shrink-0"></span>
+          <span class="text-slate-500">TRIAGE CENSUS:</span>
+          <span class="text-teal-300 font-bold" id="queueStat">6 Inpatients (2 Critical)</span>
         </div>
+        <div class="flex items-center gap-1.5 whitespace-nowrap">
+          <span class="text-slate-500">EHR VAULT:</span>
+          <span class="text-emerald-400 font-bold">AES-256 Validated</span>
+        </div>
+        <div class="flex items-center gap-1.5 whitespace-nowrap">
+          <span class="text-slate-500">TELEMETRY:</span>
+          <span class="text-cyan-400 font-bold">250 Hz Continuous</span>
+        </div>
+      </div>
 
+      <!-- Action Buttons & Auth (Right aligned, strictly single-line, zero wrap) -->
+      <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-nowrap whitespace-nowrap">
+        
         <!-- Emergency Code Blue Trigger Button -->
-        <button id="codeBlueBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 hover:text-white border border-rose-500/50 font-mono font-bold text-xs transition-all shadow-[0_0_15px_rgba(244,63,94,0.25)] active:scale-[0.98]">
-          <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+        <button id="codeBlueBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 hover:text-white border border-rose-500/50 font-mono font-bold text-xs transition-all shadow-[0_0_15px_rgba(244,63,94,0.25)] active:scale-[0.98] shrink-0 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0"></span>
           <span>Code Blue</span>
         </button>
 
         <!-- Intake Patient Button -->
-        <button id="newPatientBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,210,211,0.25)] active:scale-[0.98]">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <button id="newPatientBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,210,211,0.25)] active:scale-[0.98] shrink-0 whitespace-nowrap">
+          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           <span>Admit Patient</span>
         </button>
 
-        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
-          <span>Portfolio</span>
-          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-        </a>
+        <!-- Direct SOW Plan Quote Trigger in Header -->
+        <button id="openMedicareQuotationBtnHeader" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.12] text-xs font-mono font-medium transition-all shrink-0 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+          <span>Plan & SOW Quote</span>
+        </button>
 
         <!-- Enterprise Auth Mount -->
-        <div id="bf-auth-mount"></div>
+        <div id="bf-auth-mount" class="shrink-0 flex items-center"></div>
       </div>
     </div>
   </header>
@@ -183,6 +188,107 @@
 
   <!-- MAIN CONTAINER -->
   <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- DIRECT ACTION WORKSPACE & ORIENTATION DECK (ABOVE THE FOLD) -->
+    <section class="double-bezel">
+      <div class="double-bezel-inner p-4 sm:p-5 space-y-4">
+        
+        <!-- Header Orientation Strip -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20 font-bold">
+                DIRECT ACTION WORKSPACE
+              </span>
+              <span class="text-xs text-slate-400 font-mono">ORIENTATION & PRIMARY CONTROLS</span>
+            </div>
+            <h1 class="font-serif italic text-lg sm:text-xl text-white font-normal tracking-tight">
+              Clinical Decision Support & High-Frequency Biotelemetry Station
+            </h1>
+            <p class="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
+              Triage active ICU inpatients, inspect live 3D cardiac sync waveforms, simulate code blue resuscitation protocols, or configure your hospital network enterprise deployment plan below.
+            </p>
+          </div>
+
+          <!-- Quick Live Telemetry Pill -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="px-3 py-1.5 rounded-xl bg-[#07090E] border border-white/[0.06] text-right font-mono">
+              <span class="text-[9px] text-slate-500 block uppercase">SYSTEM STATUS</span>
+              <span class="text-xs text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                ACTIVE (250 Hz)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Primary Action Cards ("What You Can Do Right Now") -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          
+          <!-- Card 1: Direct Demo / Patient Triage -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-teal-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-teal-400 font-bold tracking-wider uppercase">01 &middot; DIRECT ACTION</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20 font-semibold">LIVE DEMO</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Admit New Inpatient</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Simulate a new emergency admission. Assign MRN, acuity triage level, bed allocation, and start real-time telemetry.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionAdmitBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 hover:text-white border border-teal-500/30 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Launch Intake Modal</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Specialized Secondary Capability / Code Blue -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-rose-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-rose-400 font-bold tracking-wider uppercase">02 &middot; RESUSCITATION</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 font-semibold">CRITICAL</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Emergency Code Blue Alert</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Broadcast an emergency station-wide cardiac arrest protocol, lock bio-telemetry to critical frequency, and trigger arrest timer.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionCodeBlueBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                <span>Simulate Code Blue</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: THE FIRST PLAN ITSELF (Commercial & Enterprise SOW) -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-teal-500/[0.08] to-cyan-500/[0.04] border border-teal-500/30 hover:border-teal-400/60 transition-all flex flex-col justify-between shadow-[0_0_20px_rgba(0,210,211,0.08)] group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-cyan-300 font-bold tracking-wider uppercase">03 &middot; THE FIRST PLAN</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-400/20 text-cyan-200 border border-cyan-400/30 font-bold">ENTERPRISE SOW</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Institutional Deployment Plan</h2>
+              <p class="text-xs text-slate-300 leading-relaxed font-sans">
+                Configure hospital bed seats, HIPAA BAA compliance, 99.9% uptime SLA, and generate an official printable SOW contract instantly.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.08]">
+              <button id="directActionPlanBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(0,210,211,0.25)] flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <span>Configure Plan & View SOW Quote</span>
+                <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
 
     <!-- 1. PATIENT EHR DIRECTORY TAB -->
     <div id="tab-emr" class="med-tab-content space-y-4">

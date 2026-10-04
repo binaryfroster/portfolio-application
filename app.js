@@ -2006,8 +2006,21 @@ INTEGRITY SEAL:       SHA256:0x${Math.floor(Math.random() * 0xffffffffffff).toSt
 
   const openQuoteBtns = [
     document.getElementById('openMedicareQuotationBtn'),
-    document.getElementById('openMedicareQuotationBtnBottom')
+    document.getElementById('openMedicareQuotationBtnBottom'),
+    document.getElementById('openMedicareQuotationBtnHeader'),
+    document.getElementById('directActionPlanBtn')
   ];
+
+  // Direct Action Orientation Deck Triggers
+  document.getElementById('directActionAdmitBtn')?.addEventListener('click', () => {
+    const admitBtn = document.getElementById('newPatientBtn');
+    if (admitBtn) admitBtn.click();
+  });
+
+  document.getElementById('directActionCodeBlueBtn')?.addEventListener('click', () => {
+    const cbBtn = document.getElementById('codeBlueBtn');
+    if (cbBtn) cbBtn.click();
+  });
 
   openQuoteBtns.forEach(btn => {
     btn?.addEventListener('click', () => {
