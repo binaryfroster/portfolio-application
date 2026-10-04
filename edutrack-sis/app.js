@@ -385,43 +385,26 @@
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+    const ambientLight = new THREE.AmbientLight(0x0f172a, 1.4);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0x38BDF8, 2.5, 30);
-    pointLight.position.set(0, 0, 5);
-    scene.add(pointLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(4, 6, 6);
+    scene.add(keyLight);
 
-    const secondaryLight = new THREE.PointLight(0x00F2FE, 1.8, 25);
-    secondaryLight.position.set(-6, 4, 3);
-    scene.add(secondaryLight);
-
-    const particlesGeo = new THREE.BufferGeometry();
-    const particleCount = 200;
-    const posArray = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 28;
-    }
-    particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particlesMat = new THREE.PointsMaterial({
-      size: 0.06,
-      color: 0x38BDF8,
-      transparent: true,
-      opacity: 0.35
-    });
-    const starField = new THREE.Points(particlesGeo, particlesMat);
-    scene.add(starField);
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    rimLight.position.set(-6, -3, 3);
+    scene.add(rimLight);
 
     constellationGroup = new THREE.Group();
     scene.add(constellationGroup);
 
-    // Central Core
+    // Central Curricular Knowledge Core
     const coreGeo = new THREE.SphereGeometry(1.0, 32, 32);
-    const coreMat = new THREE.MeshPhongMaterial({
-      color: 0x0284C7,
-      emissive: 0x0369A1,
-      shininess: 90,
-      wireframe: false
+    const coreMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.85,
+      roughness: 0.25
     });
     coreMesh = new THREE.Mesh(coreGeo, coreMat);
     constellationGroup.add(coreMesh);

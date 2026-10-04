@@ -311,12 +311,16 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    const ambientLight = new THREE.AmbientLight(0x0f172a, 1.4);
     scene.add(ambientLight);
 
-    const centerLight = new THREE.PointLight(0x00F2FE, 3.0, 25);
-    centerLight.position.set(0, 0, 4);
-    scene.add(centerLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(4, 6, 6);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    rimLight.position.set(-6, -3, 3);
+    scene.add(rimLight);
 
     vectorGroup = new THREE.Group();
     scene.add(vectorGroup);
