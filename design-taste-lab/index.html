@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Taste Lab | Binary Froster Agency Engineering</title>
+  
+  <!-- Tailwind CSS v3 via CDN with custom config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#06080E',
+            surface: '#0B0F19',
+            surfaceElevated: '#111726',
+            cyberCyan: '#00F2FE',
+            cyberBlue: '#38BDF8',
+            hazardRed: '#FF2A2A',
+            boneWhite: '#F7F6F3',
+            boneSurface: '#FFFFFF',
+            boneBorder: '#EAEAEA',
+            boneCharcoal: '#111111',
+            brandBronze: '#C8A97E',
+            brandGold: '#E5D9C5'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            serif: ['"Newsreader"', 'Georgia', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Plus Jakarta Sans, JetBrains Mono, Newsreader -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#06080E] text-slate-200 font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200 min-h-[100dvh] flex flex-col">
+
+  <!-- TOP SUITE PERSISTENT BAR -->
+  <header class="sticky top-0 z-[100] border-b border-white/[0.08] bg-[#06080E]/90 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Studio Title -->
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform duration-300">
+            <span class="text-black font-mono font-bold text-xs">BF</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-bold tracking-tight text-white text-sm flex items-center gap-2">
+              DESIGN TASTE LAB
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">V2.4</span>
+            </span>
+            <span class="text-[11px] text-slate-400 font-mono tracking-wider">AGENCY SPECIFICATION BENCHMARK</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Skill Selection Tabs -->
+      <nav class="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono">
+        <button id="tab-taste-hero" onclick="switchLabTab('hero')" class="lab-tab-btn active px-3.5 py-1.5 rounded-full transition-all duration-300">
+          01. AI Platform Hero
+        </button>
+        <button id="tab-taste-minimalist" onclick="switchLabTab('minimalist')" class="lab-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-300">
+          02. Architect Portfolio
+        </button>
+        <button id="tab-taste-brutalist" onclick="switchLabTab('brutalist')" class="lab-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-300">
+          03. Brutalist DevTool
+        </button>
+        <button id="tab-taste-redesign" onclick="switchLabTab('redesign')" class="lab-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-300">
+          04. Dashboard Redesign
+        </button>
+        <button id="tab-taste-brandkit" onclick="switchLabTab('brandkit')" class="lab-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-300">
+          05. Luxury Brandkit
+        </button>
+      </nav>
+
+      <!-- Action Utilities -->
+      <div class="flex items-center gap-3">
+        <button id="openDialDrawerBtn" onclick="toggleDialDrawer()" class="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-mono text-slate-300 flex items-center gap-2 transition-all">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span>Dials: 8 / 6 / 4</span>
+        </button>
+        <button id="openCodeModalBtn" onclick="openCodeModal()" class="px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-mono text-cyan-300 transition-all">
+          View Spec
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Subnav Bar -->
+    <div class="lg:hidden flex items-center gap-2 px-4 py-2 border-t border-white/[0.06] overflow-x-auto scrollbar-none text-xs font-mono">
+      <button onclick="switchLabTab('hero')" class="mobile-tab-btn whitespace-nowrap px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">01. AI Hero</button>
+      <button onclick="switchLabTab('minimalist')" class="mobile-tab-btn whitespace-nowrap px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10">02. Architect</button>
+      <button onclick="switchLabTab('brutalist')" class="mobile-tab-btn whitespace-nowrap px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10">03. Brutalist</button>
+      <button onclick="switchLabTab('redesign')" class="mobile-tab-btn whitespace-nowrap px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10">04. Redesign</button>
+      <button onclick="switchLabTab('brandkit')" class="mobile-tab-btn whitespace-nowrap px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10">05. Brandkit</button>
+    </div>
+  </header>
+
+  <!-- MAIN LAB WORKSPACE -->
+  <main class="flex-1 w-full relative">
+
+    <!-- ================================================================= -->
+    <!-- VIEW 1: AI DEVELOPER PLATFORM HERO SECTION (taste-skill)         -->
+    <!-- ================================================================= -->
+    <section id="view-hero" class="lab-view active min-h-[calc(100dvh-4rem)] flex flex-col justify-center relative overflow-hidden py-16 px-4 sm:px-6">
+      <!-- Ambient Lighting Mesh -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-tr from-cyan-500/10 via-blue-600/5 to-transparent blur-[140px] pointer-events-none rounded-full"></div>
+      
+      <div class="max-w-6xl mx-auto w-full relative z-10 space-y-12">
+        
+        <!-- Metadata Pill & Dial Rationale -->
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[11px] font-mono tracking-widest uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+            TASTE-SKILL // ETHEREAL GLASS ARCHETYPE
+          </div>
+          <div class="text-xs font-mono text-slate-400">
+            VARIANCE: <span class="text-cyan-400">8</span> | MOTION: <span class="text-cyan-400">6</span> | DENSITY: <span class="text-cyan-400">4</span>
+          </div>
+        </div>
+
+        <!-- Headline & Value Proposition -->
+        <div class="space-y-6 max-w-3xl">
+          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
+            Distributed neural runtimes engineered for <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500">sub-50ms inference.</span>
+          </h1>
+          <p class="text-base sm:text-lg text-slate-300 leading-relaxed font-normal max-w-2xl">
+            Compile, quantize, and orchestrate frontier LLMs across bare-metal GPU clusters. Zero cold starts, zero memory leaks, and native SIMD ring buffers.
+          </p>
+        </div>
+
+        <!-- Nested Double-Bezel CTA Group -->
+        <div class="flex flex-wrap items-center gap-4">
+          <!-- Button-in-Button Pattern -->
+          <a href="#cluster" class="group relative inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium text-sm shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 active:scale-[0.98] transition-all duration-300">
+            <span>Deploy Inference Cluster</span>
+            <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform duration-300">
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </span>
+          </a>
+
+          <button onclick="copySnippet('curl -sSL https://nexus.dev/install | sh')" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 text-sm font-mono transition-all">
+            <span class="text-cyan-400">$</span>
+            <span>curl -sSL https://nexus.dev/install | sh</span>
+            <span id="copySnippetBadge" class="text-[10px] text-slate-400 ml-1">COPY</span>
+          </button>
+        </div>
+
+        <!-- DOUBLE-BEZEL CONCENTRIC HERO BENTO -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4">
+          
+          <!-- Bento Left: Live Telemetry & Model Benchmark Matrix (5 cols) -->
+          <div class="lg:col-span-5 p-1.5 rounded-[2rem] bg-white/[0.03] border border-white/10 shadow-2xl backdrop-blur-xl">
+            <div class="rounded-[calc(2rem-0.375rem)] bg-[#0B0F19] p-6 space-y-5 border border-white/[0.05]">
+              
+              <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <span class="text-xs font-mono text-slate-400 uppercase tracking-wider">Cluster Telemetry</span>
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  99.98% HEALTHY
+                </span>
+              </div>
+
+              <!-- Metrics Grid -->
+              <div class="grid grid-cols-2 gap-3 font-mono">
+                <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span class="text-[10px] text-slate-400 block uppercase">Time-to-First-Token</span>
+                  <span class="text-xl font-bold text-white tracking-tight">42.8 ms</span>
+                  <span class="text-[10px] text-emerald-400 block mt-0.5">-14% vs baseline</span>
+                </div>
+                <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span class="text-[10px] text-slate-400 block uppercase">Token Throughput</span>
+                  <span class="text-xl font-bold text-white tracking-tight">184 t/sec</span>
+                  <span class="text-[10px] text-cyan-400 block mt-0.5">Dual-H100 NVLink</span>
+                </div>
+              </div>
+
+              <!-- Model Benchmark Bars -->
+              <div class="space-y-3 pt-2">
+                <span class="text-xs font-mono text-slate-400 uppercase tracking-wider block">Latency by Engine</span>
+                
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-mono">
+                    <span class="text-slate-300">Nexus-Flash-4B (Ours)</span>
+                    <span class="text-cyan-400 font-semibold">18 ms</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+                    <div class="h-full bg-cyan-400 rounded-full w-[25%]"></div>
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-mono">
+                    <span class="text-slate-400">vLLM Continuous Batch</span>
+                    <span class="text-slate-400">64 ms</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+                    <div class="h-full bg-slate-500 rounded-full w-[65%]"></div>
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-mono">
+                    <span class="text-slate-400">Generic REST Proxy</span>
+                    <span class="text-slate-400">128 ms</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+                    <div class="h-full bg-slate-600 rounded-full w-[95%]"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Node Routing Status -->
+              <div class="p-3 rounded-xl bg-cyan-500/[0.05] border border-cyan-500/20 flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-300">Active Nodes: 128 / 128</span>
+                <span class="text-cyan-400">Zero Packet Loss</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Bento Right: Interactive Kernel Code & Zero-Copy Architecture (7 cols) -->
+          <div class="lg:col-span-7 p-1.5 rounded-[2rem] bg-white/[0.03] border border-white/10 shadow-2xl backdrop-blur-xl">
+            <div class="rounded-[calc(2rem-0.375rem)] bg-[#0B0F19] p-6 space-y-4 border border-white/[0.05]">
+              
+              <!-- Code Header with Language Tabs -->
+              <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <div class="flex items-center gap-2 font-mono text-xs">
+                  <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+                  <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                  <span class="text-slate-400 ml-2">inference_kernel.rs</span>
+                </div>
+                <div class="flex items-center gap-1 font-mono text-xs">
+                  <button class="px-2.5 py-1 rounded bg-white/10 text-cyan-300">Rust</button>
+                  <button class="px-2.5 py-1 rounded bg-transparent text-slate-400 hover:text-white">Python</button>
+                  <button class="px-2.5 py-1 rounded bg-transparent text-slate-400 hover:text-white">TypeScript</button>
+                </div>
+              </div>
+
+              <!-- Syntax Highlighted Code -->
+              <pre class="font-mono text-xs text-slate-300 overflow-x-auto p-4 rounded-xl bg-black/40 border border-white/[0.04] leading-relaxed"><code class="language-rust"><span class="text-purple-400">use</span> nexus_core::{RingBuffer, CudaDevice, TensorView};
+
+<span class="text-purple-400">pub async fn</span> <span class="text-blue-400">execute_forward_pass</span>(
+    device: &amp;<span class="text-amber-300">CudaDevice</span>,
+    tokens: &amp;[<span class="text-amber-300">u32</span>],
+) -&gt; <span class="text-amber-300">Result</span>&lt;<span class="text-amber-300">TensorView</span>, <span class="text-amber-300">KernelError</span>&gt; {
+    <span class="text-slate-500">// Zero-copy shared memory allocation</span>
+    <span class="text-purple-400">let mut</span> buffer = <span class="text-cyan-400">RingBuffer</span>::alloc_pinned(device, <span class="text-emerald-400">4096</span>)?;
+    buffer.write_token_sequence(tokens)?;
+
+    <span class="text-slate-500">// Execute quantized flash-attention v3 SIMD kernel</span>
+    <span class="text-purple-400">let</span> output = device.launch_kernel(<span class="text-emerald-300">"flash_attn_v3"</span>, &amp;buffer).<span class="text-purple-400">await</span>?;
+    <span class="text-cyan-400">Ok</span>(output.into_view())
+}</code></pre>
+
+              <!-- Interactive Simulator Trigger -->
+              <div class="flex items-center justify-between pt-2">
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                  <span>Target: x86_64-avx512 / NVLink H100</span>
+                </div>
+                <button onclick="runInferenceSim()" id="runSimBtn" class="px-4 py-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-mono transition-all">
+                  Simulate Kernel
+                </button>
+              </div>
+
+              <!-- Output Readout -->
+              <div id="simOutputBox" class="hidden p-3 rounded-lg bg-black/60 border border-cyan-500/30 font-mono text-[11px] text-cyan-300 space-y-1">
+                <div>&gt; Allocating 4096-byte pinned NVLink DMA buffer... OK</div>
+                <div>&gt; Kernel flash_attn_v3 compiled in 4.2ms. Latency: 12.8ms. TTFT: 18.2ms.</div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 2: ARCHITECT PORTFOLIO WEBSITE (taste-minimalist-skill)       -->
+    <!-- ================================================================= -->
+    <section id="view-minimalist" class="lab-view hidden min-h-[calc(100dvh-4rem)] bg-[#F7F6F3] text-[#111111] py-20 px-4 sm:px-8 transition-colors duration-500">
+      <div class="max-w-5xl mx-auto space-y-16">
+        
+        <!-- Header Pill & Dial -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#EAEAEA] pb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDF3EC] text-[#346538] text-[11px] font-mono tracking-wider uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#346538]"></span>
+            TASTE-MINIMALIST-SKILL // WARM MONOCHROME ARCHETYPE
+          </div>
+          <div class="text-xs font-mono text-[#787774]">
+            STUDIO VANE // ARCHITECTURE &amp; SPATIAL SYSTEMS
+          </div>
+        </div>
+
+        <!-- Editorial Hero Headline -->
+        <div class="space-y-6 max-w-3xl">
+          <h2 class="text-4xl sm:text-6xl font-serif tracking-tight text-[#111111] leading-[1.08]">
+            Monolithic forms in quiet dialogue with alpine topography.
+          </h2>
+          <p class="text-base sm:text-lg text-[#787774] leading-relaxed font-sans max-w-xl">
+            We engineer enduring residential pavilions, cultural foundations, and civic spaces grounded in geological material honesty and structural restraint.
+          </p>
+        </div>
+
+        <!-- Minimalist Filter Bar -->
+        <div class="flex items-center gap-2 text-xs font-mono border-b border-[#EAEAEA] pb-4">
+          <span class="text-[#787774] mr-3">INDEX /</span>
+          <button class="px-3 py-1 rounded bg-[#111111] text-white">All Works (14)</button>
+          <button class="px-3 py-1 rounded hover:bg-[#EAEAEA] text-[#787774]">Alpine Monoliths</button>
+          <button class="px-3 py-1 rounded hover:bg-[#EAEAEA] text-[#787774]">Civic &amp; Cultural</button>
+          <button class="px-3 py-1 rounded hover:bg-[#EAEAEA] text-[#787774]">Timber Research</button>
+        </div>
+
+        <!-- Flat Bento Grid (8px radii, 1px solid #EAEAEA) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+          
+          <!-- Project 1: Featured (8 cols) -->
+          <div class="md:col-span-8 p-8 rounded-xl bg-white border border-[#EAEAEA] space-y-6 flex flex-col justify-between hover:border-[#111111]/30 transition-colors">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs font-mono text-[#787774]">
+                <span>COMMISSION 042 // CH</span>
+                <span class="px-2 py-0.5 rounded bg-[#E1F3FE] text-[#1F6C9F]">COMPLETED 2025</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-serif text-[#111111]">Vals Alpine Residence &amp; Geothermal Bath</h3>
+              <p class="text-sm text-[#787774] font-sans leading-relaxed">
+                Subterranean concrete casting embedded into Vals quartzite gneiss. Passive solar orientation with raw timber joinery and thermal mass regulation.
+              </p>
+            </div>
+            
+            <div class="pt-6 border-t border-[#EAEAEA] flex items-center justify-between text-xs font-mono">
+              <div class="space-y-0.5">
+                <span class="text-[#787774] block">COORDINATES</span>
+                <span class="font-medium text-[#111111]">46.6182 N, 9.1812 E</span>
+              </div>
+              <div class="space-y-0.5">
+                <span class="text-[#787774] block">SURFACE AREA</span>
+                <span class="font-medium text-[#111111]">640 m2</span>
+              </div>
+              <button onclick="openProjectDetails('Vals Alpine Residence')" class="px-3 py-1.5 rounded bg-[#111111] text-white hover:bg-[#333333] transition-colors">
+                View Monograph
+              </button>
+            </div>
+          </div>
+
+          <!-- Project 2: Side Specimen (4 cols) -->
+          <div class="md:col-span-4 p-8 rounded-xl bg-white border border-[#EAEAEA] space-y-6 flex flex-col justify-between hover:border-[#111111]/30 transition-colors">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs font-mono text-[#787774]">
+                <span>COMMISSION 039</span>
+                <span class="px-2 py-0.5 rounded bg-[#FDEBEC] text-[#9F2F2D]">UNDER BUILD</span>
+              </div>
+              <h3 class="text-2xl font-serif text-[#111111]">Kyoto Timber Pavilion</h3>
+              <p class="text-sm text-[#787774] font-sans leading-relaxed">
+                Interlocking charred cedar structure with zero metallic fasteners. Hand-troweled lime wash.
+              </p>
+            </div>
+
+            <div class="pt-6 border-t border-[#EAEAEA] flex items-center justify-between text-xs font-mono">
+              <span class="text-[#787774]">35.0116 N, 135.7681 E</span>
+              <button onclick="openProjectDetails('Kyoto Timber Pavilion')" class="text-[#111111] font-semibold underline underline-offset-4">
+                Details
+              </button>
+            </div>
+          </div>
+
+          <!-- Project 3: Wide Full Banner (12 cols) -->
+          <div class="md:col-span-12 p-8 rounded-xl bg-white border border-[#EAEAEA] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-[#111111]/30 transition-colors">
+            <div class="space-y-1 max-w-xl">
+              <span class="text-xs font-mono text-[#787774]">COMMISSION 037 // IS</span>
+              <h4 class="text-xl font-serif text-[#111111]">Reykjavik Basalt Observatory &amp; Geological Archives</h4>
+              <p class="text-xs font-sans text-[#787774]">Formwork cast directly against volcanic columnar basalt formations, framing the North Atlantic horizon.</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-mono">
+              <div class="px-3 py-1 rounded bg-[#FBF3DB] text-[#956400]">MUSEUM COUNCIL AWARD</div>
+              <button onclick="openProjectDetails('Reykjavik Basalt Observatory')" class="px-4 py-2 rounded bg-[#111111] text-white hover:bg-[#333333]">Examine Plans</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 3: DEVELOPER TOOL LANDING PAGE (taste-brutalist-skill)       -->
+    <!-- ================================================================= -->
+    <section id="view-brutalist" class="lab-view hidden min-h-[calc(100dvh-4rem)] bg-[#0A0A0A] text-[#EAEAEA] py-16 px-4 sm:px-6">
+      <div class="max-w-6xl mx-auto space-y-12">
+        
+        <!-- Brutalist Header Strip -->
+        <div class="border-b-2 border-[#EAEAEA] pb-4 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+          <div class="flex items-center gap-3">
+            <span class="px-2 py-0.5 bg-[#FF2A2A] text-black font-bold uppercase">RE-IND // 09</span>
+            <span class="text-[#EAEAEA] tracking-widest">[ SWISS INDUSTRIAL TELEMETRY TERMINAL ]</span>
+          </div>
+          <div class="text-[#888888]">
+            CLASS: UNRESTRICTED // SPEC 802.11-SIMD
+          </div>
+        </div>
+
+        <!-- Giant Architectural Typography (Clamp + Negative Tracking) -->
+        <div class="space-y-4">
+          <h2 class="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-[-0.05em] leading-[0.88] text-white">
+            BARE-METAL<br>
+            <span class="text-[#FF2A2A]">SIMD KERNELS.</span>
+          </h2>
+          <p class="font-mono text-sm sm:text-base text-[#AAAAAA] max-w-2xl leading-relaxed">
+            DETERMINISTIC ZERO-COPY RUNTIME FOR MASSIVE TENSOR TRANSFORMS. NO GARBAGE COLLECTION. NO RUNTIME ABSTRACTION OVERHEAD. 100% HARDWARE SATURATION.
+          </p>
+        </div>
+
+        <!-- Utilitarian ASCII Actions -->
+        <div class="flex flex-wrap items-center gap-4 font-mono text-xs">
+          <button class="px-6 py-3 bg-[#FF2A2A] hover:bg-[#FF4A4A] text-black font-bold uppercase tracking-wider rounded-none transition-colors">
+            &gt;&gt;&gt; COMPILE KERNEL V4
+          </button>
+          <button class="px-6 py-3 bg-transparent border border-[#EAEAEA] hover:bg-[#EAEAEA] hover:text-black font-bold uppercase tracking-wider rounded-none transition-colors">
+            [ READ ARCHITECTURE RFC ]
+          </button>
+        </div>
+
+        <!-- Blueprint Deterministic Grid (Zero Radius, 1px Gap) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-[#333333] border border-[#333333]">
+          
+          <!-- Box 1 -->
+          <div class="bg-[#0A0A0A] p-6 space-y-4">
+            <div class="flex items-center justify-between text-xs font-mono text-[#888888]">
+              <span>[ UNIT: REG-01 ]</span>
+              <span class="text-[#FF2A2A]">L1D CACHE</span>
+            </div>
+            <div class="text-3xl font-mono font-bold text-white">99.84%</div>
+            <p class="font-mono text-xs text-[#888888] leading-relaxed">
+              Zero cache line bouncing. AVX-512 aligned memory blocks mapped directly to processor registers.
+            </p>
+            <div class="text-[10px] font-mono text-[#4AF626] pt-2 border-t border-[#222222]">
+              STATUS: NOMINAL // 0 FAULTS
+            </div>
+          </div>
+
+          <!-- Box 2 -->
+          <div class="bg-[#0A0A0A] p-6 space-y-4">
+            <div class="flex items-center justify-between text-xs font-mono text-[#888888]">
+              <span>[ UNIT: REG-02 ]</span>
+              <span class="text-[#FF2A2A]">THROUGHPUT</span>
+            </div>
+            <div class="text-3xl font-mono font-bold text-white">412 GB/S</div>
+            <p class="font-mono text-xs text-[#888888] leading-relaxed">
+              PCIe Gen 5 x16 DMA channels saturated. Direct host-to-device asynchronous memory streaming.
+            </p>
+            <div class="text-[10px] font-mono text-[#4AF626] pt-2 border-t border-[#222222]">
+              STATUS: SATURATED // 0 DROPS
+            </div>
+          </div>
+
+          <!-- Box 3 -->
+          <div class="bg-[#0A0A0A] p-6 space-y-4">
+            <div class="flex items-center justify-between text-xs font-mono text-[#888888]">
+              <span>[ UNIT: REG-03 ]</span>
+              <span class="text-[#FF2A2A]">JITTER</span>
+            </div>
+            <div class="text-3xl font-mono font-bold text-white">&lt; 1.2 US</div>
+            <p class="font-mono text-xs text-[#888888] leading-relaxed">
+              Kernel execution latency bounded within 1.2 microseconds at p99.99 across 10 million cycles.
+            </p>
+            <div class="text-[10px] font-mono text-[#4AF626] pt-2 border-t border-[#222222]">
+              STATUS: DETERMINISTIC
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 4: DASHBOARD REDESIGN (taste-redesign-skill)                 -->
+    <!-- ================================================================= -->
+    <section id="view-redesign" class="lab-view hidden min-h-[calc(100dvh-4rem)] bg-[#080B14] py-16 px-4 sm:px-6">
+      <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header & Toggle Mode -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
+          <div class="space-y-1">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-mono tracking-widest uppercase">
+              TASTE-REDESIGN-SKILL // BEFORE VS AFTER AUDIT
+            </div>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Institutional Telemetry Dashboard Redesign</h2>
+          </div>
+
+          <!-- Interactive Before / After Segmented Switcher -->
+          <div class="flex items-center p-1 rounded-xl bg-white/[0.05] border border-white/10 text-xs font-mono">
+            <button id="toggleBeforeBtn" onclick="toggleRedesignState('before')" class="px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all">
+              Before (Generic AI Slop)
+            </button>
+            <button id="toggleAfterBtn" onclick="toggleRedesignState('after')" class="px-4 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-500/30 transition-all">
+              After (Engineered Agency Standard)
+            </button>
+          </div>
+        </div>
+
+        <!-- STATE A: BEFORE (Generic AI Slop) -->
+        <div id="redesignBeforeCard" class="hidden p-8 rounded-3xl bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-purple-900/40 border border-purple-500/30 shadow-2xl space-y-6">
+          <div class="p-3 rounded-lg bg-rose-500/20 border border-rose-500/40 text-xs font-mono text-rose-300">
+            AUDIT DEFECTS DETECTED: Cliché purple gradient blobs, unreadable contrast ratios (&lt; 2.1:1), vague marketing slogans, identical 3-column height repetition, zero domain metrics.
+          </div>
+
+          <div class="text-center py-8 space-y-3">
+            <span class="text-xs uppercase font-mono text-purple-300">AI-POWERED INSIGHTS</span>
+            <h3 class="text-3xl font-bold text-white">Elevate your seamless next-gen workflow.</h3>
+            <p class="text-sm text-slate-400 max-w-md mx-auto">Unleash actionable synergies and transform your data into game-changing paradigms.</p>
+            <button class="px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium text-sm shadow-lg shadow-purple-500/50">
+              Get Started Now
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-500/20 text-center">
+              <span class="text-xs text-purple-300">Total Users</span>
+              <div class="text-2xl font-bold text-white">99.9%</div>
+            </div>
+            <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-500/20 text-center">
+              <span class="text-xs text-purple-300">Efficiency</span>
+              <div class="text-2xl font-bold text-white">10x</div>
+            </div>
+            <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-500/20 text-center">
+              <span class="text-xs text-purple-300">Global Scale</span>
+              <div class="text-2xl font-bold text-white">Infinite</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATE B: AFTER (Engineered Agency Standard) -->
+        <div id="redesignAfterCard" class="p-1.5 rounded-[2rem] bg-white/[0.03] border border-white/10 shadow-2xl backdrop-blur-xl">
+          <div class="rounded-[calc(2rem-0.375rem)] bg-[#0B0F19] p-6 space-y-6 border border-white/[0.05]">
+            
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
+              <div>
+                <span class="text-xs font-mono text-slate-400 uppercase tracking-wider block">Production Control Plane</span>
+                <h3 class="text-xl font-bold text-white">Cluster US-EAST-01 (128x H100 SXM5)</h3>
+              </div>
+              <div class="flex items-center gap-2 font-mono text-xs">
+                <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">OEE: 98.4%</span>
+                <span class="px-2.5 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">NVLink: SATURATED</span>
+              </div>
+            </div>
+
+            <!-- Granular Latency Quantile Breakdown -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span class="text-[10px] text-slate-400 uppercase block">p50 Latency</span>
+                <span class="text-lg font-bold text-white">18.4 ms</span>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span class="text-[10px] text-slate-400 uppercase block">p95 Latency</span>
+                <span class="text-lg font-bold text-white">41.2 ms</span>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span class="text-[10px] text-slate-400 uppercase block">p99 Latency</span>
+                <span class="text-lg font-bold text-amber-400">78.6 ms</span>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span class="text-[10px] text-slate-400 uppercase block">Error Rate</span>
+                <span class="text-lg font-bold text-emerald-400">0.0012%</span>
+              </div>
+            </div>
+
+            <!-- Live Active Stream Ledger Table -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-mono text-xs">
+                <thead>
+                  <tr class="border-b border-white/[0.08] text-slate-400 uppercase tracking-wider text-[10px]">
+                    <th class="py-2.5 px-3">Session Hash</th>
+                    <th class="py-2.5 px-3">Model Route</th>
+                    <th class="py-2.5 px-3">Batch Size</th>
+                    <th class="py-2.5 px-3">Tokens / Sec</th>
+                    <th class="py-2.5 px-3">VRAM %</th>
+                    <th class="py-2.5 px-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.04] text-slate-300">
+                  <tr class="hover:bg-white/[0.02]">
+                    <td class="py-3 px-3 text-cyan-400 font-semibold">0x7f83...b165</td>
+                    <td class="py-3 px-3">Llama-3.3-70B-FP8</td>
+                    <td class="py-3 px-3">64 seq</td>
+                    <td class="py-3 px-3 text-emerald-400">194.2 t/s</td>
+                    <td class="py-3 px-3">78.4%</td>
+                    <td class="py-3 px-3"><button class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white">Inspect</button></td>
+                  </tr>
+                  <tr class="hover:bg-white/[0.02]">
+                    <td class="py-3 px-3 text-cyan-400 font-semibold">0x9a44...d019</td>
+                    <td class="py-3 px-3">Qwen-2.5-Coder-32B</td>
+                    <td class="py-3 px-3">128 seq</td>
+                    <td class="py-3 px-3 text-emerald-400">242.0 t/s</td>
+                    <td class="py-3 px-3">64.1%</td>
+                    <td class="py-3 px-3"><button class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white">Inspect</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 5: LUXURY REAL ESTATE BRANDKIT (taste-brandkit)              -->
+    <!-- ================================================================= -->
+    <section id="view-brandkit" class="lab-view hidden min-h-[calc(100dvh-4rem)] bg-[#0B0E14] text-[#E5D9C5] py-16 px-4 sm:px-6">
+      <div class="max-w-6xl mx-auto space-y-12">
+        
+        <!-- Brand Strategy Deck Header -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#C8A97E]/20 pb-4 font-mono text-xs">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8A97E]/10 border border-[#C8A97E]/30 text-[#C8A97E] uppercase tracking-widest">
+            TASTE-BRANDKIT // 3x3 IDENTITY PRESENTATION DECK
+          </div>
+          <div class="text-[#A49B89]">
+            AURELIA &amp; VANCE // ARCHITECTURAL HOLDINGS &amp; PRIVATE VAULT
+          </div>
+        </div>
+
+        <!-- 3x3 Presentation Board System -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Panel 1: Logo Cover & Monogram -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-6 flex flex-col justify-between">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">01 / LOGO COVER</span>
+            <div class="text-center py-8">
+              <div class="w-16 h-16 mx-auto mb-4 border border-[#C8A97E] rounded-full flex items-center justify-center font-serif text-2xl font-bold text-[#E5D9C5]">
+                AV
+              </div>
+              <h3 class="text-xl font-serif tracking-widest text-white uppercase">Aurelia &amp; Vance</h3>
+              <span class="text-[10px] font-mono text-[#C8A97E] tracking-widest uppercase block mt-1">Haute Architecture</span>
+            </div>
+            <div class="text-[10px] font-mono text-[#A49B89] text-center border-t border-white/[0.05] pt-3">
+              PRIMARY HORIZONTAL &amp; MONOGRAM SUITE
+            </div>
+          </div>
+
+          <!-- Panel 2: Logo Construction Geometry -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-4">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">02 / GEOMETRIC LOGIC</span>
+            <div class="p-4 rounded-xl bg-black/40 border border-[#C8A97E]/10 text-center font-mono text-xs text-[#C8A97E] space-y-2">
+              <div class="w-20 h-20 mx-auto border border-dashed border-[#C8A97E]/40 rounded-full flex items-center justify-center relative">
+                <div class="absolute inset-2 border border-[#C8A97E]/30 rotate-45"></div>
+                <span class="text-[10px]">1 : 1.618</span>
+              </div>
+              <p class="text-[11px] text-[#A49B89]">Golden Ratio proportion arcs aligned to classical Corinthian column ratios.</p>
+            </div>
+            <span class="text-[10px] font-mono text-[#A49B89] block">Clearspace: 2.5x Monogram Height</span>
+          </div>
+
+          <!-- Panel 3: Digital Surface Application -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-4">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">03 / DIGITAL VAULT APPLICATION</span>
+            <div class="p-3 rounded-lg bg-black/60 border border-white/[0.08] font-mono text-xs space-y-2">
+              <div class="flex items-center justify-between text-[10px] text-[#A49B89] border-b border-white/[0.05] pb-1">
+                <span>vault.aureliavance.com</span>
+                <span class="text-emerald-400">ENCRYPTED</span>
+              </div>
+              <div class="text-white text-xs font-serif">The Mayfair Penthouse Suite</div>
+              <div class="text-[#C8A97E] text-sm font-bold">$38,500,000 USD</div>
+            </div>
+            <span class="text-[10px] font-mono text-[#A49B89] block">High-security institutional deed inspection surface.</span>
+          </div>
+
+          <!-- Panel 4: Brand Essence & Manifesto -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-4">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">04 / MANIFESTO</span>
+            <h4 class="text-2xl font-serif text-white italic">"Architecture for generations, not quarterly cycles."</h4>
+            <p class="text-xs text-[#A49B89] leading-relaxed">
+              We curate singular residential and civic properties where stone masonry, natural illumination, and legal title security converge.
+            </p>
+          </div>
+
+          <!-- Panel 5: Material & Color System -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-4">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">05 / PALETTE SYSTEM</span>
+            <div class="grid grid-cols-4 gap-2 text-center font-mono text-[10px]">
+              <div class="space-y-1">
+                <div class="h-10 rounded bg-[#0B0E14] border border-white/20"></div>
+                <span class="block text-white">#0B0E14</span>
+              </div>
+              <div class="space-y-1">
+                <div class="h-10 rounded bg-[#C8A97E]"></div>
+                <span class="block text-[#C8A97E]">#C8A97E</span>
+              </div>
+              <div class="space-y-1">
+                <div class="h-10 rounded bg-[#E5D9C5] text-black"></div>
+                <span class="block text-[#E5D9C5]">#E5D9C5</span>
+              </div>
+              <div class="space-y-1">
+                <div class="h-10 rounded bg-[#F5F5F0]"></div>
+                <span class="block text-slate-300">#F5F5F0</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-[#A49B89] block">Obsidian, Burnished Bronze, Sandstone, Calacatta.</span>
+          </div>
+
+          <!-- Panel 6: Typographic Hierarchy -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-4">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">06 / TYPOGRAPHY SPECIMEN</span>
+            <div class="space-y-2 border-l-2 border-[#C8A97E] pl-3">
+              <div class="font-serif text-lg text-white">Newsreader Variable</div>
+              <span class="text-[11px] font-mono text-[#A49B89] block">Headings &amp; Monographs (H1-H3)</span>
+            </div>
+            <div class="space-y-2 border-l-2 border-white/20 pl-3">
+              <div class="font-sans text-sm text-slate-200">Plus Jakarta Sans</div>
+              <span class="text-[11px] font-mono text-[#A49B89] block">Body Typography &amp; Legal Folios</span>
+            </div>
+          </div>
+
+          <!-- Panel 7: Physical Tactile Application -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-3">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">07 / TACTILE APPLICATION</span>
+            <div class="p-3 rounded-xl bg-black/40 border border-white/10 font-mono text-xs text-slate-300 space-y-1">
+              <span class="text-[#C8A97E] block font-bold">DEED FOLIO SPEC:</span>
+              <p class="text-[11px] text-[#A49B89]">600gsm Somerset Cotton, blind debossed monogram, hot-stamped gold leaf foil seal.</p>
+            </div>
+          </div>
+
+          <!-- Panel 8: Image Direction -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-3">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">08 / IMAGE ART DIRECTION</span>
+            <p class="text-xs text-[#A49B89] leading-relaxed">
+              Desaturated travertine facades, high-contrast chiaroscuro shadows, textured limestone details. Strictly zero saturated stock photography.
+            </p>
+          </div>
+
+          <!-- Panel 9: System Details & Floorplan Glyphs -->
+          <div class="p-6 rounded-2xl bg-[#0F141F] border border-[#C8A97E]/20 space-y-3">
+            <span class="text-[10px] font-mono text-[#A49B89] uppercase tracking-wider block">09 / TOKEN CONSTRAINTS</span>
+            <div class="flex items-center justify-between text-xs font-mono text-slate-300 pt-2 border-t border-white/[0.05]">
+              <span>MIN LOGO WIDTH</span>
+              <span class="text-[#C8A97E]">24 mm</span>
+            </div>
+            <div class="flex items-center justify-between text-xs font-mono text-slate-300">
+              <span>COLOR RESTRICTION</span>
+              <span class="text-[#C8A97E]">Max 1 Accent</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CODE / ARCHITECTURAL SPEC MODAL -->
+  <div id="codeModal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="relative w-full max-w-3xl p-1 rounded-3xl bg-white/[0.05] border border-cyan-500/40 shadow-2xl backdrop-blur-2xl">
+      <div class="rounded-2xl bg-[#080B14] p-6 text-slate-200 space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center gap-2 font-mono text-xs text-cyan-300">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            TASTE DESIGN SYSTEM &amp; DIAL AUDIT
+          </div>
+          <button onclick="closeCodeModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+            X
+          </button>
+        </div>
+
+        <div class="space-y-3 text-xs font-mono text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/10">
+            <span class="text-cyan-400 font-bold block mb-1">01. THE THREE DIALS</span>
+            <p class="text-slate-400">DESIGN_VARIANCE: 8 (Asymmetrical Bento, dynamic layouts)<br>
+            MOTION_INTENSITY: 6 (Fluid custom cubic-bezier, button-in-button haptics)<br>
+            VISUAL_DENSITY: 4 (Generous macro-whitespace py-24+, breathable hierarchy)</p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/10">
+            <span class="text-cyan-400 font-bold block mb-1">02. ABSOLUTE ZERO DIRECTIVE</span>
+            <p class="text-slate-400">Banned fonts: Inter, Roboto, Arial. (Enforced: Plus Jakarta Sans, Geist, Newsreader).<br>
+            Banned icons: Generic thick Lucide. (Enforced: Light precision SVG primitives).<br>
+            Banned borders/shadows: Generic 1px gray borders. (Enforced: Double-bezel concentric cards).</p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/10">
+            <span class="text-cyan-400 font-bold block mb-1">03. ZERO EMOJI COMPLIANCE</span>
+            <p class="text-slate-400">100% verified 0 emojis across all markup, CSS, and interactive state handlers.</p>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2 border-t border-white/10">
+          <button onclick="closeCodeModal()" class="px-4 py-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-mono text-xs border border-cyan-500/40">
+            Close Specification
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
