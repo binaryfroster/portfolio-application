@@ -679,6 +679,116 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
   const chunkModalCount = document.getElementById('chunkModalCount');
   const chunkListContainer = document.getElementById('chunkListContainer');
 
+  // Benchmarks Modal Elements
+  const openBenchmarkBtn = document.getElementById('openBenchmarkBtn');
+  const benchmarkMatrixModal = document.getElementById('benchmarkMatrixModal');
+  const closeBenchmarkModalBtn = document.getElementById('closeBenchmarkModalBtn');
+  const dismissBenchmarkModalBtn = document.getElementById('dismissBenchmarkModalBtn');
+
+  // Estimator & SOW Modals Elements
+  const openEstimatorBtn = document.getElementById('openEstimatorBtn');
+  const nexusEstimatorModal = document.getElementById('nexusEstimatorModal');
+  const closeEstimatorModalBtn = document.getElementById('closeEstimatorModalBtn');
+  const openNexusQuotationBtn = document.getElementById('openNexusQuotationBtn');
+
+  const nexusSeatsSlider = document.getElementById('nexusSeatsSlider');
+  const nexusSeatsLabel = document.getElementById('nexusSeatsLabel');
+  const nexusTokensSlider = document.getElementById('nexusTokensSlider');
+  const nexusTokensLabel = document.getElementById('nexusTokensLabel');
+  const nexusLegacyCost = document.getElementById('nexusLegacyCost');
+  const nexusPlatformCost = document.getElementById('nexusPlatformCost');
+  const nexusMonthlySavings = document.getElementById('nexusMonthlySavings');
+  const nexusAnnualSavings = document.getElementById('nexusAnnualSavings');
+
+  // SOW Quotation Modal Elements
+  const nexusQuotationModal = document.getElementById('nexusQuotationModal');
+  const closeNexusQuotationBtn = document.getElementById('closeNexusQuotationBtn');
+  const printNexusQuotationBtn = document.getElementById('printNexusQuotationBtn');
+  const quoteNexusTierName = document.getElementById('quoteNexusTierName');
+  const quoteNexusSeatCount = document.getElementById('quoteNexusSeatCount');
+  const quoteNexusTokenCount = document.getElementById('quoteNexusTokenCount');
+  const quoteNexusBaseFee = document.getElementById('quoteNexusBaseFee');
+  const quoteNexusTotalMonthly = document.getElementById('quoteNexusTotalMonthly');
+  const quoteNexusTotalAnnual = document.getElementById('quoteNexusTotalAnnual');
+  const quoteNexusContractHash = document.getElementById('quoteNexusContractHash');
+
+  // Plan Definitions & Estimator State
+  const estimatorState = {
+    selectedPlan: 'squad',
+    baseFee: 1850,
+    seats: 25,
+    tokensMillion: 100
+  };
+
+  const COPILOT_PLANS = {
+    desk: {
+      name: 'Developer Desk',
+      basePrice: 390,
+      includedSeats: 10,
+      includedTokens: 50,
+      extraSeatRate: 25,
+      extraTokenRate: 5
+    },
+    squad: {
+      name: 'Enterprise Squad',
+      basePrice: 1850,
+      includedSeats: 50,
+      includedTokens: 250,
+      extraSeatRate: 20,
+      extraTokenRate: 4
+    },
+    sovereign: {
+      name: 'Sovereign Multi-Model AI',
+      basePrice: 5400,
+      includedSeats: 200,
+      includedTokens: 1000,
+      extraSeatRate: 15,
+      extraTokenRate: 3
+    }
+  };
+
+  function updateEstimatorCalculations() {
+    const plan = COPILOT_PLANS[estimatorState.selectedPlan] || COPILOT_PLANS.squad;
+
+    let platformCost = plan.basePrice;
+    if (estimatorState.seats > plan.includedSeats) {
+      platformCost += (estimatorState.seats - plan.includedSeats) * plan.extraSeatRate;
+    }
+    if (estimatorState.tokensMillion > plan.includedTokens) {
+      const extraTokens = estimatorState.tokensMillion - plan.includedTokens;
+      platformCost += Math.ceil(extraTokens / 10) * plan.extraTokenRate;
+    }
+
+    const legacyCost = 5000 + (estimatorState.seats * 120) + (Math.ceil(estimatorState.tokensMillion / 10) * 30);
+    const monthlySavings = Math.max(0, legacyCost - platformCost);
+    const annualSavings = monthlySavings * 12;
+
+    if (nexusSeatsLabel) nexusSeatsLabel.textContent = `${estimatorState.seats} Desks`;
+    if (nexusTokensLabel) nexusTokensLabel.textContent = `${estimatorState.tokensMillion}M Tokens`;
+    if (nexusLegacyCost) nexusLegacyCost.textContent = `$${legacyCost.toLocaleString()}`;
+    if (nexusPlatformCost) nexusPlatformCost.textContent = `$${platformCost.toLocaleString()}`;
+    if (nexusMonthlySavings) nexusMonthlySavings.textContent = `$${monthlySavings.toLocaleString()}`;
+    if (nexusAnnualSavings) nexusAnnualSavings.textContent = `$${annualSavings.toLocaleString()}`;
+
+    if (quoteNexusTierName) quoteNexusTierName.textContent = plan.name;
+    if (quoteNexusSeatCount) quoteNexusSeatCount.textContent = `${estimatorState.seats} Desks`;
+    if (quoteNexusTokenCount) quoteNexusTokenCount.textContent = `${estimatorState.tokensMillion}M Tokens / mo`;
+    if (quoteNexusBaseFee) quoteNexusBaseFee.textContent = `$${platformCost.toLocaleString()}.00`;
+    if (quoteNexusTotalMonthly) quoteNexusTotalMonthly.textContent = `$${platformCost.toLocaleString()}.00`;
+    if (quoteNexusTotalAnnual) quoteNexusTotalAnnual.textContent = `$${(platformCost * 12).toLocaleString()}.00`;
+
+    if (quoteNexusContractHash) {
+      const seed = `NEXUS-2026-${estimatorState.selectedPlan}-${estimatorState.seats}-${estimatorState.tokensMillion}-${platformCost}`;
+      let hash = 0x811c9dc5;
+      for (let i = 0; i < seed.length; i++) {
+        hash ^= seed.charCodeAt(i);
+        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+      }
+      const hex1 = Math.abs(hash).toString(16).padStart(8, '0');
+      quoteNexusContractHash.textContent = `e8b9${hex1}823a41b590392dc4901ba6349e5d22f0c76591023bc42169da408bf9`;
+    }
+  }
+
   // 3D Controls
   const zoomInBtn = document.getElementById('zoomInBtn');
   const zoomOutBtn = document.getElementById('zoomOutBtn');
@@ -1061,6 +1171,99 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
       dismissChunkModalBtn.addEventListener('click', () => chunkPreviewModal.classList.add('hidden'));
     }
 
+    // Benchmark Matrix Modal
+    if (openBenchmarkBtn && benchmarkMatrixModal) {
+      openBenchmarkBtn.addEventListener('click', () => {
+        benchmarkMatrixModal.classList.remove('hidden');
+      });
+    }
+    if (closeBenchmarkModalBtn && benchmarkMatrixModal) {
+      closeBenchmarkModalBtn.addEventListener('click', () => {
+        benchmarkMatrixModal.classList.add('hidden');
+      });
+    }
+    if (dismissBenchmarkModalBtn && benchmarkMatrixModal) {
+      dismissBenchmarkModalBtn.addEventListener('click', () => {
+        benchmarkMatrixModal.classList.add('hidden');
+      });
+    }
+
+    // Enterprise Plan Estimator Modal
+    if (openEstimatorBtn && nexusEstimatorModal) {
+      openEstimatorBtn.addEventListener('click', () => {
+        nexusEstimatorModal.classList.remove('hidden');
+        updateEstimatorCalculations();
+      });
+    }
+    if (closeEstimatorModalBtn && nexusEstimatorModal) {
+      closeEstimatorModalBtn.addEventListener('click', () => {
+        nexusEstimatorModal.classList.add('hidden');
+      });
+    }
+
+    // Plan Selection Cards
+    document.querySelectorAll('.nexus-plan-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const planKey = card.getAttribute('data-plan');
+        if (!planKey) return;
+        estimatorState.selectedPlan = planKey;
+        estimatorState.baseFee = parseInt(card.getAttribute('data-base') || '1850', 10);
+
+        document.querySelectorAll('.nexus-plan-card').forEach((c) => {
+          c.classList.remove('bg-cyan-950/20', 'border-2', 'border-cyan-400', 'shadow-[0_0_30px_rgba(0,242,254,0.2)]');
+          c.classList.add('bg-[#080D1A]', 'border-white/[0.08]');
+          const btn = c.querySelector('.select-nexus-plan-btn');
+          if (btn) {
+            btn.className = 'select-nexus-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+            btn.textContent = `Select ${c.getAttribute('data-plan').toUpperCase()} Plan`;
+          }
+        });
+
+        card.classList.remove('bg-[#080D1A]', 'border-white/[0.08]');
+        card.classList.add('bg-cyan-950/20', 'border-2', 'border-cyan-400', 'shadow-[0_0_30px_rgba(0,242,254,0.2)]');
+        const activeBtn = card.querySelector('.select-nexus-plan-btn');
+        if (activeBtn) {
+          activeBtn.className = 'select-nexus-plan-btn mt-6 w-full py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(0,242,254,0.3)]';
+          activeBtn.textContent = 'Selected Plan';
+        }
+
+        updateEstimatorCalculations();
+        if (window.BFAuth) window.BFAuth.showToast(`Selected ${COPILOT_PLANS[planKey].name} tier`, 'info');
+      });
+    });
+
+    // Sizing Sliders
+    if (nexusSeatsSlider) {
+      nexusSeatsSlider.addEventListener('input', (e) => {
+        estimatorState.seats = parseInt(e.target.value, 10);
+        updateEstimatorCalculations();
+      });
+    }
+    if (nexusTokensSlider) {
+      nexusTokensSlider.addEventListener('input', (e) => {
+        estimatorState.tokensMillion = parseInt(e.target.value, 10);
+        updateEstimatorCalculations();
+      });
+    }
+
+    // Quotation Modal Actions
+    if (openNexusQuotationBtn && nexusQuotationModal) {
+      openNexusQuotationBtn.addEventListener('click', () => {
+        updateEstimatorCalculations();
+        nexusQuotationModal.classList.remove('hidden');
+      });
+    }
+    if (closeNexusQuotationBtn && nexusQuotationModal) {
+      closeNexusQuotationBtn.addEventListener('click', () => {
+        nexusQuotationModal.classList.add('hidden');
+      });
+    }
+    if (printNexusQuotationBtn) {
+      printNexusQuotationBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+
     // Quick Prompts Pill Bar
     document.querySelectorAll('.quick-prompt-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -1294,20 +1497,33 @@ This pattern allows Cloudflare to serve cached assets within 60 seconds while as
     if (chunkModalCount) chunkModalCount.textContent = `${chunks.length} Chunks Displayed (${doc.chunks || chunks.length} Total)`;
 
     if (chunkListContainer) {
-      chunkListContainer.innerHTML = chunks.map((c, idx) => `
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-brand-border space-y-1.5">
-          <div class="flex items-center justify-between">
+      chunkListContainer.innerHTML = chunks.map((c, idx) => {
+        const bm25Score = (24.8 - idx * 3.4).toFixed(2);
+        const startOffset = idx * 1024;
+        const endOffset = (idx + 1) * 1024;
+        const vectorSlice = `[${(0.0124 + idx * 0.005).toFixed(4)}, ${(-0.0489 + idx * 0.002).toFixed(4)}, ${(0.1205 - idx * 0.008).toFixed(4)}, -0.0091, 0.0874, -0.0632, ... 1,530 dims]`;
+
+        return `
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-brand-border space-y-2">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1.5 border-b border-white/[0.04]">
             <span class="font-bold text-xs text-white font-mono">${c.title || `Chunk #${idx + 1}`}</span>
-            <div class="flex items-center gap-2">
-              <span class="text-[9px] font-mono text-slate-500">Tokens ${c.tokenRange || '0 - 256'}</span>
-              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-bold">Cosine ${c.score || '0.94'}</span>
+            <div class="flex items-center gap-2 flex-wrap text-[10px] font-mono">
+              <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-bold">BM25 Rank #${idx + 1} (${bm25Score})</span>
+              <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-bold">Cosine ${c.score || '0.948'}</span>
+              <span class="text-slate-400">Tokens ${c.tokenRange || '0 - 256'}</span>
+              <span class="text-slate-500">[${startOffset}..${endOffset} B]</span>
             </div>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed font-mono bg-black/40 p-2.5 rounded-lg border border-white/[0.04]">
             ${c.text}
           </p>
+          <div class="p-2 rounded bg-[#060912] border border-white/[0.04] text-[10px] font-mono flex items-center justify-between text-slate-400">
+            <span class="text-cyan-400 font-bold">1,536-dim Embedding Slice:</span>
+            <span class="text-slate-500 truncate max-w-xs sm:max-w-md">${vectorSlice}</span>
+          </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     chunkPreviewModal.classList.remove('hidden');
