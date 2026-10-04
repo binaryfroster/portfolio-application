@@ -397,13 +397,13 @@
   // =========================================================================
   // 3. THREE.JS 3D HOLOGRAPHIC AUDIO VISUALIZER
   // =========================================================================
-  const container = document.getElementById('threejs-audio-container');
-  let scene, camera, renderer, sphereMesh, innerCore, ringMesh, particleSystem;
+  const container = document.getElementById('threeContainer') || document.getElementById('threejs-audio-container');
+  let scene, camera, renderer, sphereMesh, innerCore, ringMesh, ringMesh2, ringMesh3;
   let originalPositions = [];
   let isDragging = false;
   let prevMousePos = { x: 0, y: 0 };
-  let sphereRotation = { x: 0.2, y: 0.3 };
-  let targetRotation = { x: 0.2, y: 0.3 };
+  let sphereRotation = { x: 0.15, y: 0.25 };
+  let targetRotation = { x: 0.15, y: 0.25 };
 
   function initThreeJS() {
     if (!container || typeof THREE === 'undefined') return;
@@ -415,88 +415,98 @@
     scene = new THREE.Scene();
 
     // Camera
-    camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 6.8);
+    camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 6.2);
     camera.lookAt(0, 0, 0);
 
-    // WebGL Renderer
+    // WebGL Renderer with High Precision Studio Shading
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    if (renderer.toneMapping !== undefined) {
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+    }
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x2b1055, 1.6);
+    // Studio Lighting Architecture (Swiss Acoustic Laboratory)
+    const ambientLight = new THREE.AmbientLight(0x0a0e17, 1.4);
     scene.add(ambientLight);
 
-    const purpleLight = new THREE.PointLight(0xa855f7, 3.2, 20);
-    purpleLight.position.set(4, 3, 4);
-    scene.add(purpleLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(5, 6, 5);
+    scene.add(keyLight);
 
-    const cyanLight = new THREE.PointLight(0x00f2fe, 2.8, 20);
-    cyanLight.position.set(-4, -2, 3);
-    scene.add(cyanLight);
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.4);
+    rimLight.position.set(-6, -3, 3);
+    scene.add(rimLight);
 
-    // Outer Harmonic Spectral Sphere
-    const geometry = new THREE.IcosahedronGeometry(1.8, 16);
+    const fillLight = new THREE.PointLight(0x94a3b8, 1.0, 30);
+    fillLight.position.set(0, -4, 4);
+    scene.add(fillLight);
+
+    // Outer Acoustic Lattice Membrane
+    const geometry = new THREE.IcosahedronGeometry(1.75, 12);
     originalPositions = Array.from(geometry.attributes.position.array);
 
-    const wireframeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x8b5cf6,
-      emissive: 0x4c1d95,
+    const latticeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      emissive: 0x0f172a,
+      roughness: 0.2,
+      metalness: 0.85,
       wireframe: true,
-      roughness: 0.3,
-      metalness: 0.8,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.45
     });
 
-    sphereMesh = new THREE.Mesh(geometry, wireframeMaterial);
+    sphereMesh = new THREE.Mesh(geometry, latticeMaterial);
     scene.add(sphereMesh);
 
-    // Inner Glowing Core
-    const innerGeometry = new THREE.SphereGeometry(1.1, 24, 24);
-    const innerMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00f2fe,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.28
+    // Inner Acoustic Solid Resonator Core (Anodized Slate)
+    const innerGeometry = new THREE.SphereGeometry(1.2, 32, 32);
+    const innerMaterial = new THREE.MeshStandardMaterial({
+      color: 0x111622,
+      roughness: 0.35,
+      metalness: 0.9,
+      wireframe: false
     });
     innerCore = new THREE.Mesh(innerGeometry, innerMaterial);
     scene.add(innerCore);
 
-    // Orbital Telemetry Ring
-    const ringGeo = new THREE.TorusGeometry(2.25, 0.02, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0xa855f7,
+    // Concentric Wave Ring 1 (Equatorial Plane)
+    const ringGeo1 = new THREE.TorusGeometry(2.15, 0.012, 16, 120);
+    const ringMat1 = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
       transparent: true,
-      opacity: 0.45
+      opacity: 0.4
     });
-    ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.rotation.x = Math.PI / 3;
+    ringMesh = new THREE.Mesh(ringGeo1, ringMat1);
+    ringMesh.rotation.x = Math.PI / 2.3;
     scene.add(ringMesh);
 
-    // Floating Stardust Particles
-    const particleCount = 140;
-    const particleGeo = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      particlePositions[i] = (Math.random() - 0.5) * 8.5;
-      particlePositions[i + 1] = (Math.random() - 0.5) * 8.5;
-      particlePositions[i + 2] = (Math.random() - 0.5) * 8.5;
-    }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-
-    const particleMat = new THREE.PointsMaterial({
-      color: 0x38bdf8,
-      size: 0.038,
+    // Concentric Wave Ring 2 (Polar Offset Plane)
+    const ringGeo2 = new THREE.TorusGeometry(2.35, 0.009, 16, 120);
+    const ringMat2 = new THREE.MeshBasicMaterial({
+      color: 0x94a3b8,
       transparent: true,
-      opacity: 0.65
+      opacity: 0.25
     });
-    particleSystem = new THREE.Points(particleGeo, particleMat);
-    scene.add(particleSystem);
+    ringMesh2 = new THREE.Mesh(ringGeo2, ringMat2);
+    ringMesh2.rotation.y = Math.PI / 3.5;
+    ringMesh2.rotation.x = Math.PI / 6.0;
+    scene.add(ringMesh2);
+
+    // Concentric Wave Ring 3 (Outer Horizon Ring)
+    const ringGeo3 = new THREE.TorusGeometry(2.55, 0.007, 16, 120);
+    const ringMat3 = new THREE.MeshBasicMaterial({
+      color: 0x64748b,
+      transparent: true,
+      opacity: 0.18
+    });
+    ringMesh3 = new THREE.Mesh(ringGeo3, ringMat3);
+    ringMesh3.rotation.z = Math.PI / 4.0;
+    scene.add(ringMesh3);
 
     // Mouse Controls
     container.addEventListener('mousedown', (e) => {
@@ -615,11 +625,14 @@
     }
 
     if (ringMesh) {
-      ringMesh.rotation.z = elapsedTime * 0.2;
+      ringMesh.rotation.z = elapsedTime * 0.15;
     }
-
-    if (particleSystem) {
-      particleSystem.rotation.y = -elapsedTime * 0.05;
+    if (ringMesh2) {
+      ringMesh2.rotation.x = Math.PI / 6.0 + elapsedTime * 0.1;
+      ringMesh2.rotation.y = elapsedTime * 0.12;
+    }
+    if (ringMesh3) {
+      ringMesh3.rotation.z = Math.PI / 4.0 - elapsedTime * 0.08;
     }
 
     if (renderer && scene && camera) {
