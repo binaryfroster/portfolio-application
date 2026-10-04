@@ -151,22 +151,22 @@
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // Architectural Lighting Setup
-    ambientLight = new THREE.AmbientLight(0x0e241b, 1.8);
+    // Architectural Lighting Setup (Swiss Architectural Standard)
+    ambientLight = new THREE.AmbientLight(0x0f172a, 1.4);
     scene.add(ambientLight);
 
-    dirLight1 = new THREE.DirectionalLight(0x10b981, 2.6);
+    dirLight1 = new THREE.DirectionalLight(0xffffff, 2.4);
     dirLight1.position.set(6, 10, 6);
     scene.add(dirLight1);
 
-    dirLight2 = new THREE.DirectionalLight(0x00f2fe, 1.6);
+    dirLight2 = new THREE.DirectionalLight(0x94a3b8, 1.2);
     dirLight2.position.set(-6, 5, -4);
     scene.add(dirLight2);
 
     worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    groundGrid = new THREE.GridHelper(10, 20, 0x164e3b, 0x09261c);
+    groundGrid = new THREE.GridHelper(10, 20, 0x334155, 0x1e293b);
     groundGrid.position.y = -1.45;
     worldGroup.add(groundGrid);
 
@@ -285,50 +285,50 @@
     const depth = 2.0 * scaleFactor;
     const floorHeight = 0.85;
 
-    // Era-based color palettes
-    let slabColor = 0x10b981;
-    let glassColor = 0x00f2fe;
+    // Architectural Material Tones
+    let slabColor = 0x242830; // Cast Charcoal Concrete
+    let glassColor = 0x94a3b8; // Float Glass
 
     if (era === 'victorian' || era === 'georgian') {
-      slabColor = 0x8b5a2b;
-      glassColor = 0xf59e0b;
+      slabColor = 0x3a332a; // Weathered Portland Stone / Limestone
+      glassColor = 0xa3a3a3;
     } else if (era === 'contemporary') {
-      slabColor = 0x34d399;
+      slabColor = 0x1e242d; // Anodized Slate
       glassColor = 0x38bdf8;
     } else if (era === 'edwardian') {
-      slabColor = 0x6366f1;
-      glassColor = 0xa855f7;
+      slabColor = 0x2d3748; // Architectural Granite
+      glassColor = 0x94a3b8;
     }
 
     // Material definitions based on Wireframe Mode
     const slabMaterial = new THREE.MeshStandardMaterial({
       color: slabColor,
-      roughness: wireframeMode ? 1.0 : 0.25,
-      metalness: wireframeMode ? 0.0 : 0.5,
+      roughness: wireframeMode ? 1.0 : 0.4,
+      metalness: wireframeMode ? 0.0 : 0.7,
       wireframe: wireframeMode,
       transparent: true,
-      opacity: wireframeMode ? 0.85 : 0.95
+      opacity: wireframeMode ? 0.8 : 0.96
     });
 
     const glassMaterial = wireframeMode ? new THREE.MeshBasicMaterial({
       color: glassColor,
       wireframe: true,
       transparent: true,
-      opacity: 0.7
+      opacity: 0.65
     }) : new THREE.MeshPhysicalMaterial({
       color: glassColor,
       transparent: true,
-      opacity: 0.45,
-      roughness: 0.1,
-      metalness: 0.1,
-      transmission: 0.65
+      opacity: 0.42,
+      roughness: 0.12,
+      metalness: 0.25,
+      transmission: 0.75
     });
 
     const frameMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0f291f,
+      color: 0x1e293b,
       wireframe: true,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.75
     });
 
     const startY = -1.4;
@@ -401,28 +401,28 @@
   lightingToggleBtn?.addEventListener('click', () => {
     if (lightingMode === 'studio') {
       lightingMode = 'sunset';
-      ambientLight.color.setHex(0x2a1a08);
+      ambientLight.color.setHex(0x1c1208);
       dirLight1.color.setHex(0xf59e0b);
       dirLight2.color.setHex(0xd97706);
-      lightingToggleBtn.textContent = 'Light: Sunset';
+      lightingToggleBtn.textContent = 'Light: Golden';
       lightingToggleBtn.className = 'px-2.5 py-1 rounded-md bg-amber-600/30 text-amber-300 border border-amber-500/50 font-mono transition-colors';
     } else if (lightingMode === 'sunset') {
-      lightingMode = 'cyber';
-      ambientLight.color.setHex(0x050c18);
-      dirLight1.color.setHex(0x00f2fe);
-      dirLight2.color.setHex(0x818cf8);
-      lightingToggleBtn.textContent = 'Light: Cyber';
-      lightingToggleBtn.className = 'px-2.5 py-1 rounded-md bg-cyan-600/30 text-cyan-300 border border-cyan-500/50 font-mono transition-colors';
+      lightingMode = 'overcast';
+      ambientLight.color.setHex(0x1e293b);
+      dirLight1.color.setHex(0xcbd5e1);
+      dirLight2.color.setHex(0x64748b);
+      lightingToggleBtn.textContent = 'Light: Overcast';
+      lightingToggleBtn.className = 'px-2.5 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600 font-mono transition-colors';
     } else {
       lightingMode = 'studio';
-      ambientLight.color.setHex(0x0e241b);
-      dirLight1.color.setHex(0x10b981);
-      dirLight2.color.setHex(0x00f2fe);
-      lightingToggleBtn.textContent = 'Light: Studio';
+      ambientLight.color.setHex(0x0f172a);
+      dirLight1.color.setHex(0xffffff);
+      dirLight2.color.setHex(0x94a3b8);
+      lightingToggleBtn.textContent = 'Light: Solar';
       lightingToggleBtn.className = 'px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-cyan-300 border border-white/10 font-mono transition-colors';
     }
     reconstruct3DBuilding();
-    if (window.showToast) window.showToast(`3D studio lighting environment updated: ${lightingMode.toUpperCase()}.`, 'info');
+    if (window.showToast) window.showToast(`3D architectural lighting environment updated: ${lightingMode.toUpperCase()}.`, 'info');
   });
 
   autoRotateToggleBtn?.addEventListener('click', () => {
