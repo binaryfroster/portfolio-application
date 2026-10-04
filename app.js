@@ -1802,9 +1802,31 @@
 
   // Quotation Modal events
   const quoteModal = document.getElementById('quotationModal');
-  document.getElementById('openQuotationModalBtn')?.addEventListener('click', () => {
-    updateRoiCalculations();
-    quoteModal?.classList.remove('hidden');
+  const openQuoteVoiceBtns = [
+    document.getElementById('openQuotationModalBtn'),
+    document.getElementById('openQuotationModalBtnHeader'),
+    document.getElementById('directActionPlanBtn')
+  ];
+
+  openQuoteVoiceBtns.forEach(btn => {
+    btn?.addEventListener('click', () => {
+      updateRoiCalculations();
+      quoteModal?.classList.remove('hidden');
+    });
+  });
+
+  // Direct Action Orientation Deck Triggers
+  document.getElementById('directActionCallBtn')?.addEventListener('click', () => {
+    const simBtn = document.getElementById('simulateCallBtn');
+    if (simBtn) simBtn.click();
+  });
+
+  document.getElementById('directActionTwilioBtn')?.addEventListener('click', () => {
+    if (typeof toggleTwilioDrawer === 'function') {
+      toggleTwilioDrawer();
+    } else {
+      document.getElementById('openTwilioDrawerBtn')?.click();
+    }
   });
   document.getElementById('closeQuotationModalBtn')?.addEventListener('click', () => {
     quoteModal?.classList.add('hidden');
