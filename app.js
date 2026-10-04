@@ -228,19 +228,23 @@
     DOM.certContainer.innerHTML = '';
     DOM.certContainer.appendChild(renderer.domElement);
 
-    // Dynamic Lighting
-    const ambientLight = new THREE.AmbientLight(0x2e1065, 2.0);
+    // Studio Lighting Architecture (Bauhaus Physical Showcase)
+    const ambientLight = new THREE.AmbientLight(0x0f1422, 1.4);
     scene.add(ambientLight);
 
-    const goldLight = new THREE.PointLight(0xf59e0b, 3.5, 25);
-    goldLight.position.set(4, 5, 5);
-    scene.add(goldLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(5, 6, 6);
+    scene.add(keyLight);
 
-    const cyanLight = new THREE.PointLight(0x00f2fe, 2.5, 25);
-    cyanLight.position.set(-4, -4, 4);
-    scene.add(cyanLight);
+    const goldRimLight = new THREE.DirectionalLight(0xd4af37, 1.5);
+    goldRimLight.position.set(-5, 4, 3);
+    scene.add(goldRimLight);
 
-    // Diploma Geometry & Texture
+    const fillLight = new THREE.PointLight(0x94a3b8, 1.0, 30);
+    fillLight.position.set(0, -5, 5);
+    scene.add(fillLight);
+
+    // Diploma Geometry & PBR Gold Foil Materials
     const canvasTexture = createDiplomaTexture();
     const cardWidth = 4.4;
     const cardHeight = 3.0;
@@ -249,29 +253,22 @@
     const geometry = new THREE.BoxGeometry(cardWidth, cardHeight, cardDepth);
 
     const materials = [
-      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.2 }),
-      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.2 }),
-      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.2 }),
-      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.2 }),
-      new THREE.MeshStandardMaterial({ map: canvasTexture, roughness: 0.25, metalness: 0.2 }),
-      new THREE.MeshStandardMaterial({ color: 0x0f1124, wireframe: true })
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ map: canvasTexture, roughness: 0.3, metalness: 0.15 }),
+      new THREE.MeshStandardMaterial({ color: 0x0c0f17, roughness: 0.4, metalness: 0.8 })
     ];
 
     certMesh = new THREE.Mesh(geometry, materials);
     scene.add(certMesh);
 
-    // Background Particle Field
-    const particleCount = 100;
-    const pGeo = new THREE.BufferGeometry();
-    const pPos = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      pPos[i] = (Math.random() - 0.5) * 8.5;
-      pPos[i + 1] = (Math.random() - 0.5) * 6.5;
-      pPos[i + 2] = (Math.random() - 0.5) * 4.5;
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    const pMat = new THREE.PointsMaterial({ color: 0xa855f7, size: 0.045, transparent: true, opacity: 0.75 });
-    particles = new THREE.Points(pGeo, pMat);
+    // Subtle Precision Framing Ring (Replacing purple particles)
+    const ringGeo = new THREE.TorusGeometry(3.6, 0.008, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.25 });
+    particles = new THREE.Mesh(ringGeo, ringMat);
+    particles.rotation.x = Math.PI / 3;
     scene.add(particles);
 
     // Interactive Drag Orbit Controls
