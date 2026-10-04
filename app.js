@@ -244,15 +244,15 @@
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2(-999, -999);
 
-    // Industrial Lighting System
-    const ambient = new THREE.AmbientLight(0x0f172a, 2.0);
+    // Industrial Lighting System (Dieter Rams Factory Standard)
+    const ambient = new THREE.AmbientLight(0x0f172a, 1.4);
     scene.add(ambient);
 
-    const dirLight1 = new THREE.DirectionalLight(0x00f2fe, 2.8);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.4);
     dirLight1.position.set(8, 14, 6);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x10b981, 2.2);
+    const dirLight2 = new THREE.DirectionalLight(0x94a3b8, 1.2);
     dirLight2.position.set(-8, 10, -6);
     scene.add(dirLight2);
 
@@ -261,13 +261,13 @@
 
     // Factory Floor Base Slab
     const floorGeo = new THREE.BoxGeometry(11, 0.25, 9);
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x090e1a, roughness: 0.85, metalness: 0.2 });
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x111622, roughness: 0.8, metalness: 0.2 });
     const floorMesh = new THREE.Mesh(floorGeo, floorMat);
     floorMesh.position.y = -0.125;
     factoryGroup.add(floorMesh);
 
     // Grid System
-    const grid = new THREE.GridHelper(11, 22, 0x1f293d, 0x0c1322);
+    const grid = new THREE.GridHelper(11, 22, 0x334155, 0x1e293b);
     grid.position.y = 0.01;
     factoryGroup.add(grid);
 
@@ -278,12 +278,12 @@
     belt1.position.set(-2.8, 0.2, 0);
     factoryGroup.add(belt1);
 
-    // Conveyor Moving Packages
-    const boxMatCyan = new THREE.MeshStandardMaterial({ color: 0x00f2fe, roughness: 0.3, emissive: 0x004455 });
-    const boxMatEmerald = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3, emissive: 0x054030 });
+    // Conveyor Machined Component Billets
+    const boxMat1 = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8, roughness: 0.25 });
+    const boxMat2 = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7, roughness: 0.3 });
 
     for (let i = 0; i < 4; i++) {
-      const pBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 0.5), i % 2 === 0 ? boxMatCyan : boxMatEmerald);
+      const pBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 0.5), i % 2 === 0 ? boxMat1 : boxMat2);
       pBox.position.set(-2.8, 0.55, -2.8 + i * 1.8);
       factoryGroup.add(pBox);
       conveyorBoxes.push(pBox);
