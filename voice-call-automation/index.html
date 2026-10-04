@@ -80,42 +80,148 @@
 <body class="min-h-screen flex flex-col antialiased bg-[#07090E] text-slate-200 selection:bg-white/20 selection:text-white">
 
   <!-- TOP CONSOLE NAVIGATION -->
-  <header class="sticky top-0 z-50 px-4 sm:px-6 h-16 bg-[#07090E]/95 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <a href="/" class="flex items-center gap-2.5 group">
-        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-mono font-bold text-xs text-white border border-white/20">
+  <header class="sticky top-0 z-50 px-4 sm:px-6 h-16 bg-[#07090E]/95 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between gap-3 flex-nowrap min-w-0 w-full">
+    <div class="flex items-center gap-2.5 shrink-0 min-w-0">
+      <a href="/" class="flex items-center gap-2.5 group shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center font-mono font-bold text-xs text-purple-300 border border-purple-500/30 shrink-0">
           VF
         </div>
-        <div class="flex flex-col">
-          <span class="font-bold tracking-tight text-white text-sm flex items-center gap-2">
-            VOCALFLOW AI
-            <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white/10 text-slate-300 border border-white/20">TELEPHONY OS</span>
-          </span>
-          <span class="text-[10px] text-slate-400 font-mono">ACOUSTIC CARRIER CONSOLE</span>
+        <div class="flex flex-col justify-center min-w-0 text-left">
+          <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap">
+            <span class="font-serif italic font-normal text-sm sm:text-base tracking-tight text-white group-hover:text-purple-300 transition-colors whitespace-nowrap">VocalFlow AI</span>
+            <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/30 font-semibold tracking-wider whitespace-nowrap shrink-0">AUTONOMOUS SIP</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden md:block whitespace-nowrap truncate mt-0.5">ACOUSTIC CARRIER CONSOLE & TELEPHONY OS</p>
         </div>
       </a>
     </div>
 
     <!-- Status Strip & Quick Triggers -->
-    <div class="flex items-center gap-4">
-      <div id="headerSipBadge" class="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs font-mono text-slate-300">
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0 flex-nowrap whitespace-nowrap">
+      <div id="headerSipBadge" class="hidden xl:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs font-mono text-slate-300 shrink-0 whitespace-nowrap">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
         <span id="callStatusText">SIP CARRIER READY</span>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button id="simulateCallBtn" class="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-mono text-white transition-all">
-          <span id="simulateCallBtnText">Simulate Inbound</span>
-        </button>
-        <button id="openTwilioDrawerBtn" onclick="toggleTwilioDrawer()" class="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-slate-300 transition-all">
-          Carrier Setup
-        </button>
-      </div>
+      <button id="simulateCallBtn" class="px-3.5 py-1.5 rounded-full bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-xs font-mono text-purple-200 transition-all shrink-0 whitespace-nowrap active:scale-[0.98]">
+        <span id="simulateCallBtnText">Simulate Inbound</span>
+      </button>
+      <button id="openTwilioDrawerBtn" onclick="toggleTwilioDrawer()" class="px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-slate-300 transition-all shrink-0 whitespace-nowrap">
+        Carrier Setup
+      </button>
+      <button id="openQuotationModalBtnHeader" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.12] text-xs font-mono font-medium transition-all shrink-0 whitespace-nowrap">
+        <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+        <span>Plan & SOW Quote</span>
+      </button>
+      <div id="bf-auth-mount" class="shrink-0 flex items-center"></div>
     </div>
   </header>
 
   <!-- MAIN TELEPHONY WORKSPACE -->
-  <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- DIRECT ACTION WORKSPACE & ORIENTATION DECK (ABOVE THE FOLD) -->
+    <section class="concentric-card">
+      <div class="concentric-card-inner p-4 sm:p-5 space-y-4">
+        
+        <!-- Header Orientation Strip -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-bold">
+                DIRECT ACTION WORKSPACE
+              </span>
+              <span class="text-xs text-slate-400 font-mono">AUTONOMOUS TELEPHONY CONTROLS</span>
+            </div>
+            <h1 class="font-serif italic text-lg sm:text-xl text-white font-normal tracking-tight">
+              Enterprise Voice AI Agent & Acoustic Carrier Console
+            </h1>
+            <p class="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
+              Test live bidirectional conversational voice calls, configure production Twilio SIP credentials, or calculate your contact center enterprise deployment plan below.
+            </p>
+          </div>
+
+          <!-- Quick Carrier Telemetry Pill -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="px-3 py-1.5 rounded-xl bg-[#07090E] border border-white/[0.06] text-right font-mono">
+              <span class="text-[9px] text-slate-500 block uppercase">LATENCY TARGET</span>
+              <span class="text-xs text-purple-300 font-bold flex items-center gap-1.5 justify-end">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                &lt; 150ms RT
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Primary Action Cards ("What You Can Do Right Now") -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          
+          <!-- Card 1: Direct Demo / Call Simulation -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-purple-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-purple-400 font-bold tracking-wider uppercase">01 &middot; DIRECT ACTION</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">LIVE DEMO</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Simulate Inbound Voice Call</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Trigger a live inbound voice interaction. Experience real-time speech synthesis, DTMF tones, and dynamic turn-taking.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionCallBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 hover:text-white border border-purple-500/30 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                <span>Trigger Inbound Call</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Specialized Secondary Capability / Carrier Gateway -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-white/20 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-slate-400 font-bold tracking-wider uppercase">02 &middot; SIP CARRIER</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-300 border border-white/10 font-semibold">GATEWAY</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Twilio Gateway Setup</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Plug in real Twilio Account SID, Auth Token, and caller ID for live PSTN outbound phone calling to mobile numbers.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionTwilioBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 hover:text-white border border-white/10 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <span>Configure Carrier Gateway</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: THE FIRST PLAN ITSELF (Commercial & Enterprise SOW) -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-purple-500/[0.08] to-cyan-500/[0.04] border border-purple-500/30 hover:border-purple-400/60 transition-all flex flex-col justify-between shadow-[0_0_20px_rgba(168,85,247,0.08)] group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-purple-300 font-bold tracking-wider uppercase">03 &middot; THE FIRST PLAN</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-400/30 font-bold">ENTERPRISE SOW</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Telephony Deployment Plan</h2>
+              <p class="text-xs text-slate-300 leading-relaxed font-sans">
+                Calculate concurrent voice channels, SIP trunk volume, ROI savings, and generate an official printable SOW quotation.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.08]">
+              <button id="directActionPlanBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(168,85,247,0.25)] flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <span>Configure Plan & View SOW Quote</span>
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2-COLUMN TELEPHONY WORKSPACE -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
     
     <!-- LEFT COLUMN: ACOUSTIC STAGE & CALL CONTROLS (7 Cols) -->
     <div class="lg:col-span-7 space-y-6">

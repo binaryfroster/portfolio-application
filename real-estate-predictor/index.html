@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta name="bf-app-id" content="real-estate-predictor">
@@ -112,87 +112,62 @@
 <body class="min-h-screen flex flex-col antialiased bg-[#07090E] text-slate-200">
 
   <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 px-4 py-2.5 bg-[#07090E]/95 backdrop-blur-xl border-b border-white/[0.08]">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
+  <header class="sticky top-0 z-40 px-3 sm:px-6 py-2.5 bg-[#07090E]/95 backdrop-blur-xl border-b border-white/[0.08]">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3 flex-nowrap min-w-0 w-full">
       
       <!-- Logo & App Identification -->
-      <div class="flex items-center gap-3">
-        <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
-          <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white font-mono font-bold text-xs">
+      <div class="flex items-center gap-2.5 shrink-0 min-w-0">
+        <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-300 font-mono font-bold text-xs shrink-0">
             MV
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-serif italic font-normal text-sm tracking-tight text-white group-hover:text-emerald-300 transition-colors">MetroVal ML</span>
-              <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/10 text-slate-300 border border-white/20 font-semibold tracking-wider">92.4% RICS ACCURACY</span>
+          <div class="flex flex-col justify-center min-w-0 text-left">
+            <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap">
+              <span class="font-serif italic font-normal text-sm sm:text-base tracking-tight text-white group-hover:text-emerald-300 transition-colors whitespace-nowrap">MetroVal ML</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-semibold tracking-wider whitespace-nowrap shrink-0">92.4% RICS ACCURACY</span>
             </div>
-            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">SPATIAL ECONOMETRIC VALUATION</p>
+            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden md:block whitespace-nowrap truncate mt-0.5">SPATIAL ECONOMETRIC VALUATION ENGINE</p>
           </div>
         </a>
       </div>
 
       <!-- Telemetry Info -->
-      <div class="hidden xl:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
-        <div class="flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <div class="hidden xl:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4 shrink-0 whitespace-nowrap">
+        <div class="flex items-center gap-1.5 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
           <span class="text-slate-500">TRAINED COMPS:</span>
           <span class="text-slate-200 font-bold">500,000+ HM Land Registry</span>
         </div>
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 whitespace-nowrap">
           <span class="text-slate-500">CONFIDENCE:</span>
           <span class="text-slate-200 font-bold">95% CI (RICS Red Book)</span>
         </div>
       </div>
 
       <!-- Actions & Controls -->
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-nowrap whitespace-nowrap">
         
         <!-- Currency Toggle -->
-        <div class="flex items-center p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs font-mono">
+        <div class="flex items-center p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs font-mono shrink-0">
           <button id="currencyGbpBtn" type="button" class="px-2.5 py-1 rounded text-white bg-white/10 font-bold transition-all">GBP [£]</button>
           <button id="currencyUsdBtn" type="button" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">USD [$]</button>
         </div>
 
         <!-- Saved Properties Drawer Trigger -->
-        <button id="savedPropertiesBtn" type="button" class="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] text-slate-200 text-xs font-semibold transition-all">
-          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+        <button id="savedPropertiesBtn" type="button" class="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] text-slate-200 text-xs font-semibold transition-all shrink-0 whitespace-nowrap">
+          <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
           <span class="hidden sm:inline">Saved</span>
           <span id="savedCountBadge" class="font-mono text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">0</span>
         </button>
 
-        <!-- Export Appraisal Report Menu -->
-        <div class="relative">
-          <button id="exportDropdownBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] text-slate-200 text-xs font-semibold transition-all">
-            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <span class="hidden sm:inline">Export Appraisal</span>
-            <span class="sm:hidden">Export</span>
-            <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </button>
-
-          <!-- Dropdown Options -->
-          <div id="exportMenu" class="hidden absolute right-0 mt-2 w-56 p-1.5 rounded-2xl bg-[#0B0E17] border border-white/[0.1] shadow-2xl z-50 text-xs font-mono">
-            <button id="printDossierBtn" type="button" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/[0.06] text-slate-200 transition-colors flex items-center justify-between">
-              <span>Print RICS Dossier (PDF)</span>
-              <span class="text-slate-400">[PRINT]</span>
-            </button>
-            <button id="exportJsonBtn" type="button" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/[0.06] text-slate-200 transition-colors flex items-center justify-between">
-              <span>Download Model JSON</span>
-              <span class="text-cyan-400">[JSON]</span>
-            </button>
-            <button id="exportCsvBtn" type="button" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/[0.06] text-slate-200 transition-colors flex items-center justify-between">
-              <span>Export Comps CSV</span>
-              <span class="text-amber-400">[CSV]</span>
-            </button>
-          </div>
-        </div>
-
-        <a href="https://binaryfroster.com/portfolio" class="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
-          <span>Portfolio</span>
-          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-        </a>
+        <!-- Direct SOW Plan Quote Trigger in Header -->
+        <button id="openPropQuotationBtnHeader" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.12] text-xs font-mono font-medium transition-all shrink-0 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>Plan & SOW Quote</span>
+        </button>
 
         <!-- Enterprise Auth Mount -->
-        <div id="bf-auth-mount"></div>
+        <div id="bf-auth-mount" class="shrink-0 flex items-center"></div>
       </div>
     </div>
   </header>
@@ -213,6 +188,106 @@
 
   <!-- MAIN CONTAINER -->
   <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- DIRECT ACTION WORKSPACE & ORIENTATION DECK (ABOVE THE FOLD) -->
+    <section class="double-bezel">
+      <div class="double-bezel-inner p-4 sm:p-5 space-y-4">
+        
+        <!-- Header Orientation Strip -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">
+                DIRECT ACTION WORKSPACE
+              </span>
+              <span class="text-xs text-slate-400 font-mono">VALUATION CONTROLS & SOW</span>
+            </div>
+            <h1 class="font-serif italic text-lg sm:text-xl text-white font-normal tracking-tight">
+              Spatial Econometric Valuation & PropTech ML Engine
+            </h1>
+            <p class="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
+              Calculate machine learning property valuations, inspect verified Land Registry comparable transactions, or configure an enterprise API deployment plan below.
+            </p>
+          </div>
+
+          <!-- Quick Accuracy Telemetry Pill -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="px-3 py-1.5 rounded-xl bg-[#07090E] border border-white/[0.06] text-right font-mono">
+              <span class="text-[9px] text-slate-500 block uppercase">MODEL ACCURACY</span>
+              <span class="text-xs text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                92.4% RICS R2
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Primary Action Cards ("What You Can Do Right Now") -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          
+          <!-- Card 1: Direct Demo / Valuation Engine -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-emerald-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-emerald-400 font-bold tracking-wider uppercase">01 &middot; DIRECT ACTION</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">LIVE DEMO</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Run ML Valuation Engine</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Predict instant fair market value, confidence bounds, and $/sqft metrics with 3D solar massing building visualization.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionPredictBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span>Calculate Valuation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Specialized Secondary Capability / Comps Analysis -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-teal-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-teal-400 font-bold tracking-wider uppercase">02 &middot; MARKET COMPS</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20 font-semibold">REGISTRY</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Inspect Registry Comps</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Filter 500k+ historical Land Registry transactions, compare square footage, distance radius, and recent transaction dates.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionCompsBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 hover:text-white border border-teal-500/25 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <span>View Comparable Records</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: THE FIRST PLAN ITSELF (Commercial & Enterprise SOW) -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-emerald-500/[0.08] to-teal-500/[0.04] border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between shadow-[0_0_20px_rgba(16,185,129,0.08)] group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-emerald-300 font-bold tracking-wider uppercase">03 &middot; THE FIRST PLAN</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 font-bold">ENTERPRISE SOW</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">PropTech Enterprise Deployment</h2>
+              <p class="text-xs text-slate-300 leading-relaxed font-sans">
+                Configure valuation API volume, MLS / HM Land Registry ingestion pipeline, custom ML models, and download signed SOW quote.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.08]">
+              <button id="directActionPlanBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <span>Configure Plan & View SOW Quote</span>
+                <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 

@@ -152,21 +152,21 @@
       if (!header) return;
       mount = document.createElement('div');
       mount.id = 'bf-auth-mount';
-      mount.className = 'flex items-center gap-2 relative';
+      mount.className = 'flex items-center gap-2 relative shrink-0';
       header.appendChild(mount);
     }
 
     mount.innerHTML = `
-      <div class="relative">
-        <button id="bf-user-menu-btn" class="flex items-center gap-2.5 p-1 pl-1.5 pr-3 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.1] transition-all text-left">
-          <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center font-mono font-bold text-xs text-white shadow-inner">
+      <div class="relative shrink-0">
+        <button id="bf-user-menu-btn" class="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] transition-all text-left shrink-0 whitespace-nowrap">
+          <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center font-mono font-bold text-xs text-white shadow-inner shrink-0">
             ${user.avatar}
           </div>
-          <div class="hidden sm:block">
-            <div class="text-xs font-semibold text-white leading-tight">${user.name}</div>
-            <div class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">${user.role}</div>
+          <div class="hidden sm:flex flex-col justify-center min-w-0 text-left">
+            <div class="text-xs font-semibold text-white leading-tight whitespace-nowrap">${user.name}</div>
+            <div class="text-[9px] font-mono text-slate-400 uppercase tracking-wider whitespace-nowrap mt-0.5">${user.role}</div>
           </div>
-          <svg class="w-3.5 h-3.5 text-slate-400 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3.5 h-3.5 text-slate-400 ml-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>

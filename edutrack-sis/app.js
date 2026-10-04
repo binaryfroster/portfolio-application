@@ -1805,15 +1805,40 @@
       updateSisEstimator();
     });
 
-    // Quotation modal open/close
+    // Quotation modal open/close & Direct Action triggers
     const openSisBtn = document.getElementById('openSisQuotationBtn');
+    const openSisHeaderBtn = document.getElementById('openSisQuotationBtnHeader');
+    const directActionPlanBtn = document.getElementById('directActionPlanBtn');
     const closeSisBtn = document.getElementById('closeSisQuotationBtn');
     const modal = document.getElementById('edutrackQuotationModal');
     const printBtn = document.getElementById('printSisQuotationBtn');
 
-    openSisBtn?.addEventListener('click', () => {
-      updateSisEstimator();
-      if (modal) modal.classList.remove('hidden');
+    [openSisBtn, openSisHeaderBtn, directActionPlanBtn].forEach(btn => {
+      btn?.addEventListener('click', () => {
+        updateSisEstimator();
+        if (modal) modal.classList.remove('hidden');
+      });
+    });
+
+    // Direct Action Card 1: Record Cohort Attendance
+    const directActionAttendanceBtn = document.getElementById('directActionAttendanceBtn');
+    directActionAttendanceBtn?.addEventListener('click', () => {
+      const attTab = document.querySelector('.sis-tab[data-tab="attendance"]');
+      attTab?.click();
+      const attView = document.getElementById('tab-attendance');
+      if (attView) {
+        attView.scrollIntoView({ behavior: 'smooth' });
+      }
+      triggerToast('Cohort attendance registry active.', 'info');
+    });
+
+    // Direct Action Card 2: Generate Official Transcript
+    const directActionTranscriptBtn = document.getElementById('directActionTranscriptBtn');
+    directActionTranscriptBtn?.addEventListener('click', () => {
+      if (typeof openTranscriptModal === 'function' && studentsState && studentsState[0]) {
+        openTranscriptModal(studentsState[0]);
+        triggerToast('Rendering official FERPA transcript with PKI seal.', 'info');
+      }
     });
 
     closeSisBtn?.addEventListener('click', () => {

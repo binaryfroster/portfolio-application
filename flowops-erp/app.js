@@ -1524,7 +1524,7 @@
     updateMesEstimator();
   });
 
-  // Quotation Modal Triggers
+  // Quotation Modal Triggers & Direct Action Handlers
   const flowopsQuotationModal = document.getElementById('flowopsQuotationModal');
   const closeFlowOpsQuotationModal = document.getElementById('closeFlowOpsQuotationModal');
   const confirmFlowOpsQuoteBtn = document.getElementById('confirmFlowOpsQuoteBtn');
@@ -1532,7 +1532,9 @@
 
   const openFlowOpsBtns = [
     document.getElementById('openFlowOpsQuotationBtn'),
-    document.getElementById('openFlowOpsQuotationBtnBottom')
+    document.getElementById('openFlowOpsQuotationBtnBottom'),
+    document.getElementById('openFlowOpsQuotationBtnHeader'),
+    document.getElementById('directActionPlanBtn')
   ];
 
   openFlowOpsBtns.forEach(btn => {
@@ -1544,6 +1546,31 @@
       }
       if (flowopsQuotationModal) flowopsQuotationModal.classList.remove('hidden');
     });
+  });
+
+  // Direct Action Card 1: Dispatch Production Batch
+  const directActionBatchBtn = document.getElementById('directActionBatchBtn');
+  directActionBatchBtn?.addEventListener('click', () => {
+    const woBtn = document.getElementById('openNewWOModalBtn');
+    if (woBtn) {
+      woBtn.click();
+    } else {
+      const woTab = document.querySelector('.nav-tab[data-tab="workorders"]');
+      woTab?.click();
+    }
+    if (window.showToast) window.showToast('Work Order Dispatch Modal initialized.', 'info');
+  });
+
+  // Direct Action Card 2: Audit 3D Warehouse Floor
+  const directActionFloorBtn = document.getElementById('directActionFloorBtn');
+  directActionFloorBtn?.addEventListener('click', () => {
+    const dashTab = document.querySelector('.nav-tab[data-tab="dashboard"]');
+    dashTab?.click();
+    const floor = document.getElementById('threejs-factory-container');
+    if (floor) {
+      floor.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (window.showToast) window.showToast('Inspecting 3D Digital Twin Factory floor.', 'info');
   });
 
   closeFlowOpsQuotationModal?.addEventListener('click', () => {

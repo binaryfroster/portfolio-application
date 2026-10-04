@@ -1958,15 +1958,37 @@ func main() {
       updateLmsEstimator();
     });
 
-    // Quotation modal open/close
+    // Quotation modal open/close & Direct Action triggers
     const openLmsBtn = document.getElementById('openLmsQuotationBtn');
+    const openLmsHeaderBtn = document.getElementById('openLmsQuotationBtnHeader');
+    const directActionPlanBtn = document.getElementById('directActionPlanBtn');
     const closeLmsBtn = document.getElementById('closeLmsQuotationBtn');
     const modal = document.getElementById('learnbridgeQuotationModal');
     const printBtn = document.getElementById('printLmsQuotationBtn');
 
-    openLmsBtn?.addEventListener('click', () => {
-      updateLmsEstimator();
-      if (modal) modal.classList.remove('hidden');
+    [openLmsBtn, openLmsHeaderBtn, directActionPlanBtn].forEach(btn => {
+      btn?.addEventListener('click', () => {
+        updateLmsEstimator();
+        if (modal) modal.classList.remove('hidden');
+      });
+    });
+
+    // Direct Action Card 1: Launch Interactive Lesson
+    const directActionLessonBtn = document.getElementById('directActionLessonBtn');
+    directActionLessonBtn?.addEventListener('click', () => {
+      switchTab('learning');
+      const player = document.getElementById('tab-learning');
+      if (player) {
+        player.scrollIntoView({ behavior: 'smooth' });
+      }
+      toast('Switched to live lesson stage. Kernel bypass video ready.', 'info');
+    });
+
+    // Direct Action Card 2: Inspect 3D Diploma Foil
+    const directActionCertBtn = document.getElementById('directActionCertBtn');
+    directActionCertBtn?.addEventListener('click', () => {
+      openCertificateModal();
+      toast('Rendering 3D tamper-proof diploma certificate...', 'info');
     });
 
     closeLmsBtn?.addEventListener('click', () => {
