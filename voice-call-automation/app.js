@@ -362,6 +362,35 @@
     if (meterBarL) meterBarL.style.width = `${Math.max(2, Math.min(100, meterLevelL))}%`;
     if (meterBarR) meterBarR.style.width = `${Math.max(2, Math.min(100, meterLevelR))}%`;
 
+    // 9-Band FFT Acoustic Frequency Bars Update
+    const fftMultipliers = [0.25, 0.45, 0.85, 1.0, 0.9, 0.7, 0.5, 0.3, 0.15];
+    const fftEnergyElem = document.getElementById('fftBandEnergy');
+    for (let b = 0; b < 9; b++) {
+      const barElem = document.getElementById(`fftBar${b}`);
+      if (barElem) {
+        let bandH = 8;
+        if (isAiSpeaking || isRecognizing) {
+          const jitter = (Math.random() * 0.35 + 0.65);
+          bandH = Math.min(100, Math.max(10, (meterLevelL * fftMultipliers[b] * jitter) * 1.2));
+        } else if (inCall && !isMuted && !isHold) {
+          bandH = Math.min(30, Math.max(6, 12 * fftMultipliers[b] + Math.random() * 6));
+        } else {
+          bandH = Math.min(18, Math.max(4, 6 * fftMultipliers[b] + Math.random() * 3));
+        }
+        barElem.style.height = `${bandH}%`;
+      }
+    }
+    if (fftEnergyElem) {
+      if (isAiSpeaking || isRecognizing) {
+        const peakDb = -Math.round(24 - (meterLevelL / 100) * 18);
+        fftEnergyElem.textContent = `PEAK: ${peakDb} dB`;
+      } else if (inCall) {
+        fftEnergyElem.textContent = 'PEAK: -32.1 dB';
+      } else {
+        fftEnergyElem.textContent = 'STANDBY';
+      }
+    }
+
     requestAnimationFrame(updateAudioMeterLoop);
   }
 
@@ -952,9 +981,14 @@
     callStatusText.textContent = isOutbound ? 'OUTBOUND SIP CALL CONNECTED' : 'INBOUND SIP CALL CONNECTED';
 
     if (sipSignalingStatus) {
-      sipSignalingStatus.textContent = 'CONNECTED (SIP/2.0 200 OK)';
-      sipSignalingStatus.className = 'text-emerald-400 font-bold';
+      sipSignalingStatus.textContent = 'CONNECTING (SIP INVITE)...';
+      sipSignalingStatus.className = 'text-cyan-400 font-bold';
     }
+    updateSipPipelineStep(1, 'INVITE SENT');
+    setTimeout(() => { if (inCall) updateSipPipelineStep(2, '180 RINGING'); }, 300);
+    setTimeout(() => { if (inCall) updateSipPipelineStep(3, '200 OK SDP'); }, 650);
+    setTimeout(() => { if (inCall) updateSipPipelineStep(4, 'RTP MEDIA FLOW'); }, 950);
+    setTimeout(() => { if (inCall) updateSipPipelineStep(5, 'AI REASONING ACTIVE', true); }, 1300);
 
     if (vadStatus) {
       vadStatus.textContent = 'VAD: INITIALIZING AUDIO STREAM';
@@ -1067,6 +1101,7 @@
       sipSignalingStatus.textContent = 'TERMINATED (BYE 200 OK)';
       sipSignalingStatus.className = 'text-slate-400 font-bold';
     }
+    resetSipPipeline();
 
     if (vadStatus) {
       vadStatus.textContent = 'VAD: STANDBY';
@@ -1602,10 +1637,183 @@
     if (window.showToast) window.showToast(`Voice persona switched to: ${cfg.name} (${cfg.title})`, 'info');
   });
 
+  // =========================================================================
+  // 9. SIP PIPELINE, IVR INSPECTOR & ENTERPRISE PLAN ESTIMATION LOGIC
+  // =========================================================================
+  function updateSipPipelineStep(stepNum, statusText, isDone = false) {
+    const badge = document.getElementById('sipStateBadge');
+    if (badge) badge.textContent = `SIP DIALOG: ${statusText}`;
+    for (let i = 1; i <= 5; i++) {
+      const stepElem = document.getElementById(`sipStep${i}`);
+      const dotElem = document.getElementById(`sipStep${i}Dot`);
+      if (stepElem && dotElem) {
+        if (i < stepNum) {
+          stepElem.className = 'p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 transition-all';
+          dotElem.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 mx-auto mt-1.5';
+        } else if (i === stepNum) {
+          stepElem.className = 'p-2 rounded-lg bg-cyan-500/20 border border-cyan-500/50 transition-all ring-1 ring-cyan-500/30';
+          dotElem.className = 'w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse mx-auto mt-1.5';
+        } else {
+          stepElem.className = 'p-2 rounded-lg bg-white/[0.02] border border-white/[0.06] transition-all';
+          dotElem.className = 'w-1.5 h-1.5 rounded-full bg-slate-600 mx-auto mt-1.5';
+        }
+      }
+    }
+    if (isDone) {
+      const step5 = document.getElementById('sipStep5');
+      const dot5 = document.getElementById('sipStep5Dot');
+      if (step5) step5.className = 'p-2 rounded-lg bg-purple-500/20 border border-purple-500/50 transition-all';
+      if (dot5) dot5.className = 'w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse mx-auto mt-1.5';
+      if (badge) badge.textContent = 'SIP DIALOG: ESTABLISHED (RTP 48kHz)';
+    }
+  }
+
+  function resetSipPipeline() {
+    const badge = document.getElementById('sipStateBadge');
+    if (badge) badge.textContent = 'SIP DIALOG: IDLE';
+    for (let i = 1; i <= 5; i++) {
+      const stepElem = document.getElementById(`sipStep${i}`);
+      const dotElem = document.getElementById(`sipStep${i}Dot`);
+      if (stepElem) stepElem.className = 'p-2 rounded-lg bg-white/[0.02] border border-white/[0.06] transition-all';
+      if (dotElem) dotElem.className = 'w-1.5 h-1.5 rounded-full bg-slate-600 mx-auto mt-1.5';
+    }
+  }
+
+  // IVR Node Tree Buttons Interaction
+  document.querySelectorAll('.ivr-node-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ivr-node-btn').forEach(b => {
+        b.classList.remove('ring-1', 'ring-purple-400', 'bg-purple-500/20');
+      });
+      btn.classList.add('ring-1', 'ring-purple-400', 'bg-purple-500/20');
+      const title = btn.getAttribute('data-title');
+      const type = btn.getAttribute('data-type');
+      const desc = btn.getAttribute('data-desc');
+      const latency = btn.getAttribute('data-latency');
+      const titleElem = document.getElementById('ivrInspectTitle');
+      const badgeElem = document.getElementById('ivrInspectBadge');
+      const descElem = document.getElementById('ivrInspectDesc');
+      const latencyElem = document.getElementById('ivrInspectLatency');
+      if (titleElem) titleElem.textContent = title;
+      if (badgeElem) badgeElem.textContent = type;
+      if (descElem) descElem.textContent = desc;
+      if (latencyElem) latencyElem.textContent = latency;
+    });
+  });
+
+  // Enterprise Plan Estimation & ROI Calculator Logic
+  let selectedPlanKey = 'growth';
+  const PLAN_DATA = {
+    starter: { name: 'Autonomous Voice Desk', basePrice: 299, includedMinutes: 2500, overageRate: 0.06, dids: '1 Dedicated DID' },
+    growth: { name: 'Growth Telephony PBX', basePrice: 899, includedMinutes: 12000, overageRate: 0.04, dids: '5 Dedicated DIDs' },
+    enterprise: { name: 'Enterprise Omnichannel', basePrice: 2499, includedMinutes: 50000, overageRate: 0.03, dids: 'Unlimited DIDs' }
+  };
+
+  function updateRoiCalculations() {
+    const minutes = parseInt(document.getElementById('roiMinutesSlider')?.value || '15000', 10);
+    const wage = parseInt(document.getElementById('roiWageSlider')?.value || '26', 10);
+    const deflection = parseInt(document.getElementById('roiDeflectionSlider')?.value || '70', 10);
+
+    const minutesLabel = document.getElementById('roiMinutesLabel');
+    const wageLabel = document.getElementById('roiWageLabel');
+    const deflectionLabel = document.getElementById('roiDeflectionLabel');
+    if (minutesLabel) minutesLabel.textContent = `${minutes.toLocaleString()} mins`;
+    if (wageLabel) wageLabel.textContent = `$${wage}.00 / hr`;
+    if (deflectionLabel) deflectionLabel.textContent = `${deflection}% Deflected`;
+
+    const plan = PLAN_DATA[selectedPlanKey] || PLAN_DATA.growth;
+    const traditionalMonthly = Math.round((minutes / 60) * wage);
+    const overageMinutes = Math.max(0, minutes - plan.includedMinutes);
+    const platformMonthly = Math.round(plan.basePrice + (overageMinutes * plan.overageRate));
+    const netSavings = Math.max(0, traditionalMonthly - platformMonthly);
+    const annualSavings = netSavings * 12;
+
+    const tradCostElem = document.getElementById('roiTraditionalCost');
+    const aiCostElem = document.getElementById('roiAiCost');
+    const netSavingsElem = document.getElementById('roiNetSavings');
+    const annualSavingsElem = document.getElementById('roiAnnualSavings');
+    if (tradCostElem) tradCostElem.textContent = `$${traditionalMonthly.toLocaleString()} / mo`;
+    if (aiCostElem) aiCostElem.textContent = `$${platformMonthly.toLocaleString()} / mo`;
+    if (netSavingsElem) netSavingsElem.textContent = `$${netSavings.toLocaleString()} / mo`;
+    if (annualSavingsElem) annualSavingsElem.textContent = `$${annualSavings.toLocaleString()} / yr`;
+
+    // Update quotation modal elements
+    const qPlanName = document.getElementById('quotePlanName');
+    const qPlanMins = document.getElementById('quotePlanMins');
+    const qPlanPrice = document.getElementById('quotePlanPrice');
+    const qVolDetails = document.getElementById('quoteVolumeDetails');
+    const qOverage = document.getElementById('quoteOveragePrice');
+    const qSavings = document.getElementById('quoteSavingsText');
+    const qTotal = document.getElementById('quoteTotalPrice');
+    if (qPlanName) qPlanName.textContent = plan.name;
+    if (qPlanMins) qPlanMins.textContent = `${plan.includedMinutes.toLocaleString()} Inbound Minutes Included / ${plan.dids}`;
+    if (qPlanPrice) qPlanPrice.textContent = `$${plan.basePrice.toLocaleString()}.00 / mo`;
+    if (qVolDetails) qVolDetails.textContent = `${minutes.toLocaleString()} Minutes (${overageMinutes.toLocaleString()} overage @ $${plan.overageRate}/min)`;
+    if (qOverage) qOverage.textContent = `$${Math.round(overageMinutes * plan.overageRate)}.00 / mo`;
+    if (qSavings) qSavings.textContent = `Projected Net Monthly Savings: $${netSavings.toLocaleString()}`;
+    if (qTotal) qTotal.textContent = `$${platformMonthly.toLocaleString()}.00 / mo`;
+  }
+
+  // Plan card selections
+  document.querySelectorAll('.voice-plan-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const plan = card.getAttribute('data-plan');
+      if (!plan || !PLAN_DATA[plan]) return;
+      selectedPlanKey = plan;
+      document.querySelectorAll('.voice-plan-card').forEach(c => {
+        const isCurrent = c.getAttribute('data-plan') === plan;
+        const btn = c.querySelector('.select-plan-btn');
+        if (isCurrent) {
+          c.classList.add('border-cyan-500/80', 'ring-1', 'ring-cyan-500/40');
+          if (btn) {
+            btn.className = 'select-plan-btn mt-6 w-full py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(0,242,254,0.3)]';
+            btn.textContent = 'Selected Plan';
+          }
+        } else {
+          c.classList.remove('border-cyan-500/80', 'ring-1', 'ring-cyan-500/40');
+          if (btn) {
+            btn.className = 'select-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+            btn.textContent = 'Select Plan';
+          }
+        }
+      });
+      updateRoiCalculations();
+      if (window.showToast) window.showToast(`Selected tier: ${PLAN_DATA[plan].name}`, 'info');
+    });
+  });
+
+  // Slider change listeners
+  ['roiMinutesSlider', 'roiWageSlider', 'roiDeflectionSlider'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateRoiCalculations);
+  });
+
+  // Quotation Modal events
+  const quoteModal = document.getElementById('quotationModal');
+  document.getElementById('openQuotationModalBtn')?.addEventListener('click', () => {
+    updateRoiCalculations();
+    quoteModal?.classList.remove('hidden');
+  });
+  document.getElementById('closeQuotationModalBtn')?.addEventListener('click', () => {
+    quoteModal?.classList.add('hidden');
+  });
+  document.getElementById('printQuotationBtn')?.addEventListener('click', () => {
+    window.print();
+  });
+  document.getElementById('proceedQuotationBtn')?.addEventListener('click', () => {
+    quoteModal?.classList.add('hidden');
+    if (window.showToast) {
+      window.showToast('Enterprise SOW quotation initialized. Redirecting to legal contract gateway...', 'success');
+    }
+    setTimeout(() => {
+      window.location.href = 'https://portal.binaryfroster.com/login';
+    }, 1200);
+  });
+
   // Initialize System
   initThreeJS();
   loadBackendTelemetry();
   initSpeechRecognition();
   loadTwilioConfig();
+  updateRoiCalculations();
 
 })();

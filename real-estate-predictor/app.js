@@ -814,6 +814,77 @@
       breakdownPrincipalBar.style.width = `${piPercent}%`;
       breakdownTaxBar.style.width = `${100 - piPercent}%`;
     }
+
+    // Update Institutional Investment Tear-Sheet Metrics
+    const annualRent = monthlyRentEst * 12;
+    const noi = Math.round(annualRent * 0.80);
+    const capRate = ((noi / (price || 1)) * 100).toFixed(2);
+    const annualDebtService = monthlyPI * 12;
+    const annualCashFlow = Math.max(0, noi - annualDebtService);
+    const cashOnCash = downPayment > 0 ? ((annualCashFlow / downPayment) * 100).toFixed(2) : '0.00';
+    const dscr = annualDebtService > 0 ? (noi / annualDebtService).toFixed(2) : '2.50';
+
+    const tearNoiVal = document.getElementById('tearNoiVal');
+    const tearCapRateVal = document.getElementById('tearCapRateVal');
+    const tearCashReturnVal = document.getElementById('tearCashReturnVal');
+    const tearDscrVal = document.getElementById('tearDscrVal');
+
+    if (tearNoiVal) tearNoiVal.textContent = `${currencySymbol}${noi.toLocaleString('en-US')} / yr`;
+    if (tearCapRateVal) tearCapRateVal.textContent = `${capRate}% Net`;
+    if (tearCashReturnVal) tearCashReturnVal.textContent = `${cashOnCash}%`;
+    if (tearDscrVal) tearDscrVal.textContent = `${dscr}x (${parseFloat(dscr) >= 1.25 ? 'Safe' : 'Watch'})`;
+
+    // Render 360-month Amortization Schedule Table
+    renderAmortizationSchedule(loanAmount, monthlyRate, numPayments, monthlyPI);
+  }
+
+  function renderAmortizationSchedule(principal, monthlyRate, totalMonths, monthlyPI) {
+    const tableBody = document.getElementById('amortizationTableBody');
+    if (!tableBody) return;
+
+    if (principal <= 0 || totalMonths <= 0 || monthlyPI <= 0) {
+      tableBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500 font-mono">No active mortgage debt balance.</td></tr>`;
+      return;
+    }
+
+    let remainingDebt = principal;
+    const currentPrice = currentValuation.price || 2505500;
+    let equityBuilt = Math.round(currentPrice * (downPaymentPct / 100));
+    const allMilestones = [1, 2, 3, 5, 10, 15, 20, 25, 30];
+    const maxYear = Math.round(totalMonths / 12);
+    const milestoneYears = allMilestones.filter(y => y <= maxYear);
+    if (!milestoneYears.includes(maxYear)) milestoneYears.push(maxYear);
+
+    let html = '';
+    let currentMonth = 0;
+
+    for (let targetYear of milestoneYears) {
+      const targetMonth = targetYear * 12;
+      let cumPrincipal = 0;
+      let cumInterest = 0;
+
+      while (currentMonth < targetMonth && remainingDebt > 0) {
+        const interest = remainingDebt * monthlyRate;
+        const princ = Math.min(remainingDebt, monthlyPI - interest);
+        cumPrincipal += princ;
+        cumInterest += interest;
+        remainingDebt = Math.max(0, remainingDebt - princ);
+        equityBuilt += princ;
+        currentMonth++;
+      }
+
+      html += `
+        <tr class="hover:bg-white/[0.02] transition-colors">
+          <td class="p-2 text-white font-bold font-mono">Year ${targetYear} (${targetMonth} mo)</td>
+          <td class="p-2 text-emerald-400 font-medium font-mono">${currencySymbol}${Math.round(cumPrincipal).toLocaleString('en-US')}</td>
+          <td class="p-2 text-amber-300 font-medium font-mono">${currencySymbol}${Math.round(cumInterest).toLocaleString('en-US')}</td>
+          <td class="p-2 text-slate-300 font-bold font-mono">${currencySymbol}${Math.round(remainingDebt).toLocaleString('en-US')}</td>
+          <td class="p-2 text-right text-cyan-400 font-bold font-mono">${currencySymbol}${Math.round(equityBuilt).toLocaleString('en-US')}</td>
+        </tr>
+      `;
+    }
+
+    tableBody.innerHTML = html;
   }
 
   // Mortgage Calculator Listeners
@@ -1441,6 +1512,142 @@
     }
   });
 
+  // =========================================================================
+  // 9. PROPTECH ENTERPRISE PLAN ESTIMATOR & SIZING ENGINE
+  // =========================================================================
+  const PROP_PLANS = {
+    boutique: { name: 'Boutique Appraisal Desk', base: 450, appraisals: 500, extra: 0.80 },
+    institutional: { name: 'Institutional Underwriting Desk', base: 1850, appraisals: 5000, extra: 0.35 },
+    reit: { name: 'Enterprise REIT & Capital Markets', base: 4950, appraisals: 50000, extra: 0.15 }
+  };
+
+  let activePropPlan = 'institutional';
+  let propVolume = 8000;
+  let propFee = 180;
+
+  const propVolumeSlider = document.getElementById('propVolumeSlider');
+  const propVolumeLabel = document.getElementById('propVolumeLabel');
+  const propFeeSlider = document.getElementById('propFeeSlider');
+  const propFeeLabel = document.getElementById('propFeeLabel');
+  const propTradCost = document.getElementById('propTradCost');
+  const propAiCost = document.getElementById('propAiCost');
+  const propNetSavings = document.getElementById('propNetSavings');
+  const propAnnualSavings = document.getElementById('propAnnualSavings');
+
+  function updatePropEstimator() {
+    const plan = PROP_PLANS[activePropPlan] || PROP_PLANS.institutional;
+    const traditionalCost = propVolume * propFee;
+    const overage = Math.max(0, propVolume - plan.appraisals);
+    const aiPlatformCost = plan.base + Math.round(overage * plan.extra);
+    const monthlySavings = Math.max(0, traditionalCost - aiPlatformCost);
+    const annualSavings = monthlySavings * 12;
+
+    if (propVolumeLabel) propVolumeLabel.textContent = `${propVolume.toLocaleString('en-US')} Appraisals`;
+    if (propFeeLabel) propFeeLabel.textContent = `£${propFee.toFixed(2)} / desk report`;
+    if (propTradCost) propTradCost.textContent = `£${traditionalCost.toLocaleString('en-US')} / mo`;
+    if (propAiCost) {
+      propAiCost.textContent = `£${aiPlatformCost.toLocaleString('en-US')} / mo`;
+      const overageText = overage > 0 ? `Base £${plan.base.toLocaleString()} + ${overage.toLocaleString()} overage` : `All ${propVolume.toLocaleString()} covered in base`;
+      const sub = propAiCost.nextElementSibling;
+      if (sub) sub.textContent = overageText;
+    }
+    if (propNetSavings) propNetSavings.textContent = `£${monthlySavings.toLocaleString('en-US')} / mo`;
+    if (propAnnualSavings) propAnnualSavings.textContent = `£${annualSavings.toLocaleString('en-US')} / yr`;
+
+    // Modal sync
+    const modalPlanName = document.getElementById('modalPropPlanName');
+    const modalPlanCost = document.getElementById('modalPropPlanCost');
+    const modalVolume = document.getElementById('modalPropVolume');
+    const modalSavings = document.getElementById('modalPropSavings');
+    if (modalPlanName) modalPlanName.textContent = plan.name;
+    if (modalPlanCost) modalPlanCost.textContent = `£${aiPlatformCost.toLocaleString('en-US')} / mo`;
+    if (modalVolume) modalVolume.textContent = `${propVolume.toLocaleString('en-US')} Appraisals / mo`;
+    if (modalSavings) modalSavings.textContent = `£${annualSavings.toLocaleString('en-US')}`;
+  }
+
+  // Plan Card Selection Listeners
+  document.querySelectorAll('.prop-plan-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const planKey = card.getAttribute('data-plan');
+      if (!planKey || !PROP_PLANS[planKey]) return;
+      activePropPlan = planKey;
+
+      document.querySelectorAll('.prop-plan-card').forEach(c => {
+        c.classList.remove('border-emerald-500', 'bg-emerald-950/20', 'shadow-[0_0_30px_rgba(16,185,129,0.2)]');
+        c.classList.add('border-white/[0.08]', 'bg-[#091712]');
+        const btn = c.querySelector('.select-prop-plan-btn');
+        if (btn) {
+          btn.className = 'select-prop-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+          btn.textContent = `Select ${c.getAttribute('data-plan').toUpperCase()} Plan`;
+        }
+      });
+
+      card.classList.remove('border-white/[0.08]', 'bg-[#091712]');
+      card.classList.add('border-emerald-500', 'bg-emerald-950/20', 'shadow-[0_0_30px_rgba(16,185,129,0.2)]');
+      const activeBtn = card.querySelector('.select-prop-plan-btn');
+      if (activeBtn) {
+        activeBtn.className = 'select-prop-plan-btn mt-6 w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]';
+        activeBtn.textContent = 'Selected Plan';
+      }
+
+      updatePropEstimator();
+      if (window.showToast) window.showToast(`Selected ${PROP_PLANS[planKey].name} tier.`, 'info');
+    });
+  });
+
+  propVolumeSlider?.addEventListener('input', (e) => {
+    propVolume = parseInt(e.target.value, 10) || 8000;
+    updatePropEstimator();
+  });
+
+  propFeeSlider?.addEventListener('input', (e) => {
+    propFee = parseInt(e.target.value, 10) || 180;
+    updatePropEstimator();
+  });
+
+  // Quotation Modal Triggers
+  const propQuotationModal = document.getElementById('propQuotationModal');
+  const closePropQuotationModal = document.getElementById('closePropQuotationModal');
+  const confirmPropQuoteBtn = document.getElementById('confirmPropQuoteBtn');
+  const printPropQuoteBtn = document.getElementById('printPropQuoteBtn');
+
+  document.querySelectorAll('#openPropQuotationBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      updatePropEstimator();
+      const dateEl = document.getElementById('propQuoteDate');
+      if (dateEl) {
+        dateEl.textContent = `DATE: ${new Date().toISOString().split('T')[0]}`;
+      }
+      if (propQuotationModal) propQuotationModal.classList.remove('hidden');
+    });
+  });
+
+  closePropQuotationModal?.addEventListener('click', () => {
+    if (propQuotationModal) propQuotationModal.classList.add('hidden');
+  });
+
+  propQuotationModal?.addEventListener('click', (e) => {
+    if (e.target === propQuotationModal) {
+      propQuotationModal.classList.add('hidden');
+    }
+  });
+
+  confirmPropQuoteBtn?.addEventListener('click', () => {
+    const org = document.getElementById('propQuoteOrg')?.value || 'Client Partner';
+    const signer = document.getElementById('propQuoteSigner')?.value || 'Executive Lead';
+    if (window.showToast) {
+      window.showToast(`PropTech Valuation SLA Locked for ${org} (${signer}).`, 'success');
+    }
+    if (propQuotationModal) propQuotationModal.classList.add('hidden');
+  });
+
+  printPropQuoteBtn?.addEventListener('click', () => {
+    if (window.showToast) window.showToast('Preparing executive PropTech valuation quotation for export...', 'info');
+    setTimeout(() => {
+      window.print();
+    }, 400);
+  });
+
   // Initialization
   initThreeJS();
   updateSavedBadge();
@@ -1448,5 +1655,6 @@
   updateConditionBadge();
   runValuation();
   loadCompsAndAnalytics();
+  updatePropEstimator();
 
 })();

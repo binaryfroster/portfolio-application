@@ -1702,15 +1702,167 @@
   }
 
   // ==========================================
+  // 8. COLLEGIATE SIS PLAN ESTIMATOR & SIZING ENGINE
+  // ==========================================
+  const SIS_PLANS = {
+    campus: {
+      name: 'Single-Campus Academy',
+      base: 450,
+      students: 1200,
+      faculty: 80,
+      badge: 'FOUNDATION'
+    },
+    collegiate: {
+      name: 'Comprehensive College / Institute',
+      base: 1650,
+      students: 8000,
+      faculty: 450,
+      badge: 'RECOMMENDED'
+    },
+    sovereign: {
+      name: 'Multi-Campus University System',
+      base: 4800,
+      students: 25000,
+      faculty: 1500,
+      badge: 'ENTERPRISE SYSTEM'
+    }
+  };
+
+  let activeSisPlan = 'collegiate';
+  let sisStudents = 5000;
+  let sisFaculty = 250;
+
+  const sisStudentsSlider = document.getElementById('sisStudentsSlider');
+  const sisFacultySlider = document.getElementById('sisFacultySlider');
+  const sisStudentsLabel = document.getElementById('sisStudentsLabel');
+  const sisFacultyLabel = document.getElementById('sisFacultyLabel');
+  const sisLegacyCost = document.getElementById('sisLegacyCost');
+  const sisPlatformCost = document.getElementById('sisPlatformCost');
+  const sisNetSavings = document.getElementById('sisNetSavings');
+  const sisAnnualValue = document.getElementById('sisAnnualValue');
+
+  function updateSisEstimator() {
+    const plan = SIS_PLANS[activeSisPlan] || SIS_PLANS.collegiate;
+    // Legacy cost: ~$2.20/student + $8/faculty + $2,500 baseline clerical registrar staff
+    const legacyCost = Math.round(sisStudents * 2.2) + Math.round(sisFaculty * 8) + 2500;
+    const extraStudents = Math.max(0, sisStudents - plan.students);
+    const extraFaculty = Math.max(0, sisFaculty - plan.faculty);
+    const platformCost = plan.base + Math.round(extraStudents * 0.12) + Math.round(extraFaculty * 1.5);
+    const monthlySavings = Math.max(0, legacyCost - platformCost);
+    const annualSavings = monthlySavings * 12;
+
+    if (sisStudentsLabel) sisStudentsLabel.textContent = `${sisStudents.toLocaleString('en-US')} Students`;
+    if (sisFacultyLabel) sisFacultyLabel.textContent = `${sisFaculty.toLocaleString('en-US')} Staff`;
+    if (sisLegacyCost) sisLegacyCost.textContent = `$${legacyCost.toLocaleString('en-US')} / mo`;
+    if (sisPlatformCost) {
+      sisPlatformCost.textContent = `$${platformCost.toLocaleString('en-US')} / mo`;
+      const sub = sisPlatformCost.nextElementSibling;
+      if (sub) {
+        sub.textContent = (extraStudents > 0 || extraFaculty > 0)
+          ? `Base $${plan.base.toLocaleString()} + capacity scale`
+          : `All ${sisStudents.toLocaleString('en-US')} seats included in base`;
+      }
+    }
+    if (sisNetSavings) sisNetSavings.textContent = `$${monthlySavings.toLocaleString('en-US')} / mo`;
+    if (sisAnnualValue) sisAnnualValue.textContent = `$${annualSavings.toLocaleString('en-US')} / yr`;
+
+    // Modal sync
+    const quoteTier = document.getElementById('quoteSisTierName');
+    const quoteStudents = document.getElementById('quoteSisStudentCount');
+    const quoteFaculty = document.getElementById('quoteSisFacultyCount');
+    const quoteBaseFee = document.getElementById('quoteSisBaseFee');
+    const quoteTotalMonthly = document.getElementById('quoteSisTotalMonthly');
+    const quoteTotalAnnual = document.getElementById('quoteSisTotalAnnual');
+
+    if (quoteTier) quoteTier.textContent = plan.name;
+    if (quoteStudents) quoteStudents.textContent = `${sisStudents.toLocaleString('en-US')} Enrolled Students`;
+    if (quoteFaculty) quoteFaculty.textContent = `${sisFaculty.toLocaleString('en-US')} Faculty Desks`;
+    if (quoteBaseFee) quoteBaseFee.textContent = `$${platformCost.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    if (quoteTotalMonthly) quoteTotalMonthly.textContent = `$${platformCost.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    if (quoteTotalAnnual) quoteTotalAnnual.textContent = `$${(platformCost * 12).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  }
+
+  function setupSisEstimatorListeners() {
+    document.querySelectorAll('.sis-plan-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const planKey = card.getAttribute('data-plan');
+        if (!planKey || !SIS_PLANS[planKey]) return;
+        activeSisPlan = planKey;
+
+        document.querySelectorAll('.sis-plan-card').forEach((c) => {
+          c.classList.remove('border-sky-500', 'border-2', 'bg-sky-950/20', 'shadow-[0_0_30px_rgba(56,189,248,0.2)]');
+          c.classList.add('border-white/[0.08]', 'border', 'bg-[#080D1A]');
+          const btn = c.querySelector('.select-sis-plan-btn');
+          if (btn) {
+            btn.className = 'select-sis-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+            btn.textContent = `Select ${c.getAttribute('data-plan').toUpperCase()} Plan`;
+          }
+        });
+
+        card.classList.remove('border-white/[0.08]', 'bg-[#080D1A]');
+        card.classList.add('border-sky-500', 'border-2', 'bg-sky-950/20', 'shadow-[0_0_30px_rgba(56,189,248,0.2)]');
+        const activeBtn = card.querySelector('.select-sis-plan-btn');
+        if (activeBtn) {
+          activeBtn.className = 'select-sis-plan-btn mt-6 w-full py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(56,189,248,0.3)]';
+          activeBtn.textContent = 'Selected Plan';
+        }
+
+        updateSisEstimator();
+        triggerToast(`Selected ${SIS_PLANS[planKey].name} tier.`, 'info');
+      });
+    });
+
+    sisStudentsSlider?.addEventListener('input', (e) => {
+      sisStudents = parseInt(e.target.value, 10) || 5000;
+      updateSisEstimator();
+    });
+
+    sisFacultySlider?.addEventListener('input', (e) => {
+      sisFaculty = parseInt(e.target.value, 10) || 250;
+      updateSisEstimator();
+    });
+
+    // Quotation modal open/close
+    const openSisBtn = document.getElementById('openSisQuotationBtn');
+    const closeSisBtn = document.getElementById('closeSisQuotationBtn');
+    const modal = document.getElementById('edutrackQuotationModal');
+    const printBtn = document.getElementById('printSisQuotationBtn');
+
+    openSisBtn?.addEventListener('click', () => {
+      updateSisEstimator();
+      if (modal) modal.classList.remove('hidden');
+    });
+
+    closeSisBtn?.addEventListener('click', () => {
+      if (modal) modal.classList.add('hidden');
+    });
+
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    printBtn?.addEventListener('click', () => {
+      triggerToast('Generating official Institutional SIS SOW quotation...', 'info');
+      setTimeout(() => {
+        window.print();
+      }, 400);
+    });
+
+    updateSisEstimator();
+  }
+
+  // ==========================================
   // INITIALIZATION
   // ==========================================
   document.addEventListener('DOMContentLoaded', () => {
     initThreeConstellation();
     loadStudentsFromApi();
+    setupSisEstimatorListeners();
   });
 
   if (document.readyState !== 'loading') {
     initThreeConstellation();
     loadStudentsFromApi();
+    setupSisEstimatorListeners();
   }
 })();

@@ -1386,10 +1386,198 @@
   });
 
   // =========================================================================
+  // 12. CNC MILL TELEMETRY & MULTI-LEVEL BOM CONTROLLER
+  // =========================================================================
+  const GCODE_BLOCKS = [
+    'N420 G01 X142.500 Y88.220 Z-12.400 F4800 S14200',
+    'N421 G02 X156.120 Y94.880 I12.500 J-4.200 F4800 S14200',
+    'N422 G01 X168.400 Y102.150 Z-14.800 F5200 S14200',
+    'N423 G03 X182.200 Y110.450 R8.500 F4600 S14150',
+    'N424 G00 Z50.000 M09 (Tool Clearance Rapid)',
+    'N425 G01 X142.500 Y88.220 Z-16.200 F4800 S14200'
+  ];
+  let gcodeIdx = 0;
+
+  setInterval(() => {
+    const spindleEl = document.getElementById('cncSpindleRpm');
+    const feedEl = document.getElementById('cncFeedRate');
+    const gcodeEl = document.getElementById('cncGcodeBlock');
+    if (!spindleEl || !feedEl || !gcodeEl) return;
+
+    const rpmJitter = Math.floor(Math.random() * 80) - 40;
+    const feedJitter = Math.floor(Math.random() * 60) - 30;
+
+    spindleEl.innerHTML = `${(14200 + rpmJitter).toLocaleString('en-US')} <span class="text-[9px] font-normal text-slate-400">RPM</span>`;
+    feedEl.innerHTML = `${(4800 + feedJitter).toLocaleString('en-US')} <span class="text-[9px] font-normal text-slate-400">mm/min</span>`;
+
+    gcodeIdx = (gcodeIdx + 1) % GCODE_BLOCKS.length;
+    gcodeEl.textContent = GCODE_BLOCKS[gcodeIdx];
+  }, 2500);
+
+  // BOM Expand / Collapse Toggle
+  const toggleBomTreeBtn = document.getElementById('toggleBomTreeBtn');
+  let bomExpanded = true;
+  toggleBomTreeBtn?.addEventListener('click', () => {
+    bomExpanded = !bomExpanded;
+    const l2Rows = document.querySelectorAll('#bomTableBody tr.text-slate-400');
+    l2Rows.forEach(row => {
+      row.style.display = bomExpanded ? '' : 'none';
+    });
+    toggleBomTreeBtn.textContent = bomExpanded ? 'Collapse Sub-Levels' : 'Expand All Levels';
+    if (window.showToast) window.showToast(`BOM tree ${bomExpanded ? 'expanded' : 'collapsed'}.`, 'info');
+  });
+
+  // =========================================================================
+  // 13. INDUSTRIAL MES PLAN ESTIMATOR & SHOP FLOOR SIZING ENGINE
+  // =========================================================================
+  const MES_PLANS = {
+    shop: { name: 'Prototype Machine Shop', base: 550, cells: 4, wos: 250 },
+    factory: { name: 'High-Precision Batch Factory', base: 1950, cells: 16, wos: 1500 },
+    gigafactory: { name: 'Tier-1 Aerospace Gigafactory', base: 5200, cells: 64, wos: 10000 }
+  };
+
+  let activeMesPlan = 'factory';
+  let mesCells = 16;
+  let mesWos = 1500;
+
+  const mesCellsSlider = document.getElementById('mesCellsSlider');
+  const mesCellsLabel = document.getElementById('mesCellsLabel');
+  const mesWosSlider = document.getElementById('mesWosSlider');
+  const mesWosLabel = document.getElementById('mesWosLabel');
+  const mesLegacyCost = document.getElementById('mesLegacyCost');
+  const mesPlatformCost = document.getElementById('mesPlatformCost');
+  const mesNetSavings = document.getElementById('mesNetSavings');
+  const mesAnnualSavings = document.getElementById('mesAnnualSavings');
+
+  function updateMesEstimator() {
+    const plan = MES_PLANS[activeMesPlan] || MES_PLANS.factory;
+    const legacyCost = (mesCells * 650) + Math.round(mesWos * 5.2);
+    const extraCells = Math.max(0, mesCells - plan.cells);
+    const extraWos = Math.max(0, mesWos - plan.wos);
+    const platformCost = plan.base + (extraCells * 95) + Math.round(extraWos * 0.85);
+    const monthlySavings = Math.max(0, legacyCost - platformCost);
+    const annualSavings = monthlySavings * 12;
+
+    if (mesCellsLabel) mesCellsLabel.textContent = `${mesCells} Cells`;
+    if (mesWosLabel) mesWosLabel.textContent = `${mesWos.toLocaleString('en-US')} Orders`;
+    if (mesLegacyCost) mesLegacyCost.textContent = `$${legacyCost.toLocaleString('en-US')} / mo`;
+    if (mesPlatformCost) {
+      mesPlatformCost.textContent = `$${platformCost.toLocaleString('en-US')} / mo`;
+      const sub = mesPlatformCost.nextElementSibling;
+      if (sub) {
+        sub.textContent = (extraCells > 0 || extraWos > 0)
+          ? `Base $${plan.base.toLocaleString()} + capacity overage`
+          : `All ${mesCells} cells included in base`;
+      }
+    }
+    if (mesNetSavings) mesNetSavings.textContent = `$${monthlySavings.toLocaleString('en-US')} / mo`;
+    if (mesAnnualSavings) mesAnnualSavings.textContent = `$${annualSavings.toLocaleString('en-US')} / yr`;
+
+    // Modal sync
+    const modalPlanName = document.getElementById('modalFlowOpsPlanName');
+    const modalPlanCost = document.getElementById('modalFlowOpsPlanCost');
+    const modalCapacity = document.getElementById('modalFlowOpsCapacity');
+    const modalSavings = document.getElementById('modalFlowOpsSavings');
+    if (modalPlanName) modalPlanName.textContent = plan.name;
+    if (modalPlanCost) modalPlanCost.textContent = `$${platformCost.toLocaleString('en-US')} / mo`;
+    if (modalCapacity) modalCapacity.textContent = `${mesCells} Cells / ${mesWos.toLocaleString('en-US')} WOs`;
+    if (modalSavings) modalSavings.textContent = `$${annualSavings.toLocaleString('en-US')}`;
+  }
+
+  // Plan Card Selection Listeners
+  document.querySelectorAll('.mes-plan-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const planKey = card.getAttribute('data-plan');
+      if (!planKey || !MES_PLANS[planKey]) return;
+      activeMesPlan = planKey;
+
+      document.querySelectorAll('.mes-plan-card').forEach(c => {
+        c.classList.remove('border-emerald-500', 'border-2', 'bg-emerald-950/20', 'shadow-[0_0_30px_rgba(16,185,129,0.2)]');
+        c.classList.add('border-white/[0.08]', 'border', 'bg-[#080D1A]');
+        const btn = c.querySelector('.select-mes-plan-btn');
+        if (btn) {
+          btn.className = 'select-mes-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+          btn.textContent = `Select ${c.getAttribute('data-plan').toUpperCase()} Plan`;
+        }
+      });
+
+      card.classList.remove('border-white/[0.08]', 'bg-[#080D1A]');
+      card.classList.add('border-emerald-500', 'border-2', 'bg-emerald-950/20', 'shadow-[0_0_30px_rgba(16,185,129,0.2)]');
+      const activeBtn = card.querySelector('.select-mes-plan-btn');
+      if (activeBtn) {
+        activeBtn.className = 'select-mes-plan-btn mt-6 w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]';
+        activeBtn.textContent = 'Selected Plan';
+      }
+
+      updateMesEstimator();
+      if (window.showToast) window.showToast(`Selected ${MES_PLANS[planKey].name} tier.`, 'info');
+    });
+  });
+
+  mesCellsSlider?.addEventListener('input', (e) => {
+    mesCells = parseInt(e.target.value, 10) || 16;
+    updateMesEstimator();
+  });
+
+  mesWosSlider?.addEventListener('input', (e) => {
+    mesWos = parseInt(e.target.value, 10) || 1500;
+    updateMesEstimator();
+  });
+
+  // Quotation Modal Triggers
+  const flowopsQuotationModal = document.getElementById('flowopsQuotationModal');
+  const closeFlowOpsQuotationModal = document.getElementById('closeFlowOpsQuotationModal');
+  const confirmFlowOpsQuoteBtn = document.getElementById('confirmFlowOpsQuoteBtn');
+  const printFlowOpsQuoteBtn = document.getElementById('printFlowOpsQuoteBtn');
+
+  const openFlowOpsBtns = [
+    document.getElementById('openFlowOpsQuotationBtn'),
+    document.getElementById('openFlowOpsQuotationBtnBottom')
+  ];
+
+  openFlowOpsBtns.forEach(btn => {
+    btn?.addEventListener('click', () => {
+      updateMesEstimator();
+      const dateEl = document.getElementById('flowopsQuoteDate');
+      if (dateEl) {
+        dateEl.textContent = `DATE: ${new Date().toISOString().split('T')[0]}`;
+      }
+      if (flowopsQuotationModal) flowopsQuotationModal.classList.remove('hidden');
+    });
+  });
+
+  closeFlowOpsQuotationModal?.addEventListener('click', () => {
+    if (flowopsQuotationModal) flowopsQuotationModal.classList.add('hidden');
+  });
+
+  flowopsQuotationModal?.addEventListener('click', (e) => {
+    if (e.target === flowopsQuotationModal) {
+      flowopsQuotationModal.classList.add('hidden');
+    }
+  });
+
+  confirmFlowOpsQuoteBtn?.addEventListener('click', () => {
+    const org = document.getElementById('flowopsQuoteOrg')?.value || 'Manufacturing Partner';
+    const signer = document.getElementById('flowopsQuoteSigner')?.value || 'VP Operations';
+    if (window.showToast) {
+      window.showToast(`Manufacturing MES SLA Locked for ${org} (${signer}).`, 'success');
+    }
+    if (flowopsQuotationModal) flowopsQuotationModal.classList.add('hidden');
+  });
+
+  printFlowOpsQuoteBtn?.addEventListener('click', () => {
+    if (window.showToast) window.showToast('Preparing executive Manufacturing MES quotation for export...', 'info');
+    setTimeout(() => {
+      window.print();
+    }, 400);
+  });
+
+  // =========================================================================
   // INITIALIZATION
   // =========================================================================
   initThreeJSFactory();
   loadInventory();
   loadKanban();
+  updateMesEstimator();
 
 })();
