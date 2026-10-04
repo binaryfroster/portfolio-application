@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta name="bf-app-id" content="nexus-llm-portal">
@@ -9,7 +9,7 @@
   <meta name="description" content="Binary Froster enterprise multi-model LLM portal and 3D RAG vector knowledge graph assistant.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js 3D WebGL Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -20,9 +20,9 @@
         extend: {
           colors: {
             brand: {
-              dark: '#08090C',
-              surface: '#0A0E17',
-              card: '#0E131F',
+              dark: '#07090E',
+              surface: '#0B0E17',
+              card: '#111522',
               border: '#1C2436',
               cyan: '#00F2FE',
               sky: '#38BDF8',
@@ -34,7 +34,7 @@
           },
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace']
+            mono: ['"JetBrains Mono"', 'monospace'], serif: ['"Newsreader"', 'serif']
           }
         }
       }
@@ -42,7 +42,7 @@
   </script>
   <style>
     body {
-      background-color: #08090C;
+      background-color: #07090E;
       color: #E2E8F0;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -67,7 +67,7 @@
       padding: 0.375rem;
     }
     .double-bezel-inner {
-      background: #0B0F17;
+      background: #0B0E17;
       border-radius: calc(1.25rem - 0.375rem);
       box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07);
     }
@@ -112,7 +112,7 @@
         width: 100%;
         margin: 0;
         padding: 0;
-        background: #08090C !important;
+        background: #07090E !important;
         color: #e2e8f0 !important;
       }
       .no-print {
@@ -121,10 +121,10 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased bg-[#08090C] text-slate-200 overflow-hidden select-none">
+<body class="min-h-screen flex flex-col antialiased bg-[#07090E] text-slate-200 overflow-hidden select-none">
 
   <!-- TOP NAVIGATION HEADER -->
-  <header class="h-16 border-b border-brand-border bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between z-20 shrink-0">
+  <header class="h-16 border-b border-brand-border bg-[#0B0E17]/95 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between z-20 shrink-0">
     <div class="flex items-center gap-2 sm:gap-3">
       <!-- Mobile menu trigger -->
       <button id="mobileMenuBtn" class="lg:hidden p-1.5 rounded-lg border border-brand-border text-slate-400 hover:text-white hover:bg-slate-800/60" aria-label="Toggle Navigation">
@@ -133,12 +133,12 @@
 
       <!-- Logo & System Brand -->
       <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 via-blue-600/30 to-indigo-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-mono font-bold text-sm tracking-tighter group-hover:border-cyan-400 transition-colors shadow-inner">
+        <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white font-mono font-bold text-xs">
           BF
         </div>
         <div class="flex flex-col justify-center">
           <div class="flex items-center gap-1.5 sm:gap-2">
-            <span class="font-bold text-xs sm:text-sm tracking-tight text-white">NEXUS LLM</span>
+            <span class="font-serif italic font-normal text-xs sm:text-sm tracking-tight text-white">NEXUS LLM</span>
             <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold tracking-wider">v2.5 Core</span>
           </div>
           <p class="text-[9px] text-slate-400 font-mono tracking-wider hidden sm:block mt-0.5 leading-none">ENTERPRISE COGNITIVE FABRIC</p>
@@ -147,7 +147,7 @@
     </div>
 
     <!-- Active Model Selector -->
-    <div class="hidden md:flex items-center gap-2 bg-[#0E131F] border border-brand-border px-3 py-1.5 rounded-full shadow-inner">
+    <div class="hidden md:flex items-center gap-2 bg-[#111522] border border-brand-border px-3 py-1.5 rounded-full shadow-inner">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
       <span class="text-xs text-slate-400 font-medium">Model:</span>
       <select id="modelSelector" class="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer">
@@ -267,7 +267,7 @@
       <!-- SESSIONS PANEL -->
       <div id="sessionsPanel" class="flex-1 flex flex-col overflow-hidden">
         <div class="p-2 border-b border-brand-border/60">
-          <input type="text" id="sessionSearchInput" placeholder="Filter sessions..." class="w-full px-2.5 py-1.5 rounded-lg bg-[#0E131F] border border-brand-border text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono">
+          <input type="text" id="sessionSearchInput" placeholder="Filter sessions..." class="w-full px-2.5 py-1.5 rounded-lg bg-[#111522] border border-brand-border text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono">
         </div>
         <div id="sessionList" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
           <!-- Populated by JS -->
@@ -288,7 +288,7 @@
         </div>
 
         <!-- Document Search -->
-        <input type="text" id="docSearchInput" placeholder="Filter indexed files..." class="w-full px-2.5 py-1.5 rounded-lg bg-[#0E131F] border border-brand-border text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono">
+        <input type="text" id="docSearchInput" placeholder="Filter indexed files..." class="w-full px-2.5 py-1.5 rounded-lg bg-[#111522] border border-brand-border text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono">
 
         <!-- Document List -->
         <div class="space-y-2 text-xs" id="docList">
@@ -296,7 +296,7 @@
         </div>
 
         <!-- Document Drag & Drop File Zone -->
-        <div id="fileDropzone" class="border-2 border-dashed border-brand-border hover:border-cyan-500/40 rounded-xl p-3 text-center transition-all bg-[#0B0F17]/60 cursor-pointer">
+        <div id="fileDropzone" class="border-2 border-dashed border-brand-border hover:border-cyan-500/40 rounded-xl p-3 text-center transition-all bg-[#0B0E17]/60 cursor-pointer">
           <input type="file" id="fileUploadInput" class="hidden" accept=".pdf,.docx,.txt,.md,.json,.csv">
           <label for="fileUploadInput" class="cursor-pointer block">
             <svg class="w-6 h-6 mx-auto text-cyan-400 mb-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
@@ -330,7 +330,7 @@
     </aside>
 
     <!-- CENTER CONVERSATION & 3D RAG CORE -->
-    <main class="flex-1 flex flex-col bg-[#08090C] relative overflow-hidden">
+    <main class="flex-1 flex flex-col bg-[#07090E] relative overflow-hidden">
 
       <!-- 3D NEURAL VECTOR RAG KNOWLEDGE GRAPH STAGE -->
       <div class="px-3 sm:px-4 md:px-6 pt-3 shrink-0">
@@ -415,9 +415,9 @@
       </div>
 
       <!-- Input Bar Container -->
-      <div class="p-3 sm:p-4 border-t border-brand-border bg-[#0B0F17]/95 backdrop-blur shrink-0">
+      <div class="p-3 sm:p-4 border-t border-brand-border bg-[#0B0E17]/95 backdrop-blur shrink-0">
         <form id="chatForm" class="max-w-4xl mx-auto relative flex flex-col gap-2">
-          <div class="relative flex items-end rounded-2xl border border-brand-border bg-[#0E131F] focus-within:border-cyan-500/60 transition-colors p-2 shadow-inner">
+          <div class="relative flex items-end rounded-2xl border border-brand-border bg-[#111522] focus-within:border-cyan-500/60 transition-colors p-2 shadow-inner">
             <textarea id="promptInput" rows="1" placeholder="Query enterprise documents or ask engineering architecture questions..." class="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none resize-none px-3 py-1.5 max-h-40 custom-scrollbar font-sans"></textarea>
             <div class="flex items-center gap-1.5 pb-0.5 pr-1">
               <!-- RAG Mode Toggle Button -->
