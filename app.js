@@ -241,16 +241,24 @@
     heartContainer.innerHTML = '';
     heartContainer.appendChild(renderer.domElement);
 
-    // Cardiac Lighting
-    const ambient = new THREE.AmbientLight(0x0a162b, 1.8);
+    // Clinical Laboratory Lighting Setup
+    const ambient = new THREE.AmbientLight(0x0a101d, 1.4);
     scene.add(ambient);
 
-    pointRedLight = new THREE.PointLight(0xf43f5e, 3, 22);
-    pointRedLight.position.set(4, 3, 4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(5, 6, 6);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.4);
+    rimLight.position.set(-5, 4, 3);
+    scene.add(rimLight);
+
+    pointRedLight = new THREE.PointLight(0xf43f5e, 1.8, 22);
+    pointRedLight.position.set(3, 2, 4);
     scene.add(pointRedLight);
 
-    pointTealLight = new THREE.PointLight(0x00d2d3, 2.5, 22);
-    pointTealLight.position.set(-4, -2, 4);
+    pointTealLight = new THREE.PointLight(0x38bdf8, 1.4, 22);
+    pointTealLight.position.set(-3, -2, 4);
     scene.add(pointTealLight);
 
     heartGroup = new THREE.Group();
@@ -272,11 +280,13 @@
     vGeo.computeVertexNormals();
 
     const cardiacMat = new THREE.MeshStandardMaterial({
-      color: 0xbe123c,
-      emissive: 0x4c0519,
-      roughness: 0.35,
-      metalness: 0.45,
-      wireframe: true
+      color: 0x9f1239,
+      emissive: 0x2a040d,
+      roughness: 0.3,
+      metalness: 0.7,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.85
     });
 
     ventricularMesh = new THREE.Mesh(vGeo, cardiacMat);
@@ -291,8 +301,8 @@
     ]);
     const tubeGeo = new THREE.TubeGeometry(curve, 28, 0.22, 12, false);
     const aortaMat = new THREE.MeshStandardMaterial({
-      color: 0x00d2d3,
-      emissive: 0x003d40,
+      color: 0x38bdf8,
+      emissive: 0x0c4a6e,
       wireframe: true,
       transparent: true,
       opacity: 0.85
@@ -308,7 +318,7 @@
     ]);
     const pGeo = new THREE.TubeGeometry(pCurve, 20, 0.18, 10, false);
     const pMat = new THREE.MeshStandardMaterial({
-      color: 0x00f2fe,
+      color: 0x64748b,
       wireframe: true,
       transparent: true,
       opacity: 0.7
