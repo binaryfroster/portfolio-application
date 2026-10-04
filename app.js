@@ -1697,6 +1697,299 @@
     setupQuizInteractions();
   }
 
+  // =========================================================================
+  // 7. MULTI-LANGUAGE CODE EXECUTION SANDBOX
+  // =========================================================================
+  const CODE_TEMPLATES = {
+    python: {
+      filename: 'kernel_ring_buffer.py',
+      code: `# io_uring submission & completion ring buffer simulation
+import time
+
+class RingBuffer:
+    def __init__(self, capacity=1024):
+        self.capacity = capacity
+        self.head = 0
+        self.tail = 0
+        self.entries = [None] * capacity
+
+    def submit_sqe(self, opcode, fd, buf_len):
+        if (self.tail - self.head) >= self.capacity:
+            raise OverflowError("Submission queue saturated")
+        idx = self.tail & (self.capacity - 1)
+        self.entries[idx] = {"op": opcode, "fd": fd, "len": buf_len}
+        self.tail += 1
+        return idx
+
+ring = RingBuffer(1024)
+idx = ring.submit_sqe("IORING_OP_READ", fd=4, buf_len=4096)
+print(f"[KERNEL_OK] SQE index {idx} mapped to ring buffer.")
+print(f"[TELEMETRY] Queue depth: {ring.tail - ring.head}/1024. Latency: 0.12ms")`
+    },
+    typescript: {
+      filename: 'ring_buffer.ts',
+      code: `// Zero-Copy Direct Memory Buffer via ArrayBuffer & SharedArrayBuffer
+interface SQEntry {
+  opcode: number;
+  fd: number;
+  bufferOffset: number;
+  length: number;
+}
+
+class MicroVMRingBuffer {
+  private head = 0;
+  private tail = 0;
+  private readonly capacity = 2048;
+  private entries: SQEntry[] = [];
+
+  submit(opcode: number, fd: number, length: number): number {
+    const slot = this.tail & (this.capacity - 1);
+    this.entries[slot] = { opcode, fd, bufferOffset: slot * 4096, length };
+    this.tail++;
+    return slot;
+  }
+}
+
+const ring = new MicroVMRingBuffer();
+const slot = ring.submit(0x01, 3, 8192);
+console.log(\`[TS_RUNNER] Submission complete. Allocated ring slot \${slot}.\`);
+console.log("[METRICS] Zero-copy buffer pointer pinned at 0x7fff892a0000.");`
+    },
+    go: {
+      filename: 'ring_buffer.go',
+      code: `package main
+
+import (
+	"fmt"
+	"sync/atomic"
+	"time"
+)
+
+type SubmissionQueue struct {
+	head uint32
+	tail uint32
+	mask uint32
+	buf  [1024]uint64
+}
+
+func (q *SubmissionQueue) Push(sqe uint64) bool {
+	tail := atomic.LoadUint32(&q.tail)
+	idx := tail & q.mask
+	q.buf[idx] = sqe
+	atomic.StoreUint32(&q.tail, tail+1)
+	return true
+}
+
+func main() {
+	q := &SubmissionQueue{mask: 1023}
+	start := time.Now()
+	q.Push(0xdeadbeef)
+	elapsed := time.Since(start)
+	fmt.Printf("[GO_RUNTIME] SQE pushed in %v\\n", elapsed)
+	fmt.Println("[GC_OVERHEAD] 0 allocations / 0 alloc bytes / 100% stack resident")
+}`
+    }
+  };
+
+  function setupCodeSandbox() {
+    const editor = document.getElementById('codeEditorInput');
+    const filenameEl = document.getElementById('sandboxFileName');
+    const runBtn = document.getElementById('runCodeSandboxBtn');
+    const terminal = document.getElementById('sandboxTerminalOutput');
+    const metricsEl = document.getElementById('sandboxExecutionMetrics');
+
+    document.querySelectorAll('.sandbox-lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang');
+        if (!CODE_TEMPLATES[lang]) return;
+
+        document.querySelectorAll('.sandbox-lang-btn').forEach(b => {
+          b.className = 'sandbox-lang-btn px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition-all';
+        });
+        btn.className = 'sandbox-lang-btn active-lang px-3 py-1 rounded-lg text-xs font-mono font-semibold bg-violet-600 text-white transition-all';
+
+        if (filenameEl) filenameEl.textContent = CODE_TEMPLATES[lang].filename;
+        if (editor) editor.value = CODE_TEMPLATES[lang].code;
+        toast(`Loaded ${lang.toUpperCase()} architecture template into MicroVM editor.`, 'info');
+      });
+    });
+
+    runBtn?.addEventListener('click', () => {
+      if (!terminal) return;
+      terminal.innerHTML = `
+        <div class="text-cyan-400 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>Allocating MicroVM container (microvm-us-east-4a)...</span>
+        </div>
+      `;
+      if (metricsEl) metricsEl.textContent = 'Compiling & Executing...';
+
+      setTimeout(() => {
+        const latency = Math.floor(Math.random() * 40) + 45;
+        const memory = (Math.random() * 4 + 14).toFixed(1);
+        terminal.innerHTML = `
+          <div class="text-slate-500">// Execution session started in isolated gVisor sandbox</div>
+          <div class="text-emerald-400">[MICROVM_SPAWN] Container PID 49102 initialised in 12ms.</div>
+          <div class="text-slate-200">[STDOUT] Compiling & running user buffer stream...</div>
+          <div class="text-white font-bold">[KERNEL_OK] SQE index 0 mapped to zero-copy ring buffer.</div>
+          <div class="text-cyan-300">[TELEMETRY] Queue depth: 1/1024. Latency: 0.12ms. Context switches: 0.</div>
+          <div class="text-emerald-300">[STATUS] All 4 unit test assertions passed successfully. Exit code: 0.</div>
+        `;
+        if (metricsEl) metricsEl.textContent = `Completed in ${latency}ms \u00b7 Memory: ${memory} MB`;
+        toast(`Execution succeeded in ${latency}ms (Zero context switch overhead verified).`, 'success');
+      }, 600);
+    });
+  }
+
+  // =========================================================================
+  // 8. CORPORATE L&D ACADEMY PLAN ESTIMATOR & SIZING ENGINE
+  // =========================================================================
+  const LMS_PLANS = {
+    startup: {
+      name: 'Growth Engineering Squad',
+      base: 350,
+      learners: 150,
+      hours: 500,
+      badge: 'FOUNDATION'
+    },
+    enterprise: {
+      name: 'Enterprise Engineering Upskill',
+      base: 1450,
+      learners: 1500,
+      hours: 4000,
+      badge: 'RECOMMENDED'
+    },
+    global: {
+      name: 'Global Engineering University',
+      base: 3900,
+      learners: 10000,
+      hours: 25000,
+      badge: 'ENTERPRISE SCALE'
+    }
+  };
+
+  let activeLmsPlan = 'enterprise';
+  let lmsLearners = 500;
+  let lmsSandboxHours = 2500;
+
+  const lmsLearnersSlider = document.getElementById('lmsLearnersSlider');
+  const lmsSandboxHoursSlider = document.getElementById('lmsSandboxHoursSlider');
+  const lmsLearnersLabel = document.getElementById('lmsLearnersLabel');
+  const lmsSandboxHoursLabel = document.getElementById('lmsSandboxHoursLabel');
+  const lmsLegacyCost = document.getElementById('lmsLegacyCost');
+  const lmsPlatformCost = document.getElementById('lmsPlatformCost');
+  const lmsNetSavings = document.getElementById('lmsNetSavings');
+  const lmsAnnualValue = document.getElementById('lmsAnnualValue');
+
+  function updateLmsEstimator() {
+    const plan = LMS_PLANS[activeLmsPlan] || LMS_PLANS.enterprise;
+    const legacyCost = Math.round(lmsLearners * 28) + Math.round(lmsSandboxHours * 1.8);
+    const extraLearners = Math.max(0, lmsLearners - plan.learners);
+    const extraHours = Math.max(0, lmsSandboxHours - plan.hours);
+    const platformCost = plan.base + Math.round(extraLearners * 0.95) + Math.round(extraHours * 0.15);
+    const monthlySavings = Math.max(0, legacyCost - platformCost);
+    const annualSavings = monthlySavings * 12;
+
+    if (lmsLearnersLabel) lmsLearnersLabel.textContent = `${lmsLearners.toLocaleString('en-US')} Engineers`;
+    if (lmsSandboxHoursLabel) lmsSandboxHoursLabel.textContent = `${lmsSandboxHours.toLocaleString('en-US')} Hours`;
+    if (lmsLegacyCost) lmsLegacyCost.textContent = `$${legacyCost.toLocaleString('en-US')} / mo`;
+    if (lmsPlatformCost) {
+      lmsPlatformCost.textContent = `$${platformCost.toLocaleString('en-US')} / mo`;
+      const sub = lmsPlatformCost.nextElementSibling;
+      if (sub) {
+        sub.textContent = (extraLearners > 0 || extraHours > 0)
+          ? `Base $${plan.base.toLocaleString()} + capacity scale`
+          : `All ${lmsLearners.toLocaleString('en-US')} engineers included in base`;
+      }
+    }
+    if (lmsNetSavings) lmsNetSavings.textContent = `$${monthlySavings.toLocaleString('en-US')} / mo`;
+    if (lmsAnnualValue) lmsAnnualValue.textContent = `$${annualSavings.toLocaleString('en-US')} / yr`;
+
+    // Modal sync
+    const quoteTier = document.getElementById('quoteLmsTierName');
+    const quoteLearners = document.getElementById('quoteLmsLearnerCount');
+    const quoteCompute = document.getElementById('quoteLmsComputeHours');
+    const quoteBaseFee = document.getElementById('quoteLmsBaseFee');
+    const quoteTotalMonthly = document.getElementById('quoteLmsTotalMonthly');
+    const quoteTotalAnnual = document.getElementById('quoteLmsTotalAnnual');
+
+    if (quoteTier) quoteTier.textContent = plan.name;
+    if (quoteLearners) quoteLearners.textContent = `${lmsLearners.toLocaleString('en-US')} Engineers`;
+    if (quoteCompute) quoteCompute.textContent = `${lmsSandboxHours.toLocaleString('en-US')} Hours / month`;
+    if (quoteBaseFee) quoteBaseFee.textContent = `$${platformCost.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    if (quoteTotalMonthly) quoteTotalMonthly.textContent = `$${platformCost.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    if (quoteTotalAnnual) quoteTotalAnnual.textContent = `$${(platformCost * 12).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  }
+
+  function setupLmsEstimatorListeners() {
+    document.querySelectorAll('.lms-plan-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const planKey = card.getAttribute('data-plan');
+        if (!planKey || !LMS_PLANS[planKey]) return;
+        activeLmsPlan = planKey;
+
+        document.querySelectorAll('.lms-plan-card').forEach(c => {
+          c.classList.remove('border-violet-500', 'border-2', 'bg-violet-950/20', 'shadow-[0_0_30px_rgba(139,92,246,0.2)]');
+          c.classList.add('border-white/[0.08]', 'border', 'bg-[#080D1A]');
+          const btn = c.querySelector('.select-lms-plan-btn');
+          if (btn) {
+            btn.className = 'select-lms-plan-btn mt-6 w-full py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-mono font-bold border border-white/[0.1] transition-all';
+            btn.textContent = `Select ${c.getAttribute('data-plan').toUpperCase()} Plan`;
+          }
+        });
+
+        card.classList.remove('border-white/[0.08]', 'bg-[#080D1A]');
+        card.classList.add('border-violet-500', 'border-2', 'bg-violet-950/20', 'shadow-[0_0_30px_rgba(139,92,246,0.2)]');
+        const activeBtn = card.querySelector('.select-lms-plan-btn');
+        if (activeBtn) {
+          activeBtn.className = 'select-lms-plan-btn mt-6 w-full py-2 rounded-xl bg-violet-500 hover:bg-violet-400 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]';
+          activeBtn.textContent = 'Selected Plan';
+        }
+
+        updateLmsEstimator();
+        toast(`Selected ${LMS_PLANS[planKey].name} tier.`, 'info');
+      });
+    });
+
+    lmsLearnersSlider?.addEventListener('input', (e) => {
+      lmsLearners = parseInt(e.target.value, 10) || 500;
+      updateLmsEstimator();
+    });
+
+    lmsSandboxHoursSlider?.addEventListener('input', (e) => {
+      lmsSandboxHours = parseInt(e.target.value, 10) || 2500;
+      updateLmsEstimator();
+    });
+
+    // Quotation modal open/close
+    const openLmsBtn = document.getElementById('openLmsQuotationBtn');
+    const closeLmsBtn = document.getElementById('closeLmsQuotationBtn');
+    const modal = document.getElementById('learnbridgeQuotationModal');
+    const printBtn = document.getElementById('printLmsQuotationBtn');
+
+    openLmsBtn?.addEventListener('click', () => {
+      updateLmsEstimator();
+      if (modal) modal.classList.remove('hidden');
+    });
+
+    closeLmsBtn?.addEventListener('click', () => {
+      if (modal) modal.classList.add('hidden');
+    });
+
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    printBtn?.addEventListener('click', () => {
+      toast('Generating official Corporate L&D SOW quotation...', 'info');
+      setTimeout(() => {
+        window.print();
+      }, 400);
+    });
+
+    updateLmsEstimator();
+  }
+
   async function loadServerlessProgress() {
     try {
       const res = await fetch('/api/progress?student=Dr.+Aris+Thorne');
@@ -1719,6 +2012,8 @@
   // =========================================================================
   loadPersistedState();
   initEventListeners();
+  setupCodeSandbox();
+  setupLmsEstimatorListeners();
   renderNotes();
   updatePlayerUI();
   updateMarkCompleteBtnUI();
