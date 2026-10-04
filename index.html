@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta name="bf-app-id" content="edutrack-sis">
@@ -118,23 +118,23 @@
   <!-- TOP HEADER -->
   <header class="sticky top-0 z-40 px-4 py-2.5 bg-[#07090E]/90 backdrop-blur-xl border-b border-white/[0.08]">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 shrink-0">
         <a href="https://binaryfroster.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600/30 via-blue-600/20 to-indigo-600/30 border border-sky-500/40 flex items-center justify-center text-sky-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(56,189,248,0.2)]">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600/30 via-blue-600/20 to-indigo-600/30 border border-sky-500/40 flex items-center justify-center text-sky-300 font-mono font-bold text-sm shadow-[0_0_15px_rgba(56,189,248,0.2)] shrink-0">
             ET
           </div>
-          <div>
-            <div class="flex items-center gap-2">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap">
               <span class="font-serif italic font-normal text-sm tracking-tight text-white group-hover:text-sky-300 transition-colors">EduTrack SIS</span>
-              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/30 font-semibold tracking-wider">5,000 ACTIVE USERS</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/30 font-semibold tracking-wider">FERPA COMPLIANT</span>
             </div>
-            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block">ACADEMIC INFORMATION OS</p>
+            <p class="text-[10px] text-slate-400 font-mono tracking-wider hidden sm:block whitespace-nowrap">ACADEMIC INFORMATION OS</p>
           </div>
         </a>
       </div>
 
       <!-- Telemetry & Actions -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-nowrap whitespace-nowrap">
         <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-slate-400 border-r border-white/[0.08] pr-4">
           <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -147,18 +147,24 @@
           </div>
         </div>
 
-        <button id="addStudentModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(56,189,248,0.25)] active:scale-[0.98]">
+        <button id="addStudentModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition-all shadow-[0_0_15px_rgba(56,189,248,0.25)] active:scale-[0.98] shrink-0 whitespace-nowrap">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           <span>Enroll Student</span>
         </button>
 
-        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all">
+        <!-- Direct SOW Plan Quote Trigger in Header -->
+        <button id="openSisQuotationBtnHeader" class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.12] text-xs font-mono font-medium transition-all shrink-0 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+          <span>Plan & SOW Quote</span>
+        </button>
+
+        <a href="https://binaryfroster.com/portfolio" class="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.05] text-slate-300 text-xs font-semibold transition-all shrink-0 whitespace-nowrap">
           <span>Portfolio</span>
           <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
 
         <!-- Enterprise Auth Mount -->
-        <div id="bf-auth-mount"></div>
+        <div id="bf-auth-mount" class="shrink-0 flex items-center"></div>
       </div>
     </div>
   </header>
@@ -185,6 +191,107 @@
 
   <!-- MAIN CONTAINER -->
   <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- DIRECT ACTION WORKSPACE & ORIENTATION DECK (ABOVE THE FOLD) -->
+    <section class="double-bezel">
+      <div class="double-bezel-inner p-4 sm:p-5 space-y-4">
+        
+        <!-- Header Orientation Strip -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold">
+                DIRECT ACTION WORKSPACE
+              </span>
+              <span class="text-xs text-slate-400 font-mono">REGISTRAR CONTROLS &amp; SOW</span>
+            </div>
+            <h1 class="font-serif italic text-lg sm:text-xl text-white font-normal tracking-tight">
+              Academic Operations &amp; Verified Credential Infrastructure
+            </h1>
+            <p class="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed">
+              Record classroom attendance, inspect FERPA-compliant official transcripts with PKI seals, or configure an institutional campus deployment plan below.
+            </p>
+          </div>
+
+          <!-- Quick Telemetry Pill -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="px-3 py-1.5 rounded-xl bg-[#07090E] border border-white/[0.06] text-right font-mono">
+              <span class="text-[9px] text-slate-500 block uppercase">CAMPUS ATTENDANCE</span>
+              <span class="text-xs text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                96.4% Verified Rate
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Primary Action Cards ("What You Can Do Right Now") -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          
+          <!-- Card 1: Direct Demo / Attendance Record -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-sky-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-sky-400 font-bold tracking-wider uppercase">01 &middot; DIRECT ACTION</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-semibold">ATTENDANCE</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Record Cohort Attendance</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Toggle daily classroom student status, execute 1-click batch verification, and calculate dynamic attendance rate telemetry.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionAttendanceBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 hover:text-white border border-sky-500/30 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Record Attendance</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Specialized Secondary Capability / Official Transcript -->
+          <div class="p-3.5 rounded-xl bg-[#07090E] border border-white/[0.06] hover:border-indigo-500/40 transition-all flex flex-col justify-between group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-indigo-400 font-bold tracking-wider uppercase">02 &middot; ACADEMIC RECORD</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-semibold">FERPA SEAL</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">Generate Official Transcript</h2>
+              <p class="text-xs text-slate-400 leading-relaxed font-sans">
+                Review verified cumulative GPA, course credit hours, academic honors, and inspect tamper-proof cryptographic PKI checksum.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.05]">
+              <button id="directActionTranscriptBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-white border border-indigo-500/25 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>Inspect Official Transcript</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: THE FIRST PLAN ITSELF (K-12 & University SOW) -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-sky-500/[0.08] to-blue-500/[0.04] border border-sky-500/30 hover:border-sky-400/60 transition-all flex flex-col justify-between shadow-[0_0_20px_rgba(56,189,248,0.08)] group">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-sky-300 font-bold tracking-wider uppercase">03 &middot; THE FIRST PLAN</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-400/20 text-sky-200 border border-sky-400/30 font-bold">ENTERPRISE SOW</span>
+              </div>
+              <h2 class="text-sm font-semibold text-white font-sans">K-12 &amp; University SOW Plan</h2>
+              <p class="text-xs text-slate-300 leading-relaxed font-sans">
+                Configure student population capacity, faculty licensing seats, Bursar financial ledgers, and download certified institutional SOW quote.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.08]">
+              <button id="directActionPlanBtn" type="button" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 text-xs font-mono font-bold transition-all shadow-[0_0_15px_rgba(56,189,248,0.25)] flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <span>Configure Plan &amp; View SOW Quote</span>
+                <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
 
     <!-- 1. STUDENT ROSTER & 3D PERFORMANCE -->
     <div id="tab-roster" class="sis-tab-content space-y-6">
